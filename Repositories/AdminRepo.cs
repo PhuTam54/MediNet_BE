@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
 using MediNet_BE.Dto;
 using MediNet_BE.Dto.Users;
@@ -35,6 +36,9 @@ namespace MediNet_BE.Repositories
 		public async Task<Admin> AddUserAsync(AdminDto userDto)
 		{
 			var adminMap = _mapper.Map<Admin>(userDto);
+			adminMap.Password = LoginRegisterController.HashPassword(adminMap.Password);
+			adminMap.Role = 2;
+
 			_context.Admins!.Add(adminMap);
 			await _context.SaveChangesAsync();
 			return adminMap;
@@ -43,6 +47,9 @@ namespace MediNet_BE.Repositories
 		public async Task UpdateUserAsync(AdminDto userDto)
 		{
 			var adminMap = _mapper.Map<Admin>(userDto);
+			adminMap.Password = LoginRegisterController.HashPassword(adminMap.Password);
+			adminMap.Role = 2;
+
 			_context.Admins!.Update(adminMap);
 			await _context.SaveChangesAsync();
 		}

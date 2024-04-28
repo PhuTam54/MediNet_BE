@@ -16,7 +16,7 @@ using MediNet_BE.Identity;
 
 namespace MediNet_BE.Controllers.Users
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class AdminsController : ControllerBase
     {

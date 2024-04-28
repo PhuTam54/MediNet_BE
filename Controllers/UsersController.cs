@@ -15,7 +15,7 @@ using MediNet_BE.Services.Image;
 
 namespace MediNet_BE.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/v1/[controller]")]
 	[ApiController]
 	public class UsersController : ControllerBase
 	{

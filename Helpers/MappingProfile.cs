@@ -12,7 +12,11 @@ namespace MediNet_BE.Helpers
         {
 			CreateMap<Customer, CustomerDto>();
 			CreateMap<CustomerDto, Customer>();
-			CreateMap<Admin, AdminDto>();
+            CreateMap<Customer, RegisterRequest>();
+            CreateMap<RegisterRequest, Customer>();
+            CreateMap<Customer, AuthenticateRequest>();
+            CreateMap<AuthenticateRequest, Customer>();
+            CreateMap<Admin, AdminDto>();
 			CreateMap<AdminDto, Admin>();
 			CreateMap<Category, CategoryDto>();
 			CreateMap<CategoryDto, Category>();

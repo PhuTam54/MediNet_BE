@@ -151,7 +151,8 @@ namespace MediNet_BE.Controllers.Users
 			user.Role = 1;
 			user.Status = 0;
 			user.Address = "";
-			user.Date_Of_Birth = DateTime.UtcNow;
+			user.Gender = 0;
+            user.Date_Of_Birth = DateTime.UtcNow;
 			user.PhoneNumber = "";
 
 			_context.Customers.Add(user);

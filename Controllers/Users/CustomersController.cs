@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MediNet_BE.Controllers.Users
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CustomersController : ControllerBase
     {

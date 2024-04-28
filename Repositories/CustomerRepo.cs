@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
 using MediNet_BE.Dto;
+using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Users;
+using MediNet_BE.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories
@@ -13,11 +16,13 @@ namespace MediNet_BE.Repositories
 	{
 		private readonly MediNetContext _context;
 		private readonly IMapper _mapper;
+		private readonly IMailService _mailService;
 
-		public CustomerRepo(MediNetContext context, IMapper mapper)
+		public CustomerRepo(MediNetContext context, IMapper mapper, IMailService mailService)
 		{
 			_context = context;
 			_mapper = mapper;
+			_mailService = mailService;
 		}
 		public async Task<List<Customer>> GetAllUserAsync()
 		{
@@ -34,6 +39,20 @@ namespace MediNet_BE.Repositories
 		public async Task<Customer> AddUserAsync(CustomerDto userDto)
 		{
 			var customerMap = _mapper.Map<Customer>(userDto);
+			customerMap.Role = 1;
+			customerMap.Status = 0;
+			customerMap.Date_Of_Birth = DateTime.UtcNow;
+			customerMap.Password = LoginRegisterController.HashPassword(customerMap.Password);
+
+			var data = new SendMailRequest
+			{
+				ToEmail = customerMap.Email,
+				UserName = customerMap.Username,
+				Url = "ThankYou",
+				Subject = $"Thank you {customerMap.Username}"
+			};
+			await _mailService.SendEmailAsync(data);
+
 			_context.Customers!.Add(customerMap);
 			await _context.SaveChangesAsync();
 			return customerMap;

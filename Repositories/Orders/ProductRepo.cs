@@ -47,7 +47,7 @@ namespace MediNet_BE.Repositories.Orders
 			return prdMap;
         }
 
-        public async Task<Product> AddProductAsync(ProductDto productDto)
+        public async Task<Product> AddProductAsync(ProductCreateDto productDto)
         {
             var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productDto.CategoryChildId);
             var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == productDto.ClinicId);
@@ -62,7 +62,7 @@ namespace MediNet_BE.Repositories.Orders
             return productMap;
         }
 
-        public async Task UpdateProductAsync(ProductDto productDto)
+        public async Task UpdateProductAsync(ProductCreateDto productDto)
         {
             var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productDto.CategoryChildId);
             var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == productDto.ClinicId);

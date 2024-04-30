@@ -7,8 +7,8 @@ namespace MediNet_BE.Interfaces
 	{
 		public Task<List<ServiceDto>> GetAllServiceAsync();
 		public Task<ServiceDto> GetServiceByIdAsync(int id);
-		public Task<Service> AddServiceAsync(ServiceDto serviceDto);
-		public Task UpdateServiceAsync(ServiceDto serviceDto);
+		public Task<Service> AddServiceAsync(ServiceCreateDto serviceDto);
+		public Task UpdateServiceAsync(ServiceCreateDto serviceDto);
 		public Task DeleteServiceAsync(int id);
 	}
 }

@@ -16,6 +16,8 @@ using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Dto;
 using NuGet.Packaging;
+using MediNet_BE.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -89,6 +91,8 @@ namespace MediNet_BE.Controllers.Orders
 			return Ok(feedbackDto);
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
         public async Task<ActionResult<Feedback>> CreateFeedback([FromForm] FeedbackDto feedbackCreate)
         {
@@ -120,6 +124,8 @@ namespace MediNet_BE.Controllers.Orders
             return newFeedback == null ? NotFound() : Ok(newFeedback);
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateFeedback([FromQuery] int id, [FromForm] FeedbackDto updatedFeedback)
@@ -151,6 +157,8 @@ namespace MediNet_BE.Controllers.Orders
             return Ok("Update Successfully!");
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteFeedback([FromQuery] int id)

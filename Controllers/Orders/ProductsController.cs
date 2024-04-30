@@ -17,6 +17,8 @@ using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;
 using Microsoft.IdentityModel.Tokens;
 using MediNet_BE.Dto.Users;
+using MediNet_BE.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -66,9 +68,16 @@ namespace MediNet_BE.Controllers.Orders
         /// Create Product
         /// </summary>
         /// <param name="productCreate"></param>
+        /// /// <remarks>
+        /// ManufacturerDate
+        /// 2024-04-13T08:18:59.6300000
+        /// </remarks>
         /// <returns></returns>
+
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductDto productCreate)
+        public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductCreateDto productCreate)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(productCreate.CategoryChildId);
             var clinic = await _clinicRepo.GetClinicByIdAsync(productCreate.ClinicId);
@@ -100,9 +109,11 @@ namespace MediNet_BE.Controllers.Orders
             return newProduct == null ? NotFound() : Ok(newProduct);
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateProduct([FromQuery] int id, [FromForm] ProductDto updatedProduct)
+        public async Task<IActionResult> UpdateProduct([FromQuery] int id, [FromForm] ProductCreateDto updatedProduct)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(updatedProduct.CategoryChildId);
             var clinic = await _clinicRepo.GetClinicByIdAsync(updatedProduct.ClinicId);
@@ -138,6 +149,8 @@ namespace MediNet_BE.Controllers.Orders
             return Ok("Update Successfully!");
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteProduct([FromQuery] int id)

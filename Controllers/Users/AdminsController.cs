@@ -70,18 +70,22 @@ namespace MediNet_BE.Controllers.Users
 			return adminDto == null ? NotFound() : Ok(adminDto);
 		}
 
-		/// <summary>
-		/// Create Admin
-		/// </summary>
-		/// <param name="userCreate"></param>
-		/// <remarks>
-		/// "email": "admin@gmail.com",
-		/// "username": "admin",
-		/// "password": "123456",
-		/// "role": 2
-		/// </remarks>
-		/// <returns></returns>
-		[AllowAnonymous]
+        /// <summary>
+        /// Create Admin
+        /// </summary>
+        /// <param name="userCreate"></param>
+        /// <remarks>
+        /// "email": "admin@gmail.com",
+        /// "username": "admin",
+        /// "password": "123456",
+        /// "role": 2
+        /// </remarks>
+        /// <returns></returns>
+
+        //[Authorize]
+        //[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+		// For the test -> When deploy delete the AllowAnonymous
+        [AllowAnonymous]
 		[HttpPost]
 		public async Task<ActionResult<Admin>> CreateAdmin([FromForm] AdminDto userCreate)
 		{

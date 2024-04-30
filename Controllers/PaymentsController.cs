@@ -1,9 +1,11 @@
 ﻿using MediNet_BE.Dto.Payments.Momo;
 using MediNet_BE.Dto.Payments.PayPal;
 using MediNet_BE.Dto.Payments.VNPay;
+using MediNet_BE.Identity;
 using MediNet_BE.Services.Momo;
 using MediNet_BE.Services.PayPal;
 using MediNet_BE.Services.VNPay;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,18 +26,21 @@ namespace MediNet_BE.Controllers
 			_payPalService = payPalService;
 		}
 
-		/// <summary>
-		/// Create Momo
-		/// </summary>
-		/// <param name="model"></param>
-		/// <remarks>
-		/// "fullName": "Customer",
-		/// "orderId": "54321",
-		/// "orderInfo": "Order movie ticket",
-		/// "amount": 12345
-		/// </remarks>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        /// Create Momo
+        /// </summary>
+        /// <param name="model"></param>
+        /// <remarks>
+        /// "fullName": "Customer",
+        /// "orderId": "54321",
+        /// "orderInfo": "Order movie ticket",
+        /// "amount": 12345
+        /// </remarks>
+        /// <returns></returns>
+
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        [HttpPost]
 		[Route("Momo")]
 		public async Task<IActionResult> Momo([FromBody] OrderInfoModel model)
 		{
@@ -44,25 +49,28 @@ namespace MediNet_BE.Controllers
 			return Ok(response.PayUrl);
 		}
 
-		//[HttpGet]
-		//public IActionResult PaymentMomoCallBack()
-		//{
-		//    var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
-		//    return Ok(response);
-		//}
+        //[HttpGet]
+        //public IActionResult PaymentMomoCallBack()
+        //{
+        //    var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+        //    return Ok(response);
+        //}
 
-		/// <summary>
-		/// Create VNPay
-		/// </summary>
-		/// <param name="vnPaymentRequestModel"></param>
-		/// <remarks>
-		/// "orderId": 54321,
-		/// "fullName": "Customer",
-		/// "description": "Order movie ticket",
-		/// "amount": 12345,
-		/// </remarks>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        /// Create VNPay
+        /// </summary>
+        /// <param name="vnPaymentRequestModel"></param>
+        /// <remarks>
+        /// "orderId": 54321,
+        /// "fullName": "Customer",
+        /// "description": "Order movie ticket",
+        /// "amount": 12345,
+        /// </remarks>
+        /// <returns></returns>
+        
+		[Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        [HttpPost]
 		[Route("VnPay")]
 		public IActionResult VnPay([FromBody] VnPaymentRequestModel vnPaymentRequestModel)
 		{
@@ -79,29 +87,32 @@ namespace MediNet_BE.Controllers
 			return Ok(paymentUrlString);
 		}
 
-		//[HttpGet]
-		//public IActionResult PaymentVnPayCallBack()
-		//{
-		//    var response = _vnPay.PaymentExcute(Request.Query);
-		//    if (response == null || response.VnPayResponseCode != "00")
-		//    {
-		//        return BadRequest("Thanh toan fail!");
-		//    }
-		//    return Ok(response);
-		//}
+        //[HttpGet]
+        //public IActionResult PaymentVnPayCallBack()
+        //{
+        //    var response = _vnPay.PaymentExcute(Request.Query);
+        //    if (response == null || response.VnPayResponseCode != "00")
+        //    {
+        //        return BadRequest("Thanh toan fail!");
+        //    }
+        //    return Ok(response);
+        //}
 
-		/// <summary>
-		///  Create PayPal
-		/// </summary>
-		/// <param name="model"></param>
-		/// <remarks>
-		/// "orderType": "Sandbox",
-		/// "amount": 999999,
-		/// "orderDescription": "Order movie ticket",
-		/// "name": "Customer"
-		/// </remarks>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        ///  Create PayPal
+        /// </summary>
+        /// <param name="model"></param>
+        /// <remarks>
+        /// "orderType": "Sandbox",
+        /// "amount": 999999,
+        /// "orderDescription": "Order movie ticket",
+        /// "name": "Customer"
+        /// </remarks>
+        /// <returns></returns>
+        
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        [HttpPost]
 		[Route("PayPal")]
 		public async Task<IActionResult> CreatePaymentUrl([FromBody] PaymentInformationModel model)
 		{
@@ -109,8 +120,5 @@ namespace MediNet_BE.Controllers
 
 			return Ok(url);
 		}
-
-
-
 	}
 }

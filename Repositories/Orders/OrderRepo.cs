@@ -54,7 +54,7 @@ namespace MediNet_BE.Repositories.Orders
 			return orderMap;
         }
 
-        public async Task<Order> AddOrderAsync(OrderDto orderDto)
+        public async Task<Order> AddOrderAsync(OrderCreateDto orderDto)
         {
 			var random = new Random().Next(1000, 10000);
 
@@ -92,7 +92,7 @@ namespace MediNet_BE.Repositories.Orders
             return orderMap;
         }
 
-        public async Task UpdateOrderAsync(OrderDto orderDto)
+        public async Task UpdateOrderAsync(OrderCreateDto orderDto)
         {
             var orderMap = _mapper.Map<Order>(orderDto);
             _context.Orders!.Update(orderMap);

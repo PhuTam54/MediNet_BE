@@ -10,6 +10,8 @@ using MediNet_BE.Models;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Repositories;
 using MediNet_BE.Dto;
+using MediNet_BE.Services.Image;
+using MediNet_BE.Dto.Orders;
 
 namespace MediNet_BE.Controllers
 {
@@ -18,24 +20,51 @@ namespace MediNet_BE.Controllers
     public class ClinicsController : ControllerBase
     {
 		private readonly IClinicRepo _clinicRepo;
+		private readonly IFileService _fileService;
 
-		public ClinicsController(IClinicRepo clinicRepo)
+		public ClinicsController(IClinicRepo clinicRepo, IFileService fileService)
         {
 			_clinicRepo = clinicRepo;
-        }
+			_fileService = fileService;
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Clinic>>> GetClinics()
+		}
+
+		[NonAction]
+		public List<string> GetImagesPath(string path)
+		{
+			var imagesPath = new List<string>();
+			string[] picturePaths = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
+			foreach (string picturePath in picturePaths)
+			{
+					var imageLink = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, picturePath);
+					imagesPath.Add(imageLink);
+			}
+			return imagesPath;
+		}
+
+		[HttpGet]
+        public async Task<ActionResult<IEnumerable<ClinicDto>>> GetClinics()
         {
-			return Ok(await _clinicRepo.GetAllClinicAsync());
+			var clinicsDto = await _clinicRepo.GetAllClinicAsync();
+			foreach(var clinicDto in clinicsDto)
+			{
+				clinicDto.ImagesSrc.AddRange(GetImagesPath(clinicDto.ImagesClinic));
+			}
+			return Ok(clinicsDto);
 		}
 
         [HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<Clinic>> GetClinic(int id)
+		public async Task<ActionResult<ClinicDto>> GetClinic([FromQuery] int id)
         {
-			var clinic = await _clinicRepo.GetClinicByIdAsync(id);
-			return clinic == null ? NotFound() : Ok(clinic);
+			var clinicDto = await _clinicRepo.GetClinicByIdAsync(id);
+			if (clinicDto == null)
+			{
+				return NotFound();
+			}
+			clinicDto.ImagesSrc.AddRange(GetImagesPath(clinicDto.ImagesClinic));
+
+			return Ok(clinicDto);
 		}
 
 		/// <summary>
@@ -50,7 +79,7 @@ namespace MediNet_BE.Controllers
 		/// </remarks>
 		/// <returns></returns>
 		[HttpPost]
-        public async Task<ActionResult<Clinic>> CreateClinic(ClinicDto clinicCreate)
+        public async Task<ActionResult<Clinic>> CreateClinic([FromForm]ClinicDto clinicCreate)
         {
 			if (clinicCreate == null)
 				return BadRequest(ModelState);
@@ -58,13 +87,26 @@ namespace MediNet_BE.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
+			if (clinicCreate.ImagesClinicFile != null)
+			{
+				var fileResult = _fileService.SaveImages(clinicCreate.ImagesClinicFile, "images/clinics/");
+				if (fileResult.Item1 == 1)
+				{
+					clinicCreate.ImagesClinic = fileResult.Item2;
+				}
+				else
+				{
+					return NotFound("An error occurred while saving the image!");
+				}
+			}
+
 			var newClinic = await _clinicRepo.AddClinicAsync(clinicCreate);
 			return newClinic == null ? NotFound() : Ok(newClinic);
 		}
 
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateClinic(int id, ClinicDto updatedClinic)
+		public async Task<IActionResult> UpdateClinic([FromQuery] int id, [FromForm] ClinicDto updatedClinic)
 		{
 			var clinic = await _clinicRepo.GetClinicByIdAsync(id);
 			if (clinic == null)
@@ -74,6 +116,20 @@ namespace MediNet_BE.Controllers
 			if (id != updatedClinic.Id)
 				return BadRequest();
 
+			if (updatedClinic.ImagesClinicFile != null)
+			{
+				var fileResult = _fileService.SaveImages(updatedClinic.ImagesClinicFile, "images/clinics/");
+				if (fileResult.Item1 == 1)
+				{
+					updatedClinic.ImagesClinic = fileResult.Item2;
+					await _fileService.DeleteImages(clinic.ImagesClinic);
+				}
+				else
+				{
+					return NotFound("An error occurred while saving the image!");
+				}
+			}
+
 			await _clinicRepo.UpdateClinicAsync(updatedClinic);
 
 			return Ok("Update Successfully!");
@@ -81,14 +137,16 @@ namespace MediNet_BE.Controllers
 
 		[HttpDelete]
 		[Route("id")]
-		public async Task<IActionResult> DeleteClinic(int id)
+		public async Task<IActionResult> DeleteClinic([FromQuery] int id)
         {
 			var clinic = await _clinicRepo.GetClinicByIdAsync(id);
 			if (clinic == null)
 			{
 				return NotFound();
 			}
-			await _clinicRepo.DeleteClinicAsync(clinic);
+			await _clinicRepo.DeleteClinicAsync(id);
+			await _fileService.DeleteImages(clinic.ImagesClinic);
+
 			return Ok("Delete Successfully!");
 		}
 

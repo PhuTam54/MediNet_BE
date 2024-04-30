@@ -6,6 +6,8 @@ namespace MediNet_BE.Helpers
 	{
 		public static string Init_Slug(string text)
 		{
+			text = text.ToLower();
+			text = text.Trim();
 			for (int i = 32; i < 48; i++)
 			{
 

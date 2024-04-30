@@ -32,18 +32,45 @@ namespace MediNet_BE.Controllers.Users
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
         {
-            return Ok(await _customerRepo.GetAllUserAsync());
+            var customersDto = await _customerRepo.GetAllUserAsync();
+            foreach (var customerDto in customersDto)
+            {
+                customerDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customerDto.Image);
+            }
+
+            return Ok(customersDto);
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Customer>> GetCustomerById(int id)
+        public async Task<ActionResult<CustomerDto>> GetCustomerById(int id)
         {
-            var customer = await _customerRepo.GetUserByIdAsync(id);
-            return customer == null ? NotFound() : Ok(customer);
+            var customerDto = await _customerRepo.GetUserByIdAsync(id);
+			if (customerDto == null)
+			{
+				return NotFound();
+			}
+			customerDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customerDto.Image);
+
+            return Ok(customerDto);
         }
+
+		[HttpGet]
+		[Route("email")]
+		public async Task<ActionResult<CustomerDto>> GetCustomerByEmail(string email)
+		{
+			var customerDto = await _customerRepo.GetUserByEmailAsync(email);
+			if (customerDto == null)
+			{
+				return NotFound();
+			}
+			customerDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customerDto.Image);
+
+            return Ok(customerDto);
+		}
+
 
 		/// <summary>
 		///  Create Customer
@@ -74,7 +101,7 @@ namespace MediNet_BE.Controllers.Users
                 if (fileResult.Item1 == 1)
                 {
                     customerCreate.Image = fileResult.Item2;
-                }
+				}
                 else
                 {
                     return NotFound("An error occurred while saving the image!");
@@ -103,7 +130,7 @@ namespace MediNet_BE.Controllers.Users
                 if (fileResult.Item1 == 1)
                 {
                     updatedCustomer.Image = fileResult.Item2;
-                    await _fileService.DeleteImage(customer.Image, "images/users/customers/");
+                    await _fileService.DeleteImage(customer.Image);
                 }
                 else
                 {
@@ -119,15 +146,15 @@ namespace MediNet_BE.Controllers.Users
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpDelete]
         [Route("id")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public async Task<IActionResult> DeleteCustomer([FromQuery] int id)
         {
             var customer = await _customerRepo.GetUserByIdAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            await _customerRepo.DeleteUserAsync(customer);
-            await _fileService.DeleteImage(customer.Image, "images/users/customers/");
+            await _customerRepo.DeleteUserAsync(id);
+            await _fileService.DeleteImage(customer.Image);
             return Ok("Delete Successfully!");
         }
     }

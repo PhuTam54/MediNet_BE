@@ -35,9 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\images\users\admins\" />
+    <Folder Include="wwwroot\images\users\feedbacks\" />
+    <Folder Include="wwwroot\images\clinics\" />
   </ItemGroup>
 	
 	<PropertyGroup>

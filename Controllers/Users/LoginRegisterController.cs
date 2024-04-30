@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
+using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Identity;
 using MediNet_BE.Models.Users;
+using MediNet_BE.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,15 +24,16 @@ namespace MediNet_BE.Controllers.Users
 
 		private readonly IConfiguration _config;
 		private readonly IMapper _mapper;
-
+		private readonly IMailService _mailService;
 		const int CUSTOMER = 1;
 		const int ADMIN = 2;
 
-		public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper)
+		public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
 		{
 			_context = context;
 			_config = config;
 			_mapper = mapper;
+			_mailService = mailService;
 		}
 
 		/// <summary>
@@ -208,5 +213,67 @@ namespace MediNet_BE.Controllers.Users
 			Admin,
 			Tenant
 		}
+
+		[HttpPost]
+		[Route("ForgotPwd")]
+		public async Task<IActionResult> ForgotPassword(string email)
+		{
+			if(email == null)
+			{
+				return NotFound("Email is required!");
+			}
+			var account = await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+
+			if(account != null)
+			{
+				var data = new SendMailRequest
+				{
+					ToEmail = account.Email,
+					UserName = account.Username,
+					Url = "forgotpwd",
+					Subject = "Forgot Password"
+				};
+				await _mailService.SendEmailAsync(data);
+				return Ok();
+			}
+			else
+			{
+				return NotFound();
+			}
+		}
+
+		[HttpPost]
+		[Route("ResetPwd")]
+		public async Task<IActionResult> ResetPassword(int? userId, string pwd, string confirmpwd)
+		{
+			if (userId == null)
+			{
+				return NotFound();
+			}
+			var account = await _context.Customers.FirstOrDefaultAsync(c => c.Id == userId);
+
+			if (account != null)
+			{
+				if (pwd != confirmpwd)
+				{
+					return BadRequest("Confirm Password and Password are not the same.");
+				}
+				else
+				{
+					account.Password = HashPassword(pwd);
+					_context.Customers.Update(account);
+					await _context.SaveChangesAsync();
+					return Ok("Resetpwd success!");
+				}
+			}
+			else
+			{
+				return NotFound();
+			}
+
+
+		}
+
+
 	}
 }

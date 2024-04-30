@@ -1,10 +1,16 @@
-using MediNet_BE.Data;
+﻿using MediNet_BE.Data;
 using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Payments.Momo;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Interfaces;
+using MediNet_BE.Interfaces.Categories;
+using MediNet_BE.Interfaces.Orders;
+using MediNet_BE.Models;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Repositories;
+using MediNet_BE.Repositories.Categories;
+using MediNet_BE.Repositories.Orders;
+using MediNet_BE.Repositories.Users;
 using MediNet_BE.Services;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Services.Momo;
@@ -38,16 +44,24 @@ builder.Services.AddSwaggerGen(options =>
 	var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 	options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
-
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
 
 builder.Services.AddControllers().AddJsonOptions(x =>
 				x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+//add session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+	options.IdleTimeout = TimeSpan.FromHours(1);
+	options.Cookie.HttpOnly = true;
+});
 
+builder.Services.AddHttpContextAccessor();
+
+//add repository
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<ICategoryChildRepo, CategoryChildRepo>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
@@ -55,8 +69,9 @@ builder.Services.AddScoped<IClinicRepo, ClinicRepo>();
 builder.Services.AddScoped<IServiceRepo, ServiceRepo>();
 builder.Services.AddScoped<IUserRepo<Customer, CustomerDto>, CustomerRepo>();
 builder.Services.AddScoped<IUserRepo<Admin, AdminDto>, AdminRepo>();
-builder.Services.AddScoped<ICartRepo, CartRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IFeedbackRepo, FeedbackRepo>();
+
 
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
@@ -67,17 +82,19 @@ builder.Services.AddDbContext<MediNetContext>(opt =>
 	throw new InvalidOperationException("Connection string 'MediNetContext' not found."))
 );
 
+//add service
 builder.Services.Configure<MomoOptionModel>(configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();
 builder.Services.AddSingleton<IVnPay, VnPay>();
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IPayPalService, PayPalService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 builder.Services.AddTransient<IMailService, MailService>();
 
 
+//authenciation
 var jwtSettings = configuration.GetSection("JwtSettings");
-
 builder.Services.AddAuthentication(options =>
 {
 	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -114,7 +131,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseAuthentication();
-
+app.UseSession();
 app.UseRouting();
 
 // Authorization

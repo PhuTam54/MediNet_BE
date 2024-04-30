@@ -23,7 +23,19 @@ namespace MediNet_BE.Data
 		public DbSet<Service> Services { get; set; }
 		public DbSet<Feedback> Feedbacks { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder){ }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<Category>().ToTable("Categories")
+				.HasIndex(c => c.Slug).IsUnique();
+			modelBuilder.Entity<CategoryChild>().ToTable("CategoryChilds")
+			 .HasIndex(p => p.Slug).IsUnique();
+			modelBuilder.Entity<Product>().ToTable("Products")
+				.HasIndex(p => p.Slug).IsUnique();
+			modelBuilder.Entity<Order>().ToTable("Orders")
+				.HasIndex(p => p.OrderCode).IsUnique();
+			modelBuilder.Entity<Clinic>().ToTable("Clinics")
+				.HasIndex(p => p.Slug).IsUnique();
+		}
 
 	}
 }

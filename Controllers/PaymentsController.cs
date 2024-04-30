@@ -16,13 +16,13 @@ namespace MediNet_BE.Controllers
 	public class PaymentsController : ControllerBase
 	{
 		private IMomoService _momoService;
-		private IVnPay _vnPay;
+		private readonly IVnPayService _vnPayService;
 		private readonly IPayPalService _payPalService;
 
-		public PaymentsController(IMomoService momoService, IVnPay vnPay, IPayPalService payPalService)
+		public PaymentsController(IMomoService momoService, IVnPayService vnPayService, IPayPalService payPalService)
 		{
 			_momoService = momoService;
-			_vnPay = vnPay;
+			_vnPayService = vnPayService;
 			_payPalService = payPalService;
 		}
 
@@ -78,7 +78,7 @@ namespace MediNet_BE.Controllers
 			if (vnPaymentRequestModel == null)
 				return BadRequest(ModelState);
 
-			var paymentUrlString = _vnPay.CreatePaymentUrl(HttpContext, vnPaymentRequestModel);
+			var paymentUrlString = _vnPayService.CreatePaymentUrl(HttpContext, vnPaymentRequestModel);
 
 			//var queryString = QueryHelpers.ParseQuery(new Uri(paymentUrlString).Query);
 			//IQueryCollection createdVnpay = new QueryCollection(queryString);

@@ -50,7 +50,7 @@ namespace MediNet_BE.Repositories.Users
         public async Task<Admin> AddUserAsync(AdminDto userDto)
         {
             var adminMap = _mapper.Map<Admin>(userDto);
-            adminMap.Slug = CreateSlug.Init_Slug(userDto.Username);
+            adminMap.SEO_Name = CreateSlug.Init_Slug(userDto.Username);
             adminMap.Password = LoginRegisterController.HashPassword(adminMap.Password);
             adminMap.Role = 2;
 
@@ -62,7 +62,7 @@ namespace MediNet_BE.Repositories.Users
         public async Task UpdateUserAsync(AdminDto userDto)
         {
             var adminMap = _mapper.Map<Admin>(userDto);
-            adminMap.Slug = CreateSlug.Init_Slug(userDto.Username);
+            adminMap.SEO_Name = CreateSlug.Init_Slug(userDto.Username);
             adminMap.Password = LoginRegisterController.HashPassword(adminMap.Password);
             adminMap.Role = 2;
 

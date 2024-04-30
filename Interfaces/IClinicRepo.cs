@@ -5,10 +5,10 @@ namespace MediNet_BE.Interfaces
 {
     public interface IClinicRepo
 	{
-		public Task<List<Clinic>> GetAllClinicAsync();
-		public Task<Clinic> GetClinicByIdAsync(int id);
+		public Task<List<ClinicDto>> GetAllClinicAsync();
+		public Task<ClinicDto> GetClinicByIdAsync(int id);
 		public Task<Clinic> AddClinicAsync(ClinicDto clinicDto);
 		public Task UpdateClinicAsync(ClinicDto clinicDto);
-		public Task DeleteClinicAsync(Clinic clinic);
+		public Task DeleteClinicAsync(int id);
 	}
 }

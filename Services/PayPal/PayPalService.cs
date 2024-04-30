@@ -17,7 +17,7 @@ namespace MediNet_BE.Services.PayPal
 
         public static double ConvertVndToDollar(double vnd)
         {
-            var total = Math.Round(vnd / ExchangeRate, 2);
+            var total = Math.Round((vnd * 1000) / ExchangeRate, 2);
 
             return total;
         }
@@ -30,7 +30,7 @@ namespace MediNet_BE.Services.PayPal
             var envSandbox =
                 new SandboxEnvironment(_configuration["Paypal:ClientId"], _configuration["Paypal:SecretKey"]);
             var client = new PayPalHttpClient(envSandbox);
-            var paypalOrderId = DateTime.Now.Ticks;
+            var paypalOrderId = model.OrderId;
             var urlCallBack = _configuration["Paypal:ReturnUrl"];
             var payment = new Payment()
             {

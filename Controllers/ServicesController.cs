@@ -28,17 +28,17 @@ namespace MediNet_BE.Controllers
 		}
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Service>>> GetServices()
+        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
         {
 			return Ok(await _serviceRepo.GetAllServiceAsync());
 		}
 
         [HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<Service>> GetService(int id)
+		public async Task<ActionResult<ServiceDto>> GetService([FromQuery] int id)
         {
-			var service = await _serviceRepo.GetServiceByIdAsync(id);
-			return service == null ? NotFound() : Ok(service);
+			var serviceDto = await _serviceRepo.GetServiceByIdAsync(id);
+			return serviceDto == null ? NotFound() : Ok(serviceDto);
 		}
 
         [HttpPost]
@@ -59,7 +59,7 @@ namespace MediNet_BE.Controllers
 
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateService([FromQuery] int id,ServiceDto updatedService)
+		public async Task<IActionResult> UpdateService([FromQuery] int id, [FromBody] ServiceDto updatedService)
 		{
 			var clinic = await _clinicRepo.GetClinicByIdAsync(updatedService.ClinicId);
 			if (clinic == null)
@@ -80,14 +80,14 @@ namespace MediNet_BE.Controllers
 
 		[HttpDelete]
 		[Route("id")]
-		public async Task<IActionResult> DeleteService(int id)
+		public async Task<IActionResult> DeleteService([FromQuery] int id)
         {
 			var service = await _serviceRepo.GetServiceByIdAsync(id);
 			if (service == null)
 			{
 				return NotFound();
 			}
-			await _serviceRepo.DeleteServiceAsync(service);
+			await _serviceRepo.DeleteServiceAsync(id);
 			return Ok("Delete Successfully!");
 		}
 

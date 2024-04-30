@@ -2,9 +2,12 @@
 {
 	public interface IFileService
 	{
-		public Tuple<int, string> SaveImages(IFormFile[] files, string filePath);
+		//public Task<IFormFile> GetImage(string imageFile);
+		//public Task<IFormFile[]> GetImages(string imagesFile);
+		public Tuple<int, string> SaveImages(IFormFile[] imagesFile, string filePath);
 		public Tuple<int, string> SaveImage(IFormFile imageFile, string filePath);
-		public Task DeleteImage(string imageFileName, string filePath);
+		public Task DeleteImage(string imageFile);
+		public Task DeleteImages(string imagesFile);
 
 	}
 }

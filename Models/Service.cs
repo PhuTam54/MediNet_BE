@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using MediNet_BE.Models.Orders;
 
 namespace MediNet_BE.Models
 {
-	public class Service
+    public class Service
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }

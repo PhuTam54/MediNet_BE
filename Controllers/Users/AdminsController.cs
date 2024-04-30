@@ -13,6 +13,8 @@ using MediNet_BE.Services.Image;
 using MediNet_BE.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
+using MediNet_BE.Repositories.Users;
+using MediNet_BE.Dto.Orders;
 
 namespace MediNet_BE.Controllers.Users
 {
@@ -30,17 +32,42 @@ namespace MediNet_BE.Controllers.Users
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Admin>>> GetUsers()
+		public async Task<ActionResult<IEnumerable<AdminDto>>> GetUsers()
 		{
-			return Ok(await _userRepo.GetAllUserAsync());
+			var adminsDto = await _userRepo.GetAllUserAsync();
+			foreach (var adminDto in adminsDto)
+			{
+				adminDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, adminDto.Image);
+			}
+			return Ok(adminsDto);
 		}
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<Admin>> GetUserById(int id)
+		public async Task<ActionResult<AdminDto>> GetAdminById(int id)
 		{
-			var user = await _userRepo.GetUserByIdAsync(id);
-			return user == null ? NotFound() : Ok(user);
+			var adminDto = await _userRepo.GetUserByIdAsync(id);
+			if(adminDto == null)
+			{
+				return NotFound();
+			}
+			adminDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, adminDto.Image);
+
+			return Ok(adminDto);
+		}
+
+		[HttpGet]
+		[Route("email")]
+		public async Task<ActionResult<AdminDto>> GetAdminByEmail(string email)
+		{
+			var adminDto = await _userRepo.GetUserByEmailAsync(email);
+			if (adminDto == null)
+			{
+				return NotFound();
+			}
+			adminDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, adminDto.Image);
+
+			return adminDto == null ? NotFound() : Ok(adminDto);
 		}
 
 		/// <summary>
@@ -54,9 +81,9 @@ namespace MediNet_BE.Controllers.Users
 		/// "role": 2
 		/// </remarks>
 		/// <returns></returns>
-        [AllowAnonymous]
+		[AllowAnonymous]
 		[HttpPost]
-		public async Task<ActionResult<Admin>> CreateUser([FromForm] AdminDto userCreate)
+		public async Task<ActionResult<Admin>> CreateAdmin([FromForm] AdminDto userCreate)
 		{
 			if (userCreate == null)
 				return BadRequest(ModelState);
@@ -83,7 +110,7 @@ namespace MediNet_BE.Controllers.Users
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateUser([FromQuery] int id, [FromForm] AdminDto updatedUser)
+		public async Task<IActionResult> UpdateAdmin([FromQuery] int id, [FromForm] AdminDto updatedUser)
 		{
 			var user = await _userRepo.GetUserByIdAsync(id);
 			if (user == null)
@@ -98,7 +125,7 @@ namespace MediNet_BE.Controllers.Users
 				if (fileResult.Item1 == 1)
 				{
 					updatedUser.Image = fileResult.Item2;
-					await _fileService.DeleteImage(user.Image, "images/users/admins/");
+					await _fileService.DeleteImage(user.Image);
 				}
 				else
 				{
@@ -114,15 +141,15 @@ namespace MediNet_BE.Controllers.Users
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpDelete]
 		[Route("id")]
-		public async Task<IActionResult> DeleteUser(int id)
+		public async Task<IActionResult> DeleteAdmin([FromQuery] int id)
 		{
 			var user = await _userRepo.GetUserByIdAsync(id);
 			if (user == null)
 			{
 				return NotFound();
 			}
-			await _userRepo.DeleteUserAsync(user);
-			await _fileService.DeleteImage(user.Image, "images/users/admins/");
+			await _userRepo.DeleteUserAsync(id);
+			await _fileService.DeleteImage(user.Image);
 			return Ok("Delete Successfully!");
 		}
 	}

@@ -39,6 +39,7 @@ namespace MediNet_BE.Controllers
 		[Route("Momo")]
 		public async Task<IActionResult> Momo([FromBody] OrderInfoModel model)
 		{
+			model.Amount = (double)model.Amount * 1000;
 			var response = await _momoService.CreatePaymentAsync(model);
 			return Ok(response.PayUrl);
 		}

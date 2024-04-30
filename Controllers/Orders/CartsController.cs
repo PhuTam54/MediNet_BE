@@ -51,11 +51,10 @@ namespace MediNet_BE.Controllers.Orders
             return Ok("Cart is empty!");
         }
 
-        //[Authorize]
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int userId, int buy_qty)
         {
-            var cart = MyCart;
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
             var item = cart.SingleOrDefault(c => c.ProductID == productId && c.UserID == userId);
 
             if (item == null)

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MediNet_BE.Data;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Repositories;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Helpers;
@@ -17,8 +11,6 @@ using MediNet_BE.Services.VNPay;
 using MediNet_BE.Dto.Mails;
 using MediNet_BE.Services;
 using Microsoft.Extensions.Primitives;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Azure;
 using MediNet_BE.Services.Momo;
 using MediNet_BE.Services.PayPal;
 using MediNet_BE.Dto.Payments.Momo;
@@ -26,6 +18,9 @@ using MediNet_BE.Dto.Payments.PayPal;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Orders;
+using MediNet_BE.Identity;
+using Microsoft.AspNetCore.Authorization;
+using MediNet_BE.Models;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -82,16 +77,18 @@ namespace MediNet_BE.Controllers.Orders
         /// "payment_method": "string",
         /// </remarks>
         /// <returns></returns>
+
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderDto orderCreate)
+        public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderCreateDto orderCreate)
         {
-            var carts = MyCart;
+            var carts = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
             var user = await _customerRepo.GetUserByIdAsync(orderCreate.CustomerId);
             if (user == null)
                 return NotFound("User Not Found!");
 
-            var cartUser = carts.Where(c => c.UserID == orderCreate.CustomerId).ToList();
-            if (cartUser.Count == 0)
+            if (carts.Count() == 0)
             {
                 return NotFound("There are no products in this customer's cart!");
             }
@@ -112,17 +109,18 @@ namespace MediNet_BE.Controllers.Orders
             {
                 return NotFound();
             }
+
             foreach (var cart in orderCreate.CartList)
             {
                 var cartToRemove = carts.FirstOrDefault(p => p.ProductID == cart.ProductID && p.UserID == cart.UserID);
                 if (cartToRemove != null)
                 {
                     carts.Remove(cartToRemove);
-                    HttpContext.Session.Set("Cart", carts);
                 }
             }
+            HttpContext.Session.Set("Cart", carts);
 
-			if (newOrder.Payment_method == "Paypal")
+            if (newOrder.Payment_method == "Paypal")
             {
 				var paypalModel = new PaymentInformationModel
                 {
@@ -172,14 +170,12 @@ namespace MediNet_BE.Controllers.Orders
             return Ok(newOrder);
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [NonAction]
         public async Task<Order> UpdateOrder(string orderCode)
         {
-            var updatedOrder = await _mediNetContext.Orders
-                .Include(o => o.Customer)
-                .Include(op => op.OrderProducts)
-                .ThenInclude(p => p.Product)
-                 .FirstOrDefaultAsync(m => m.OrderCode == orderCode);
+            var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);
             if (updatedOrder != null)
             {
                 updatedOrder.Is_paid = true;
@@ -199,6 +195,8 @@ namespace MediNet_BE.Controllers.Orders
             return updatedOrder;
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteOrder([FromQuery] int id)

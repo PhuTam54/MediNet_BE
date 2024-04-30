@@ -20,8 +20,10 @@ namespace MediNet_BE.Helpers
             CreateMap<RegisterRequest, Customer>();
             CreateMap<Customer, AuthenticateRequest>();
             CreateMap<AuthenticateRequest, Customer>();
+
             CreateMap<Admin, AdminDto>();
 			CreateMap<AdminDto, Admin>();
+
 			CreateMap<Category, CategoryDto>();
 			CreateMap<CategoryDto, Category>();
 
@@ -31,18 +33,27 @@ namespace MediNet_BE.Helpers
 			CreateMap<Clinic, ClinicDto>();
 			CreateMap<ClinicDto, Clinic>();
 
-
 			CreateMap<Order, OrderDto>();
 			CreateMap<OrderDto, Order>();
-			CreateMap<OrderProduct, OrderProductDto>();
+            CreateMap<Order, OrderCreateDto>();
+            CreateMap<OrderCreateDto, Order>();
+
+            CreateMap<OrderProduct, OrderProductDto>();
 			CreateMap<OrderProductDto, OrderProduct>();
 			CreateMap<OrderService, OrderServiceDto>();
 			CreateMap<OrderServiceDto, OrderService>();
+
 			CreateMap<Product, ProductDto>();
 			CreateMap<ProductDto, Product>();
-			CreateMap<Service, ServiceDto>();
+            CreateMap<Product, ProductCreateDto>();
+            CreateMap<ProductCreateDto, Product>();
+
+            CreateMap<Service, ServiceDto>();
 			CreateMap<ServiceDto, Service>();
-			CreateMap<Feedback, FeedbackDto>();
+            CreateMap<Service, ServiceCreateDto>();
+            CreateMap<ServiceCreateDto, Service>();
+
+            CreateMap<Feedback, FeedbackDto>();
 			CreateMap<FeedbackDto, Feedback>();
 		}
 	}

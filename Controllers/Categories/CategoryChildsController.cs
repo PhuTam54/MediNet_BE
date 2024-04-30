@@ -10,6 +10,8 @@ using MediNet_BE.Dto.Users;
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Models.Categories;
 using MediNet_BE.Interfaces.Categories;
+using MediNet_BE.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediNet_BE.Controllers.Categories
 {
@@ -40,6 +42,23 @@ namespace MediNet_BE.Controllers.Categories
             return categoryChild == null ? NotFound() : Ok(categoryChild);
         }
 
+        /// <summary>
+        /// categoryChildCreate
+        /// </summary>
+        /// <param name="categoryChildCreate"></param>
+        /// <remarks>
+        /// {
+        ///   "id": 0,
+        ///   "name": "Painkillers",
+        ///   "categoryId": 1,
+        ///   "products": [
+        ///   ]
+        /// }
+        /// </remarks>
+        /// <returns></returns>
+
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
         public async Task<ActionResult<CategoryChild>> CreateCategoryChild([FromBody] CategoryChildDto categoryChildCreate)
         {
@@ -56,6 +75,8 @@ namespace MediNet_BE.Controllers.Categories
             return newCategoryChild == null ? NotFound() : Ok(newCategoryChild);
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateCategoryChild([FromQuery] int id, [FromBody] CategoryChildDto updatedCategoryChild)
@@ -76,6 +97,8 @@ namespace MediNet_BE.Controllers.Categories
             return Ok("Update Successfully!");
         }
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteCategoryChild([FromQuery] int id)

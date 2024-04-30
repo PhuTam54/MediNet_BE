@@ -12,6 +12,8 @@ using MediNet_BE.Repositories;
 using MediNet_BE.Dto;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Dto.Orders;
+using MediNet_BE.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MediNet_BE.Controllers
 {
@@ -67,18 +69,21 @@ namespace MediNet_BE.Controllers
 			return Ok(clinicDto);
 		}
 
-		/// <summary>
-		/// Create Clinic
-		/// </summary>
-		/// <param name="clinicCreate"></param>
-		/// <remarks>
-		///  "name": "Abc",
-		///  "address": "Abc-123",
-		///  "phone": "0987654321",
-		///  "email": "abc@gmail.com"
-		/// </remarks>
-		/// <returns></returns>
-		[HttpPost]
+        /// <summary>
+        /// Create Clinic
+        /// </summary>
+        /// <param name="clinicCreate"></param>
+        /// <remarks>
+        ///  "name": "Abc",
+        ///  "address": "Abc-123",
+        ///  "phone": "0987654321",
+        ///  "email": "abc@gmail.com"
+        /// </remarks>
+        /// <returns></returns>
+
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [HttpPost]
         public async Task<ActionResult<Clinic>> CreateClinic([FromForm]ClinicDto clinicCreate)
         {
 			if (clinicCreate == null)
@@ -104,7 +109,9 @@ namespace MediNet_BE.Controllers
 			return newClinic == null ? NotFound() : Ok(newClinic);
 		}
 
-		[HttpPut]
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [HttpPut]
 		[Route("id")]
 		public async Task<IActionResult> UpdateClinic([FromQuery] int id, [FromForm] ClinicDto updatedClinic)
 		{
@@ -135,7 +142,9 @@ namespace MediNet_BE.Controllers
 			return Ok("Update Successfully!");
 		}
 
-		[HttpDelete]
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [HttpDelete]
 		[Route("id")]
 		public async Task<IActionResult> DeleteClinic([FromQuery] int id)
         {

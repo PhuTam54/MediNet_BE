@@ -27,8 +27,9 @@ namespace MediNet_BE.Controllers.Users
 		private readonly IMailService _mailService;
 		const int CUSTOMER = 1;
 		const int ADMIN = 2;
+		const int DOCTOR = 3;
 
-		public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
+        public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
 		{
 			_context = context;
 			_config = config;
@@ -55,16 +56,13 @@ namespace MediNet_BE.Controllers.Users
 			{
 				var email = loginModel.Email;
 
-				// Xác định loại người dùng từ email
 				var userType = GetUserTypeByEmail(email);
 
-				// Nếu không xác định được loại người dùng
 				if (userType == UserType.Unknown)
 				{
 					return BadRequest("Invalid email or password.");
 				}
 
-				// Thực hiện truy vấn đăng nhập tương ứng
 				var account = FindUserByEmailAndType(email, userType);
 
 				if (account != null && VerifyPassword(loginModel.Password, account.Password))
@@ -78,34 +76,29 @@ namespace MediNet_BE.Controllers.Users
 					{
 						userRole = "Admin";
 					}
-					// Tạo danh sách claim
 
 					var claims = new List<Claim>
 					{
 						new Claim(ClaimTypes.Email, account.Email),
 						new Claim(IdentityData.UserIdClaimName, account.Id.ToString()),
 						new Claim(IdentityData.RoleClaimName, userRole)
-                        // 1.Customer / 2.Admin 
                     };
-					// Tạo JWT token
 					var token = GenerateJwtToken(_config["JwtSettings:SecretKey"],
 						_config["JwtSettings:Issuer"], _config["JwtSettings:Audience"],
 						int.Parse(_config["JwtSettings:ExpirationMinutes"]), claims);
 
-					// Lưu JWT token vào cookie
 					Response.Cookies.Append("jwt", token, new CookieOptions
 					{
 						HttpOnly = true,
 						SameSite = SameSiteMode.Strict,
-						Secure = true // Đặt true nếu bạn chỉ muốn gửi cookie qua kết nối HTTPS
+						Secure = true
 					});
 
-					// Trả về JWT token cho người dùng
 					return Ok(new { Token = token });
 				}
 			}
 
-			return response; // Trả về Unauthorized nếu xác thực không thành công
+			return response;
 		}
 
 		private string GenerateJwtToken(string secretKey, string issuer, string audience, int expirationMinutes, IEnumerable<Claim> claims)
@@ -144,15 +137,13 @@ namespace MediNet_BE.Controllers.Users
 		[Route("Register")]
 		public IActionResult Register([FromBody] RegisterRequest registerModel)
 		{
-			// validate
 			if (_context.Customers.Any(x => x.Email == registerModel.Email))
 				throw new ApplicationException("Email '" + registerModel.Email + "' is already taken");
 
-			// map model to new user object
 			var user = _mapper.Map<Customer>(registerModel);
 
-			// Hash the password before saving it
 			user.Password = HashPassword(registerModel.Password);
+			user.Slug = registerModel.UserName;
 			user.Role = 1;
 			user.Status = 0;
 			user.Address = "";
@@ -168,7 +159,6 @@ namespace MediNet_BE.Controllers.Users
 
 		private UserType GetUserTypeByEmail(string email)
 		{
-			// Kiểm tra email thuộc về loại người dùng nào
 			if (_context.Customers.Any(u => u.Email == email))
 			{
 				return UserType.Customer;
@@ -202,7 +192,6 @@ namespace MediNet_BE.Controllers.Users
 
 		private bool VerifyPassword(string enteredPassword, string hashedPassword)
 		{
-			// So sánh mật khẩu đã hash trong cơ sở dữ liệu với mật khẩu người dùng nhập vào
 			return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
 		}
 
@@ -211,7 +200,7 @@ namespace MediNet_BE.Controllers.Users
 			Unknown,
 			Customer,
 			Admin,
-			Tenant
+			Doctor
 		}
 
 		[HttpPost]

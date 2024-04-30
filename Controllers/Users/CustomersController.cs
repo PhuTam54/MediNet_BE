@@ -72,22 +72,23 @@ namespace MediNet_BE.Controllers.Users
 		}
 
 
-		/// <summary>
-		///  Create Customer
-		/// </summary>
-		/// <param name="customerCreate"></param>
-		/// <remarks>
-		/// "Username" : "John",
-		/// "Email": " dùng email thật của mình và sửa mailSettings trong appsetings.json",
-		/// "Password": "123456",
-		/// "Address": "12A - Abc",
-		/// "PhoneNumber": "0123456789",
-		/// "": "",
-		/// </remarks>
-		/// <returns></returns>
-		//[Authorize]
-		//[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
-		[HttpPost]
+        /// <summary>
+        ///  Create Customer
+        /// </summary>
+        /// <param name="customerCreate"></param>
+        /// <remarks>
+        /// "Username" : "John",
+        /// "Email": " dùng email thật của mình và sửa mailSettings trong appsetings.json",
+        /// "Password": "123456",
+        /// "Address": "12A - Abc",
+        /// "PhoneNumber": "0123456789",
+        /// "": "",
+        /// </remarks>
+        /// <returns></returns>
+        
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [HttpPost]
         public async Task<ActionResult<Customer>> CreateCustomer([FromForm] CustomerDto customerCreate)
         {
             if (customerCreate == null)

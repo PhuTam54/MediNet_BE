@@ -27,39 +27,40 @@ namespace MediNet_BE.Repositories.Users
             _mapper = mapper;
             _mailService = mailService;
         }
-        public async Task<List<CustomerDto>> GetAllUserAsync()
+        public async Task<List<Customer>> GetAllUserAsync()
         {
             var customers = await _context.Customers!
                 .Include(o => o.Orders)
                 .Include(f => f.Feedbacks)
+                .Include(c => c.Carts)
                 .ToListAsync();
-			var customersMap = _mapper.Map<List<CustomerDto>>(customers);
 
-			return customersMap;
+			return customers;
         }
 
-        public async Task<CustomerDto> GetUserByIdAsync(int id)
+        public async Task<Customer> GetUserByIdAsync(int id)
         {
             var customer = await _context.Customers!
 								.Include(o => o.Orders)
                                 .Include(f => f.Feedbacks)
-                                .AsNoTracking()
+				                .Include(c => c.Carts)
+								.AsNoTracking()
                                 .FirstOrDefaultAsync(c => c.Id == id);
 			var customerMap = _mapper.Map<CustomerDto>(customer);
 
-			return customerMap;
+			return customer;
         }
 
-        public async Task<CustomerDto> GetUserByEmailAsync(string email)
+        public async Task<Customer> GetUserByEmailAsync(string email)
         {
             var customer = await _context.Customers!
                 .Include(o => o.Orders)
                 .Include(f => f.Feedbacks)
-                .AsNoTracking()
+				.Include(c => c.Carts)
+				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Email == email);
-			var customerMap = _mapper.Map<CustomerDto>(customer);
 
-			return customerMap;
+			return customer;
 		}
 
         public async Task<Customer> AddUserAsync(CustomerDto userDto)

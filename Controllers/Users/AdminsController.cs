@@ -32,42 +32,42 @@ namespace MediNet_BE.Controllers.Users
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<AdminDto>>> GetUsers()
+		public async Task<ActionResult<IEnumerable<Admin>>> GetAdmins()
 		{
-			var adminsDto = await _userRepo.GetAllUserAsync();
-			foreach (var adminDto in adminsDto)
+			var admins = await _userRepo.GetAllUserAsync();
+			foreach (var admin in admins)
 			{
-				adminDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, adminDto.Image);
+				admin.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, admin.Image);
 			}
-			return Ok(adminsDto);
+			return Ok(admins);
 		}
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<AdminDto>> GetAdminById(int id)
+		public async Task<ActionResult<Admin>> GetAdminById(int id)
 		{
-			var adminDto = await _userRepo.GetUserByIdAsync(id);
-			if(adminDto == null)
+			var admin = await _userRepo.GetUserByIdAsync(id);
+			if(admin == null)
 			{
 				return NotFound();
 			}
-			adminDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, adminDto.Image);
+			admin.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, admin.Image);
 
-			return Ok(adminDto);
+			return Ok(admin);
 		}
 
 		[HttpGet]
 		[Route("email")]
-		public async Task<ActionResult<AdminDto>> GetAdminByEmail(string email)
+		public async Task<ActionResult<Admin>> GetAdminByEmail(string email)
 		{
-			var adminDto = await _userRepo.GetUserByEmailAsync(email);
-			if (adminDto == null)
+			var admin = await _userRepo.GetUserByEmailAsync(email);
+			if (admin == null)
 			{
 				return NotFound();
 			}
-			adminDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, adminDto.Image);
+			admin.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, admin.Image);
 
-			return adminDto == null ? NotFound() : Ok(adminDto);
+			return Ok(admin);
 		}
 
         /// <summary>

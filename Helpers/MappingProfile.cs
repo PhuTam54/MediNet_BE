@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using MediNet_BE.Dto;
 using MediNet_BE.Dto.Categories;
+using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
+using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Models.Users;
 
@@ -32,11 +34,13 @@ namespace MediNet_BE.Helpers
 
 			CreateMap<Clinic, ClinicDto>();
 			CreateMap<ClinicDto, Clinic>();
+			CreateMap<Supply, SupplyDto>();
+			CreateMap<SupplyDto, Supply>();
 
+			CreateMap<Cart, CartDto>();
+			CreateMap<CartDto, Cart>();
 			CreateMap<Order, OrderDto>();
 			CreateMap<OrderDto, Order>();
-            CreateMap<Order, OrderCreateDto>();
-            CreateMap<OrderCreateDto, Order>();
 
             CreateMap<OrderProduct, OrderProductDto>();
 			CreateMap<OrderProductDto, OrderProduct>();
@@ -45,8 +49,6 @@ namespace MediNet_BE.Helpers
 
 			CreateMap<Product, ProductDto>();
 			CreateMap<ProductDto, Product>();
-            CreateMap<Product, ProductCreateDto>();
-            CreateMap<ProductCreateDto, Product>();
 
             CreateMap<Service, ServiceDto>();
 			CreateMap<ServiceDto, Service>();

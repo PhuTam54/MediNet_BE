@@ -5,9 +5,9 @@ namespace MediNet_BE.Interfaces.Orders
 {
     public interface IFeedbackRepo
     {
-        public Task<List<FeedbackDto>> GetAllFeedbackAsync();
-        public Task<FeedbackDto> GetFeedbackByIdAsync(int id);
-        public Task<FeedbackDto> GetFeedbackByProductIdAsync(int productId);
+        public Task<List<Feedback>> GetAllFeedbackAsync();
+        public Task<Feedback> GetFeedbackByIdAsync(int id);
+        public Task<Feedback> GetFeedbackByProductIdAsync(int productId);
         public Task<Feedback> AddFeedbackAsync(FeedbackDto feedbackDto);
         public Task UpdateFeedbackAsync(FeedbackDto feedbackDto);
         public Task DeleteFeedbackAsync(int id);

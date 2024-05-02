@@ -18,91 +18,95 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using MediNet_BE.Identity;
 using MediNet_BE.Dto.Orders;
+using MediNet_BE.Interfaces.Orders;
+using MediNet_BE.Models.Orders;
+using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.Repositories.Clinics;
 
 namespace MediNet_BE.Controllers.Orders
 {
 
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class CartsController : ControllerBase
-    {
-        private readonly MediNetContext _context;
-        public CartsController(MediNetContext context)
-        {
-            _context = context;
-        }
-        public List<CartItem> MyCart => HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+	public class CartsController : ControllerBase
+	{
+		private readonly ICartRepo _cartRepo;
+		private readonly IUserRepo<Customer, CustomerDto> _customerRepo;
+		private readonly IProductRepo _productRepo;
+		private readonly IClinicRepo _clinicRepo;
 
-        //[Authorize]
-        [HttpGet]
-        public async Task<IActionResult> getCartByUserId(int userId)
-        {
-            var carts = MyCart;
-            var user = await _context.Customers.SingleOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            var cartUser = carts.Where(c => c.UserID == userId).ToList();
-            if (cartUser != null)
-            {
-                return Ok(cartUser);
-            }
-            return Ok("Cart is empty!");
-        }
+		public CartsController(ICartRepo cartRepo, IUserRepo<Customer, CustomerDto> customerRepo, IProductRepo productRepo, IClinicRepo clinicRepo)
+		{
+			_cartRepo = cartRepo;
+			_customerRepo = customerRepo;
+			_productRepo = productRepo;
+			_clinicRepo = clinicRepo;
+		}
 
-        [HttpPost]
-        public async Task<IActionResult> AddToCart(int productId, int userId, int buy_qty)
-        {
-            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var item = cart.SingleOrDefault(c => c.ProductID == productId && c.UserID == userId);
+		[HttpGet]
+		[Route("userid")]
+		public async Task<ActionResult<IEnumerable<Cart>>> GetCartsByUserId(int userid)
+		{
+			var user = await _customerRepo.GetUserByIdAsync(userid);
+			if (user == null)
+				return NotFound("Customer Not Found!");
+			var carts = await _cartRepo.GetCartsByCustomerIdAsync(userid);
+			return Ok(carts);
+		}
 
-            if (item == null)
-            {
-                var product = await _context.Products.SingleOrDefaultAsync(p => p.Id == productId);
-                var user = await _context.Customers.SingleOrDefaultAsync(u => u.Id == userId);
-                if (product == null || user == null)
-                {
-                    return NotFound();
-                }
-                item = new CartItem
-                {
-                    ProductID = product.Id,
-                    UserID = user.Id,
-                    Name = product.Name,
-                    Image = product.Image,
-                    Price = product.Price,
-                    Description = product.Description,
-                    Qty = buy_qty
-                };
-                cart.Add(item);
-            }
-            else
-            {
-                item.Qty += buy_qty;
-            }
-            HttpContext.Session.Set("Cart", cart);
-            return Ok(cart);
-        }
+		[HttpPost]
+		public async Task<ActionResult<Cart>> AddToCart([FromBody] CartDto cartCreate)
+		{
+			var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerID);
+			var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductID);
+			var clinic = await _clinicRepo.GetClinicByIdAsync(cartCreate.ClinicID);
+			if (customer == null || product == null || clinic == null)
+				return NotFound();
 
-        [HttpDelete]
-        public IActionResult RemoveToCart(int? productId, int? userId)
-        {
-            if (productId == null)
-            {
-                return NotFound();
-            }
-            var cart = MyCart;
-            if (cart != null)
-            {
-                var carToRemove = cart.FirstOrDefault(p => p.ProductID == productId && p.UserID == userId);
-                if (carToRemove != null)
-                {
-                    cart.Remove(carToRemove);
-                    HttpContext.Session.Set("Cart", cart);
-                }
-            }
-            return Ok("Remove cart successfully!");
-        }
-    }
+			if (cartCreate == null)
+				return BadRequest(ModelState);
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var newCart = await _cartRepo.AddCartAsync(cartCreate);
+			return newCart == null ? NotFound() : Ok(newCart);
+		}
+
+		[HttpPut]
+		[Route("id")]
+		public async Task<IActionResult> UpdateCart([FromQuery] int id, [FromBody] CartDto updatedCart)
+		{
+			var customer = await _customerRepo.GetUserByIdAsync(updatedCart.CustomerID);
+			var product = await _productRepo.GetProductByIdAsync(updatedCart.ProductID);
+			var clinic = await _clinicRepo.GetClinicByIdAsync(updatedCart.ClinicID);
+			var cart = await _cartRepo.GetCartByIdAsync(id);
+
+			if (customer == null || product == null || clinic == null)
+				return NotFound();
+			if (cart == null)
+				return NotFound();
+			if (updatedCart == null)
+				return BadRequest(ModelState);
+			if (id != updatedCart.Id)
+				return BadRequest();
+
+			await _cartRepo.UpdateCartAsync(updatedCart);
+
+			return Ok("Update Successfully!");
+		}
+
+		[HttpDelete]
+		[Route("id")]
+		public async Task<IActionResult> DeleteCart(int id)
+		{
+			var cart = await _cartRepo.GetCartByIdAsync(id);
+			if (cart == null)
+			{
+				return NotFound();
+			}
+			await _cartRepo.DeleteCartAsync(cart);
+			return Ok("Delete Successfully!");
+		}
+	}
 }

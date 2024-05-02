@@ -158,7 +158,7 @@ namespace MediNet_BE.Controllers.Users
 			{
 				ToEmail = user.Email,
 				UserName = user.Username,
-				Url = "verify",
+				Url = "verifyaccount",
 				Subject = "Verify your account!"
 			};
 			await _mailService.SendEmailAsync(data);

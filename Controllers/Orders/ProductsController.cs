@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MediNet_BE.Data;
-using MediNet_BE.Interfaces;
 using MediNet_BE.Repositories;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Models.Users;
@@ -19,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
+using MediNet_BE.Interfaces.Clinics;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -40,28 +40,28 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            var prdsDto = await _productRepo.GetAllProductAsync();
-			foreach (var prdDto in prdsDto)
+            var products = await _productRepo.GetAllProductAsync();
+			foreach (var product in products)
 			{
-				prdDto.ImageSrc = String.Format("{0}://{1}{2}/{3}",Request.Scheme, Request.Host,Request.PathBase,prdDto.Image);
+				product.ImageSrc = String.Format("{0}://{1}{2}/{3}",Request.Scheme, Request.Host,Request.PathBase, product.Image);
 			}
-			return Ok(prdsDto);
+			return Ok(products);
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<ProductDto>> GetProductById(int id)
+        public async Task<ActionResult<Product>> GetProductById(int id)
         {
-            var productDto = await _productRepo.GetProductByIdAsync(id);
-			if (productDto == null)
+            var product = await _productRepo.GetProductByIdAsync(id);
+			if (product == null)
 			{
 				return NotFound();
 			}
-			productDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, productDto.Image);
+			product.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
 
-			return Ok(productDto);
+			return Ok(product);
         }
 
         /// <summary>
@@ -77,15 +77,13 @@ namespace MediNet_BE.Controllers.Orders
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductCreateDto productCreate)
+        public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductDto productCreate)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(productCreate.CategoryChildId);
-            var clinic = await _clinicRepo.GetClinicByIdAsync(productCreate.ClinicId);
 
             if (categoryChild == null)
                 return NotFound("Category Child Not Found!");
-            if (clinic == null)
-                return NotFound("Clinic Not Found!");
+
             if (productCreate == null)
                 return BadRequest(ModelState);
 
@@ -113,16 +111,15 @@ namespace MediNet_BE.Controllers.Orders
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateProduct([FromQuery] int id, [FromForm] ProductCreateDto updatedProduct)
+        public async Task<IActionResult> UpdateProduct([FromQuery] int id, [FromForm] ProductDto updatedProduct)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(updatedProduct.CategoryChildId);
-            var clinic = await _clinicRepo.GetClinicByIdAsync(updatedProduct.ClinicId);
-            var product = await _productRepo.GetProductByIdAsync(id);
+
+			var product = await _productRepo.GetProductByIdAsync(id);
 
             if (categoryChild == null)
                 return NotFound("Category Child Not Found!");
-            if (clinic == null)
-                return NotFound("Clinic Not Found!");
+
             if (product == null)
                 return NotFound();
             if (updatedProduct == null)

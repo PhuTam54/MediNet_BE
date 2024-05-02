@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Orders;
 
 namespace MediNet_BE.Models

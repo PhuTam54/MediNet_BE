@@ -23,39 +23,36 @@ namespace MediNet_BE.Repositories.Orders
             _mapper = mapper;
         }
 
-        public async Task<List<FeedbackDto>> GetAllFeedbackAsync()
+        public async Task<List<Feedback>> GetAllFeedbackAsync()
         {
             var categories = await _context.Feedbacks!
                 .Include(c => c.Customer)
                 .Include(p => p.Product)
                 .ToListAsync();
-			var categoriesMap = _mapper.Map<List<FeedbackDto>>(categories);
 
-			return categoriesMap;
+			return categories;
         }
 
-        public async Task<FeedbackDto> GetFeedbackByIdAsync(int id)
+        public async Task<Feedback> GetFeedbackByIdAsync(int id)
         {
             var feedback = await _context.Feedbacks!
 								.Include(c => c.Customer)
 								.Include(p => p.Product)
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(c => c.Id == id);
-			var feedbackMap = _mapper.Map<FeedbackDto>(feedback);
 
-			return feedbackMap;
+			return feedback;
         }
 
-        public async Task<FeedbackDto> GetFeedbackByProductIdAsync(int productId)
+        public async Task<Feedback> GetFeedbackByProductIdAsync(int productId)
         {
             var feedback = await _context.Feedbacks!
 				.Include(c => c.Customer)
                 .Include(p => p.Product)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Product.Id == productId);
-			var feedbackMap = _mapper.Map<FeedbackDto>(feedback);
 
-			return feedbackMap;
+			return feedback;
         }
 
         public async Task<Feedback> AddFeedbackAsync(FeedbackDto feedbackDto)

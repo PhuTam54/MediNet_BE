@@ -4,11 +4,12 @@ using MediNet_BE.Dto.Payments.Momo;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Interfaces.Categories;
+using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Users;
-using MediNet_BE.Repositories;
 using MediNet_BE.Repositories.Categories;
+using MediNet_BE.Repositories.Clinics;
 using MediNet_BE.Repositories.Orders;
 using MediNet_BE.Repositories.Users;
 using MediNet_BE.Services;
@@ -51,24 +52,17 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 				x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-//add session
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-	options.IdleTimeout = TimeSpan.FromHours(1);
-	options.Cookie.HttpOnly = true;
-});
-
-builder.Services.AddHttpContextAccessor();
 
 //add repository
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<ICategoryChildRepo, CategoryChildRepo>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IClinicRepo, ClinicRepo>();
+builder.Services.AddScoped<ISupplyRepo, SupplyRepo>();
 builder.Services.AddScoped<IServiceRepo, ServiceRepo>();
 builder.Services.AddScoped<IUserRepo<Customer, CustomerDto>, CustomerRepo>();
 builder.Services.AddScoped<IUserRepo<Admin, AdminDto>, AdminRepo>();
+builder.Services.AddScoped<ICartRepo, CartRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IFeedbackRepo, FeedbackRepo>();
 
@@ -130,7 +124,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseAuthentication();
-app.UseSession();
 app.UseRouting();
 
 // Authorization

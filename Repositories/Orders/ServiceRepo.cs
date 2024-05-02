@@ -18,26 +18,24 @@ namespace MediNet_BE.Repositories.Orders
             _mapper = mapper;
         }
 
-        public async Task<List<ServiceDto>> GetAllServiceAsync()
+        public async Task<List<Service>> GetAllServiceAsync()
         {
             var services = await _context.Services!
                 .Include(c => c.Clinic)
                 .Include(os => os.OrderServices)
                 .ToListAsync();
-            var servicesMap = _mapper.Map<List<ServiceDto>>(services);
-            return servicesMap;
+            return services;
         }
 
-        public async Task<ServiceDto> GetServiceByIdAsync(int id)
+        public async Task<Service> GetServiceByIdAsync(int id)
         {
             var service = await _context.Services!
                 .Include(c => c.Clinic)
                 .Include(os => os.OrderServices)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id);
-            var serviceMap = _mapper.Map<ServiceDto>(service);
 
-            return serviceMap;
+            return service;
         }
 
         public async Task<Service> AddServiceAsync(ServiceCreateDto serviceDto)

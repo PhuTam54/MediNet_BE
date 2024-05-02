@@ -19,27 +19,25 @@ namespace MediNet_BE.Repositories.Categories
             _mapper = mapper;
         }
 
-        public async Task<List<CategoryChildDto>> GetAllCategoryChildAsync()
+        public async Task<List<CategoryChild>> GetAllCategoryChildAsync()
         {
             var categoryChilds = await _context.CategoryChilds!
                 .Include(c => c.Category)
                 .Include(p => p.Products)
                 .ToListAsync();
-            var categoryChildsMap = _mapper.Map<List<CategoryChildDto>>(categoryChilds);
 
-			return categoryChildsMap;
+			return categoryChilds;
         }
 
-        public async Task<CategoryChildDto> GetCategoryChildByIdAsync(int id)
+        public async Task<CategoryChild> GetCategoryChildByIdAsync(int id)
         {
             var categoryChild = await _context.CategoryChilds!
                 .Include(c => c.Category)
 				.Include(p => p.Products)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cc => cc.Id == id);
-			var categoryChildsMap = _mapper.Map<CategoryChildDto>(categoryChild);
 
-			return categoryChildsMap;
+			return categoryChild;
         }
 
         public async Task<CategoryChild> AddCategoryChildAsync(CategoryChildDto categoryChildDto)

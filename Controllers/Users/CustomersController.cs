@@ -32,43 +32,43 @@ namespace MediNet_BE.Controllers.Users
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            var customersDto = await _customerRepo.GetAllUserAsync();
-            foreach (var customerDto in customersDto)
+            var customers = await _customerRepo.GetAllUserAsync();
+            foreach (var customer in customers)
             {
-                customerDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customerDto.Image);
+                customer.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customer.Image);
             }
 
-            return Ok(customersDto);
+            return Ok(customers);
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<CustomerDto>> GetCustomerById(int id)
+        public async Task<ActionResult<Customer>> GetCustomerById(int id)
         {
-            var customerDto = await _customerRepo.GetUserByIdAsync(id);
-			if (customerDto == null)
+            var customer = await _customerRepo.GetUserByIdAsync(id);
+			if (customer == null)
 			{
 				return NotFound();
 			}
-			customerDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customerDto.Image);
+			customer.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customer.Image);
 
-            return Ok(customerDto);
+            return Ok(customer);
         }
 
 		[HttpGet]
 		[Route("email")]
-		public async Task<ActionResult<CustomerDto>> GetCustomerByEmail(string email)
+		public async Task<ActionResult<Customer>> GetCustomerByEmail(string email)
 		{
-			var customerDto = await _customerRepo.GetUserByEmailAsync(email);
-			if (customerDto == null)
+			var customer = await _customerRepo.GetUserByEmailAsync(email);
+			if (customer == null)
 			{
 				return NotFound();
 			}
-			customerDto.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customerDto.Image);
+			customer.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customer.Image);
 
-            return Ok(customerDto);
+            return Ok(customer);
 		}
 
 
@@ -78,7 +78,7 @@ namespace MediNet_BE.Controllers.Users
         /// <param name="customerCreate"></param>
         /// <remarks>
         /// "Username" : "John",
-        /// "Email": " dùng email thật của mình và sửa mailSettings trong appsetings.json",
+        /// "Email": " dùng email thật của mình",
         /// "Password": "123456",
         /// "Address": "12A - Abc",
         /// "PhoneNumber": "0123456789",
@@ -107,6 +107,10 @@ namespace MediNet_BE.Controllers.Users
                 {
                     return NotFound("An error occurred while saving the image!");
                 }
+            }
+            else
+            {
+                return BadRequest("Image Not Null!");
             }
             var newCustomer = await _customerRepo.AddUserAsync(customerCreate);
             return newCustomer == null ? NotFound() : Ok(newCustomer);

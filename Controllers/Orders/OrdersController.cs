@@ -64,6 +64,14 @@ namespace MediNet_BE.Controllers.Orders
             return orderDto == null ? NotFound() : Ok(orderDto);
         }
 
+        [HttpGet]
+        [Route("userId")]
+        public async Task<ActionResult<OrderDto>> GetOrderByUserId(int userId)
+        {
+            var orderDto = await _orderRepo.GetOrderByUserIdAsync(userId);
+            return orderDto == null ? NotFound() : Ok(orderDto);
+        }
+
         /// <summary>
         /// Create Order
         /// </summary>

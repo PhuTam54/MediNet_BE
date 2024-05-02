@@ -7,6 +7,7 @@ namespace MediNet_BE.Interfaces.Orders
     {
         public Task<List<OrderDto>> GetAllOrderAsync();
         public Task<OrderDto> GetOrderByIdAsync(int id);
+        public Task<List<OrderDto>> GetOrderByUserIdAsync(int userId);
         public Task<Order> AddOrderAsync(OrderCreateDto orderDto);
         public Task UpdateOrderAsync(OrderCreateDto orderDto);
         public Task DeleteOrderAsync(int id);

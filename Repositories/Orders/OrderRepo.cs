@@ -28,7 +28,6 @@ namespace MediNet_BE.Repositories.Orders
             _mailService = mailService;
         }
 
-
         public async Task<List<OrderDto>> GetAllOrderAsync()
         {
             var orders = await _context.Orders!
@@ -52,6 +51,19 @@ namespace MediNet_BE.Repositories.Orders
 			var orderMap = _mapper.Map<OrderDto>(order);
 
 			return orderMap;
+        }
+
+        public async Task<List<OrderDto>> GetOrderByUserIdAsync(int userId)
+        {
+            var order = await _context.Orders!
+                .Include(c => c.Customer)
+                .Include(op => op.OrderProducts)
+                .Include(os => os.OrderServices)
+                .Where(c => c.Customer.Id == userId)
+                .ToListAsync();
+            var orderMap = _mapper.Map<List<OrderDto>>(order);
+
+            return orderMap;
         }
 
         public async Task<Order> AddOrderAsync(OrderCreateDto orderDto)

@@ -52,6 +52,19 @@ namespace MediNet_BE.Repositories.Orders
 			return order;
         }
 
+        public async Task<List<Order>> GetOrderByUserIdAsync(int userId)
+        {
+            var order = await _context.Orders!
+                .Include(c => c.Customer)
+                .Include(op => op.OrderProducts)
+                .Include(os => os.OrderServices)
+                .Where(c => c.Customer.Id == userId)
+                .ToListAsync();
+            var orderMap = _mapper.Map<List<Order>>(order);
+
+            return orderMap;
+        }
+
         public async Task<Order> AddOrderAsync(OrderDto orderDto)
         {
 			var random = new Random().Next(1000, 10000);

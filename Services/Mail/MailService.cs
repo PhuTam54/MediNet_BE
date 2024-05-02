@@ -22,8 +22,8 @@ namespace MediNet_BE.Services
             string MailText = str.ReadToEnd();
             str.Close();
             MailText = MailText.Replace("[username]", request.UserName).Replace("[email]", request.ToEmail)
-                .Replace("verify", $"https://localhost:3000/Acccount/Verify?email={request.ToEmail}")
-                .Replace("forgotpwd", $"https://localhost:3000/Acccount/ResetPassword?email={request.ToEmail}") ;
+                .Replace("verify", $"https://localhost:3000/Acccount/verify?email={request.ToEmail}")
+                .Replace("forgotpwd", $"https://localhost:3000/Acccount/resetPassword?email={request.ToEmail}") ;
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
 			email.To.Add(MailboxAddress.Parse(request.ToEmail));

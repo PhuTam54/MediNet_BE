@@ -135,7 +135,7 @@ namespace MediNet_BE.Controllers.Users
 		[HttpPost]
 		//[ValidateAntiForgeryToken]
 		[Route("Register")]
-		public IActionResult Register([FromBody] RegisterRequest registerModel)
+		public async Task<IActionResult> Register([FromBody] RegisterRequest registerModel)
 		{
 			if (_context.Customers.Any(x => x.Email == registerModel.Email))
 				throw new ApplicationException("Email '" + registerModel.Email + "' is already taken");
@@ -143,7 +143,7 @@ namespace MediNet_BE.Controllers.Users
 			var user = _mapper.Map<Customer>(registerModel);
 
 			user.Password = HashPassword(registerModel.Password);
-			user.Slug = registerModel.UserName;
+			user.SEO_Name = registerModel.UserName;
 			user.Role = 1;
 			user.Status = 0;
 			user.Address = "";
@@ -153,6 +153,15 @@ namespace MediNet_BE.Controllers.Users
 
 			_context.Customers.Add(user);
 			_context.SaveChanges();
+
+			var data = new SendMailRequest
+			{
+				ToEmail = user.Email,
+				UserName = user.Username,
+				Url = "verify",
+				Subject = "Verify your account!"
+			};
+			await _mailService.SendEmailAsync(data);
 
 			return Ok("Registration successful");
 		}

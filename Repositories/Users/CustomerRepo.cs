@@ -65,7 +65,7 @@ namespace MediNet_BE.Repositories.Users
         public async Task<Customer> AddUserAsync(CustomerDto userDto)
         {
             var customerMap = _mapper.Map<Customer>(userDto);
-            customerMap.Slug = CreateSlug.Init_Slug(userDto.Username);
+            customerMap.SEO_Name = CreateSlug.Init_Slug(userDto.Username);
             customerMap.Role = 1;
             customerMap.Status = 0;
             customerMap.Date_Of_Birth = DateTime.UtcNow;
@@ -88,7 +88,7 @@ namespace MediNet_BE.Repositories.Users
         public async Task UpdateUserAsync(CustomerDto userDto)
         {
             var customerMap = _mapper.Map<Customer>(userDto);
-            customerMap.Slug = CreateSlug.Init_Slug(userDto.Username);
+            customerMap.SEO_Name = CreateSlug.Init_Slug(userDto.Username);
 
             _context.Customers!.Update(customerMap);
             await _context.SaveChangesAsync();

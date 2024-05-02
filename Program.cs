@@ -85,7 +85,6 @@ builder.Services.AddDbContext<MediNetContext>(opt =>
 //add service
 builder.Services.Configure<MomoOptionModel>(configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();
-builder.Services.AddSingleton<IVnPay, VnPay>();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IPayPalService, PayPalService>();
 builder.Services.AddScoped<IFileService, FileService>();

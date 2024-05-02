@@ -14,8 +14,5 @@ namespace MediNet_BE.Dto.Orders
         public int CustomerId { get; set; }
         public int ProductId { get; set; }
         public IFormFile[]? ImagesFeedbackFile { get; set; }
-		public List<string> ImagesSrc { get; set; } = [];
-        public CustomerDto? Customer { get; set; }
-        public ProductDto? Product { get; set; }
     }
 }

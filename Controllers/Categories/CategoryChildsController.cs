@@ -29,14 +29,14 @@ namespace MediNet_BE.Controllers.Categories
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryChildDto>>> GetCategoryChilds()
+        public async Task<ActionResult<IEnumerable<CategoryChild>>> GetCategoryChilds()
         {
             return Ok(await _categoryChildRepo.GetAllCategoryChildAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<CategoryChildDto>> GetCategoryChildById(int id)
+        public async Task<ActionResult<CategoryChild>> GetCategoryChildById(int id)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(id);
             return categoryChild == null ? NotFound() : Ok(categoryChild);

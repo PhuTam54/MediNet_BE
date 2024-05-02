@@ -19,24 +19,22 @@ namespace MediNet_BE.Repositories.Categories
             _mapper = mapper;
         }
 
-        public async Task<List<CategoryDto>> GetAllCategoryAsync()
+        public async Task<List<Category>> GetAllCategoryAsync()
         {
             var categories = await _context.Categories!
                 .Include(cc => cc.CategoryChilds)
                 .ToListAsync();
-            var categoriesMap = _mapper.Map<List<CategoryDto>>(categories);
-            return categoriesMap;
+            return categories;
         }
 
-        public async Task<CategoryDto> GetCategoryByIdAsync(int id)
+        public async Task<Category> GetCategoryByIdAsync(int id)
         {
             var category = await _context.Categories!
                 .Include(cc => cc.CategoryChilds)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
-			var categoryMap = _mapper.Map<CategoryDto>(category);
 
-			return categoryMap;
+			return category;
         }
 
         public async Task<Category> AddCategoryAsync(CategoryDto categoryDto)

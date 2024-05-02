@@ -21,6 +21,7 @@ using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Models;
+using MediNet_BE.Repositories.Orders;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -35,9 +36,11 @@ namespace MediNet_BE.Controllers.Orders
         private readonly IMailService _mailService;
         private readonly IMomoService _momoService;
         private readonly IPayPalService _payPalService;
+		private readonly ICartRepo _cartRepo;
 
-        public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto> customerRepo,
-            IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService, IMomoService momoService, IPayPalService payPalService)
+		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto> customerRepo,
+            IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService,
+            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo)
         {
             _orderRepo = orderRepo;
             _customerRepo = customerRepo;
@@ -46,22 +49,23 @@ namespace MediNet_BE.Controllers.Orders
             _mailService = mailService;
             _momoService = momoService;
             _payPalService = payPalService;
-        }
+			_cartRepo = cartRepo;
 
-        public List<CartItem> MyCart => HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+		}
+
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             return Ok(await _orderRepo.GetAllOrderAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<OrderDto>> GetOrderById(int id)
+        public async Task<ActionResult<Order>> GetOrderById(int id)
         {
-            var orderDto = await _orderRepo.GetOrderByIdAsync(id);
-            return orderDto == null ? NotFound() : Ok(orderDto);
+            var order = await _orderRepo.GetOrderByIdAsync(id);
+            return order == null ? NotFound() : Ok(order);
         }
 
         [HttpGet]
@@ -86,25 +90,23 @@ namespace MediNet_BE.Controllers.Orders
         /// </remarks>
         /// <returns></returns>
 
-        [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        //[Authorize]
+        //[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderCreateDto orderCreate)
+        public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderDto orderCreate)
         {
-            var carts = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
             var user = await _customerRepo.GetUserByIdAsync(orderCreate.CustomerId);
             if (user == null)
                 return NotFound("User Not Found!");
 
-            if (carts.Count() == 0)
-            {
-                return NotFound("There are no products in this customer's cart!");
-            }
-
-            if (orderCreate.CartList!.Count == 0)
-            {
-                return NotFound("The user did not select any products in the shopping cart!");
-            }
+			foreach (var cartId in orderCreate.CartIds)
+			{
+				var cart = await _cartRepo.GetCartByIdAsync(cartId);
+				if (cart == null)
+				{
+					return NotFound("Cart Not Found");
+				}
+			}
 
             if (orderCreate == null)
                 return BadRequest(ModelState);
@@ -117,16 +119,6 @@ namespace MediNet_BE.Controllers.Orders
             {
                 return NotFound();
             }
-
-            foreach (var cart in orderCreate.CartList)
-            {
-                var cartToRemove = carts.FirstOrDefault(p => p.ProductID == cart.ProductID && p.UserID == cart.UserID);
-                if (cartToRemove != null)
-                {
-                    carts.Remove(cartToRemove);
-                }
-            }
-            HttpContext.Session.Set("Cart", carts);
 
             if (newOrder.Payment_method == "Paypal")
             {

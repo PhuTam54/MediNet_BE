@@ -28,19 +28,19 @@ namespace MediNet_BE.Repositories.Orders
             _mailService = mailService;
         }
 
-        public async Task<List<OrderDto>> GetAllOrderAsync()
+
+        public async Task<List<Order>> GetAllOrderAsync()
         {
             var orders = await _context.Orders!
                 .Include(c => c.Customer)
                 .Include(op => op.OrderProducts)
                 .Include(os => os.OrderServices)
                 .ToListAsync();
-			var ordersMap = _mapper.Map<List<OrderDto>>(orders);
 
-			return ordersMap;
+			return orders;
         }
 
-        public async Task<OrderDto> GetOrderByIdAsync(int id)
+        public async Task<Order> GetOrderByIdAsync(int id)
         {
             var order = await _context.Orders!
 				.Include(c => c.Customer)
@@ -48,25 +48,11 @@ namespace MediNet_BE.Repositories.Orders
 				.Include(os => os.OrderServices)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
-			var orderMap = _mapper.Map<OrderDto>(order);
 
-			return orderMap;
+			return order;
         }
 
-        public async Task<List<OrderDto>> GetOrderByUserIdAsync(int userId)
-        {
-            var order = await _context.Orders!
-                .Include(c => c.Customer)
-                .Include(op => op.OrderProducts)
-                .Include(os => os.OrderServices)
-                .Where(c => c.Customer.Id == userId)
-                .ToListAsync();
-            var orderMap = _mapper.Map<List<OrderDto>>(order);
-
-            return orderMap;
-        }
-
-        public async Task<Order> AddOrderAsync(OrderCreateDto orderDto)
+        public async Task<Order> AddOrderAsync(OrderDto orderDto)
         {
 			var random = new Random().Next(1000, 10000);
 
@@ -76,35 +62,35 @@ namespace MediNet_BE.Repositories.Orders
 			orderMap.Status = OrderStatus.PENDING;
             orderMap.Customer = customer;
 
-            _context.Orders!.Add(orderMap);
-            await _context.SaveChangesAsync();
-
-            var orderProducts = new List<OrderProduct>();
-            foreach (CartItem cartItem in orderDto.CartList)
-            {
-                OrderProduct orderProduct = new OrderProduct
+			var carts = new List<Cart>();
+			foreach (var carttId in orderDto.CartIds)
+			{
+				var cart = await _context.Carts.Include(p => p.Product).FirstOrDefaultAsync(c => c.Id == carttId);
+				if (cart != null)
+				{
+					orderMap.TotalAmount += cart.SubTotal;
+					carts.Add(cart);
+				}
+			}
+			_context.Orders!.Add(orderMap);
+			foreach (var item in carts)
+			{
+				var orderProduct = new OrderProduct { ProductId = item.Product.Id, OrderId = orderMap.Id, Product = item.Product, Order = orderMap, Quantity = item.QtyCart, Subtotal = item.SubTotal };
+                var supply = await _context.Supplies!.FirstOrDefaultAsync(s => s.Product.Id == item.ProductId && s.Clinic.Id == item.ClinicId);
+                if(supply != null)
                 {
-                    OrderId = orderMap.Id,
-                    ProductId = cartItem.ProductID,
-                    Quantity = cartItem.Qty,
-                    Subtotal = cartItem.SubTotal
-                };
-                orderProducts.Add(orderProduct);
-                var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartItem.ProductID);
-                if (product != null)
-                {
-                    product.StockQuantity -= cartItem.Qty;
-                }
-                _context.Products!.Update(product);
-            }
-            _context.OrderProducts.AddRange(orderProducts);
+					supply.StockQuantity -= item.QtyCart;
+				}
+				_context.OrderProducts!.Add(orderProduct);
+				_context.Supplies!.Update(supply);
+				_context.Carts!.Remove(item);
+			}
 
-            await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync();
+			return orderMap;
+		}
 
-            return orderMap;
-        }
-
-        public async Task UpdateOrderAsync(OrderCreateDto orderDto)
+        public async Task UpdateOrderAsync(OrderDto orderDto)
         {
             var orderMap = _mapper.Map<Order>(orderDto);
             _context.Orders!.Update(orderMap);

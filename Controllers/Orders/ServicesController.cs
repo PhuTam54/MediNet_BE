@@ -13,6 +13,7 @@ using MediNet_BE.Dto;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
 using System.Security.Claims;
+using MediNet_BE.Interfaces.Clinics;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -30,17 +31,17 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
+        public async Task<ActionResult<IEnumerable<Service>>> GetServices()
         {
             return Ok(await _serviceRepo.GetAllServiceAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<ServiceDto>> GetService([FromQuery] int id)
+        public async Task<ActionResult<Service>> GetService([FromQuery] int id)
         {
-            var serviceDto = await _serviceRepo.GetServiceByIdAsync(id);
-            return serviceDto == null ? NotFound() : Ok(serviceDto);
+            var service = await _serviceRepo.GetServiceByIdAsync(id);
+            return service == null ? NotFound() : Ok(service);
         }
 
         [Authorize]

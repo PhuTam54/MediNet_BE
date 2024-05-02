@@ -23,59 +23,56 @@ namespace MediNet_BE.Repositories.Orders
             _fileService = fileService;
         }
 
-        public async Task<List<ProductDto>> GetAllProductAsync()
+        public async Task<List<Product>> GetAllProductAsync()
         {
             var products = await _context.Products!
                 .Include(cc => cc.CategoryChild)
-                .Include(c => c.Clinic)
+                .Include(op => op.OrderProducts)
+                .Include(c => c.Carts)
+                .Include(s => s.Supplies)
                 .ToListAsync();
-            var prdsMap = _mapper.Map<List<ProductDto>>(products);
-            
 
-            return prdsMap;
+            return products;
         }
 
-        public async Task<ProductDto> GetProductByIdAsync(int id)
+        public async Task<Product> GetProductByIdAsync(int id)
         {
             var product = await _context.Products!
 				.Include(cc => cc.CategoryChild)
-				.Include(c => c.Clinic)
+				.Include(op => op.OrderProducts)
+				.Include(c => c.Carts)
+				.Include(s => s.Supplies)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id);
-			var prdMap = _mapper.Map<ProductDto>(product);
 
-			return prdMap;
+			return product;
         }
 
-        public async Task<Product> AddProductAsync(ProductCreateDto productDto)
+        public async Task<Product> AddProductAsync(ProductDto productDto)
         {
             var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productDto.CategoryChildId);
-            var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == productDto.ClinicId);
 
             var productMap = _mapper.Map<Product>(productDto);
             productMap.Slug = CreateSlug.Init_Slug(productDto.Name);
             productMap.CategoryChild = categoryChild;
-            productMap.Clinic = clinic;
 
             _context.Products!.Add(productMap);
             await _context.SaveChangesAsync();
+
             return productMap;
         }
 
-        public async Task UpdateProductAsync(ProductCreateDto productDto)
+        public async Task UpdateProductAsync(ProductDto productDto)
         {
             var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productDto.CategoryChildId);
-            var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == productDto.ClinicId);
 
             var productMap = _mapper.Map<Product>(productDto);
             productMap.Slug = CreateSlug.Init_Slug(productDto.Name);
             productMap.CategoryChild = categoryChild;
-            productMap.Clinic = clinic;
-
 
             _context.Products!.Update(productMap);
             await _context.SaveChangesAsync();
-        }
+		}
 
         public async Task DeleteProductAsync(int id)
         {

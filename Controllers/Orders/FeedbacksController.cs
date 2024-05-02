@@ -52,43 +52,43 @@ namespace MediNet_BE.Controllers.Orders
 		}
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Feedback>>> GetCategories()
         {
-            var feedbacksDto = await _feedbackRepo.GetAllFeedbackAsync();
-			foreach (var feedbackDto in feedbacksDto)
+            var feedbacks = await _feedbackRepo.GetAllFeedbackAsync();
+			foreach (var feedback in feedbacks)
 			{
-                feedbackDto.ImagesSrc.AddRange(GetImagesPath(feedbackDto.ImagesFeedback));
+				feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
 			}
             
-			return Ok(feedbacksDto);
+			return Ok(feedbacks);
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<FeedbackDto>> GetFeedbackById(int id)
+        public async Task<ActionResult<Feedback>> GetFeedbackById(int id)
         {
-            var feedbackDto = await _feedbackRepo.GetFeedbackByIdAsync(id);
-			if (feedbackDto == null)
+            var feedback = await _feedbackRepo.GetFeedbackByIdAsync(id);
+			if (feedback == null)
 			{
 				return NotFound();
 			}
-			feedbackDto.ImagesSrc.AddRange(GetImagesPath(feedbackDto.ImagesFeedback));
+			feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
 
-			return Ok(feedbackDto);
+			return Ok(feedback);
         }
 
         [HttpGet]
         [Route("productId")]
-        public async Task<ActionResult<FeedbackDto>> GetFeedbackByProductId(int productId)
+        public async Task<ActionResult<Feedback>> GetFeedbackByProductId(int productId)
         {
-            var feedbackDto = await _feedbackRepo.GetFeedbackByProductIdAsync(productId);
-			if (feedbackDto == null)
+            var feedback = await _feedbackRepo.GetFeedbackByProductIdAsync(productId);
+			if (feedback == null)
 			{
 				return NotFound();
 			}
-			feedbackDto.ImagesSrc.AddRange(GetImagesPath(feedbackDto.ImagesFeedback));
+			feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
 
-			return Ok(feedbackDto);
+			return Ok(feedback);
         }
 
         [Authorize]

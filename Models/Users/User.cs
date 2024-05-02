@@ -1,7 +1,9 @@
-﻿namespace MediNet_BE.Models.Users
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MediNet_BE.Models.Users
 {
-    public class User
-    {
+	public class User
+	{
 		public int Id { get; set; }
 		public string Username { get; set; }
 		public string SEO_Name { get; set; }
@@ -10,6 +12,7 @@
 		public int Role { get; set; }
 		public int Status { get; set; }
 		public string Image { get; set; } = string.Empty;
-
+		[NotMapped]
+		public string ImageSrc { get; set; } = string.Empty;
 	}
 }

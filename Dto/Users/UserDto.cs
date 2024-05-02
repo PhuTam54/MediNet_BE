@@ -8,6 +8,5 @@
         public string Password { get; set; }
 		public string Image { get; set; } = string.Empty;
 		public IFormFile? ImageFile { get; set; }
-		public string ImageSrc { get; set; } = string.Empty;
 	}
 }

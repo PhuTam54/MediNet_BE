@@ -75,7 +75,7 @@ namespace MediNet_BE.Migrations
                     b.ToTable("CategoryChilds", (string)null);
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Clinic", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Clinics.Clinic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -123,6 +123,66 @@ namespace MediNet_BE.Migrations
                         .IsUnique();
 
                     b.ToTable("Clinics", (string)null);
+                });
+
+            modelBuilder.Entity("MediNet_BE.Models.Clinics.Supply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClinicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Supplies");
+                });
+
+            modelBuilder.Entity("MediNet_BE.Models.Orders.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClinicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QtyCart")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Feedback", b =>
@@ -293,9 +353,6 @@ namespace MediNet_BE.Migrations
                     b.Property<int>("CategoryChildId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClinicId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -325,14 +382,9 @@ namespace MediNet_BE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryChildId");
-
-                    b.HasIndex("ClinicId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -472,6 +524,52 @@ namespace MediNet_BE.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("MediNet_BE.Models.Clinics.Supply", b =>
+                {
+                    b.HasOne("MediNet_BE.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("Supplies")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MediNet_BE.Models.Product", "Product")
+                        .WithMany("Supplies")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MediNet_BE.Models.Orders.Cart", b =>
+                {
+                    b.HasOne("MediNet_BE.Models.Clinics.Clinic", "Clinic")
+                        .WithMany("Carts")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MediNet_BE.Models.Users.Customer", "Customer")
+                        .WithMany("Carts")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MediNet_BE.Models.Product", "Product")
+                        .WithMany("Carts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clinic");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("MediNet_BE.Models.Orders.Feedback", b =>
                 {
                     b.HasOne("MediNet_BE.Models.Users.Customer", "Customer")
@@ -548,20 +646,12 @@ namespace MediNet_BE.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MediNet_BE.Models.Clinic", "Clinic")
-                        .WithMany("Products")
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("CategoryChild");
-
-                    b.Navigation("Clinic");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Service", b =>
                 {
-                    b.HasOne("MediNet_BE.Models.Clinic", "Clinic")
+                    b.HasOne("MediNet_BE.Models.Clinics.Clinic", "Clinic")
                         .WithMany("Services")
                         .HasForeignKey("ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -580,11 +670,13 @@ namespace MediNet_BE.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Clinic", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Clinics.Clinic", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Carts");
 
                     b.Navigation("Services");
+
+                    b.Navigation("Supplies");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Order", b =>
@@ -596,9 +688,13 @@ namespace MediNet_BE.Migrations
 
             modelBuilder.Entity("MediNet_BE.Models.Product", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Feedbacks");
 
                     b.Navigation("OrderProducts");
+
+                    b.Navigation("Supplies");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Service", b =>
@@ -608,6 +704,8 @@ namespace MediNet_BE.Migrations
 
             modelBuilder.Entity("MediNet_BE.Models.Users.Customer", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Orders");

@@ -24,27 +24,24 @@ namespace MediNet_BE.Repositories.Users
             _mapper = mapper;
         }
 
-        public async Task<List<AdminDto>> GetAllUserAsync()
+        public async Task<List<Admin>> GetAllUserAsync()
         {
             var admins = await _context.Admins!.ToListAsync();
-			var adminsMap = _mapper.Map<List<AdminDto>>(admins);
 
-			return adminsMap;
+			return admins;
         }
 
-        public async Task<AdminDto> GetUserByIdAsync(int id)
+        public async Task<Admin> GetUserByIdAsync(int id)
         {
             var admin = await _context.Admins!.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
-			var adminMap = _mapper.Map<AdminDto>(admin);
 
-			return adminMap;
+			return admin;
         }
 
-        public async Task<AdminDto> GetUserByEmailAsync(string email)
+        public async Task<Admin> GetUserByEmailAsync(string email)
         {
             var admin = await _context.Admins!.AsNoTracking().FirstOrDefaultAsync(c => c.Email == email);
-			var adminMap = _mapper.Map<AdminDto>(admin);
-			return adminMap;
+			return admin;
         }
 
         public async Task<Admin> AddUserAsync(AdminDto userDto)

@@ -5,7 +5,7 @@ namespace MediNet_BE.Interfaces.Orders
 {
     public interface ICartRepo
 	{
-		public Task<List<Cart>> GetCartsByCustomerIdAsync(int userId);
+		public Task<List<CartReturnDto>> GetCartsByCustomerIdAsync(int userId);
 		public Task<Cart> GetCartByIdAsync(int id);
 		public Task<Cart> AddCartAsync(CartDto cartDto);
 		public Task UpdateCartAsync(CartDto cartDto);

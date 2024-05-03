@@ -22,6 +22,7 @@ using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Models;
 using MediNet_BE.Repositories.Orders;
+using AutoMapper;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -37,10 +38,11 @@ namespace MediNet_BE.Controllers.Orders
         private readonly IMomoService _momoService;
         private readonly IPayPalService _payPalService;
 		private readonly ICartRepo _cartRepo;
+        private readonly IMapper _mapper;
 
 		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto> customerRepo,
             IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService,
-            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo)
+            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo, IMapper mapper)
         {
             _orderRepo = orderRepo;
             _customerRepo = customerRepo;
@@ -50,9 +52,8 @@ namespace MediNet_BE.Controllers.Orders
             _momoService = momoService;
             _payPalService = payPalService;
 			_cartRepo = cartRepo;
-
-		}
-
+            _mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderReturnDto>>> GetOrders()
@@ -90,8 +91,6 @@ namespace MediNet_BE.Controllers.Orders
         /// </remarks>
         /// <returns></returns>
 
-        //[Authorize]
-        //[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderDto orderCreate)
         {
@@ -191,7 +190,7 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [NonAction]
-        public async Task<Order> UpdateOrder(string orderCode)
+        public async Task<Order> UpdateStatusOrder(string orderCode)
         {
             var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);
             if (updatedOrder != null)
@@ -200,6 +199,16 @@ namespace MediNet_BE.Controllers.Orders
                 updatedOrder.Status = OrderStatus.CONFIRMED;
                 _mediNetContext.Update(updatedOrder);
                 await _mediNetContext.SaveChangesAsync();
+
+                var orderMap = _mapper.Map<OrderDto>(updatedOrder);
+                foreach (var cartId in orderMap.CartIds)
+                {
+                    var cart = await _cartRepo.GetCartByIdAsync(cartId);
+                    if (cart != null)
+                    {
+                        await _cartRepo.DeleteCartAsync(cart);
+                    }
+                }
 
                 var data = new SendMailRequest
                 {
@@ -239,7 +248,7 @@ namespace MediNet_BE.Controllers.Orders
             {
                 return BadRequest($"Lỗi thanh toán vnpay: {response.VnPayResponseCode}");
             }
-            var orderUpdate = await UpdateOrder(response.OrderId);
+            var orderUpdate = await UpdateStatusOrder(response.OrderId);
             return orderUpdate == null ? NotFound() : Ok(orderUpdate);
         }
 
@@ -250,7 +259,7 @@ namespace MediNet_BE.Controllers.Orders
             var queryCollection = new QueryCollection((Dictionary<string, StringValues>)data.Select(kv => new KeyValuePair<string, StringValues>(kv.Key, new StringValues(kv.Value))));
             var response = _momoService.PaymentExecuteAsync(queryCollection);
 
-            var orderUpdate = await UpdateOrder(response.OrderId);
+            var orderUpdate = await UpdateStatusOrder(response.OrderId);
             return orderUpdate == null ? NotFound() : Ok(orderUpdate);
         }
 
@@ -261,7 +270,7 @@ namespace MediNet_BE.Controllers.Orders
             var queryCollection = new QueryCollection((Dictionary<string, StringValues>)data.Select(kv => new KeyValuePair<string, StringValues>(kv.Key, new StringValues(kv.Value))));
             var response = _payPalService.PaymentExecute(queryCollection);
 
-            var orderUpdate = await UpdateOrder(response.OrderId);
+            var orderUpdate = await UpdateStatusOrder(response.OrderId);
             return orderUpdate == null ? NotFound() : Ok(orderUpdate);
         }
 

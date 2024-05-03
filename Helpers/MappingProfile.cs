@@ -42,8 +42,10 @@ namespace MediNet_BE.Helpers
 
 			CreateMap<Cart, CartDto>();
 			CreateMap<CartDto, Cart>();
+            CreateMap<Cart, CartReturnDto>();
+            CreateMap<CartReturnDto, Cart>();
 
-			CreateMap<Order, OrderDto>();
+            CreateMap<Order, OrderDto>();
 			CreateMap<OrderDto, Order>();
             CreateMap<Order, OrderReturnDto>();
             CreateMap<OrderReturnDto, Order>();

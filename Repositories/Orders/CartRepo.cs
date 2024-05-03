@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
+using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models.Orders;
@@ -18,15 +19,17 @@ namespace MediNet_BE.Repositories.Orders
 			_mapper = mapper;
 		}
 
-		public async Task<List<Cart>> GetCartsByCustomerIdAsync(int customerId)
+		public async Task<List<CartReturnDto>> GetCartsByCustomerIdAsync(int customerId)
 		{
 			var carts = await _context.Carts
 				.Include(c => c.Customer)
 				.Include(p => p.Product)
 				.Include(c => c.Clinic)
 				.Where(c => c.Customer.Id == customerId).ToListAsync();
-			return carts;
-		}
+            var cartMap = _mapper.Map<List<CartReturnDto>>(carts);
+
+            return cartMap;
+        }
 
 		public async Task<Cart> GetCartByIdAsync(int id)
 		{

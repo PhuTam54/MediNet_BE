@@ -55,14 +55,14 @@ namespace MediNet_BE.Controllers.Orders
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderReturnDto>>> GetOrders()
         {
             return Ok(await _orderRepo.GetAllOrderAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Order>> GetOrderById(int id)
+        public async Task<ActionResult<OrderReturnDto>> GetOrderById(int id)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
             return order == null ? NotFound() : Ok(order);
@@ -70,7 +70,7 @@ namespace MediNet_BE.Controllers.Orders
 
         [HttpGet]
         [Route("userId")]
-        public async Task<ActionResult<OrderDto>> GetOrderByUserId(int userId)
+        public async Task<ActionResult<OrderReturnDto>> GetOrderByUserId(int userId)
         {
             var orderDto = await _orderRepo.GetOrderByUserIdAsync(userId);
             return orderDto == null ? NotFound() : Ok(orderDto);
@@ -171,7 +171,25 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [HttpPut]
+        [Route("id")]
+        public async Task<IActionResult> UpdateOrder([FromQuery] int id, [FromForm] OrderDto updatedOrder)
+        {
+            var Order = await _orderRepo.GetOrderByIdAsync(id);
+
+            if (Order == null)
+                return NotFound();
+            if (updatedOrder == null)
+                return BadRequest(ModelState);
+            if (id != updatedOrder.Id)
+                return BadRequest();
+
+            await _orderRepo.UpdateOrderAsync(updatedOrder);
+
+            return Ok("Update Successfully!");
+        }
+
         [NonAction]
         public async Task<Order> UpdateOrder(string orderCode)
         {

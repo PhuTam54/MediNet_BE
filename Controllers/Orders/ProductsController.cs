@@ -9,7 +9,6 @@ using MediNet_BE.Data;
 using MediNet_BE.Repositories;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Models.Users;
-using MediNet_BE.Dto.Orders;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Interfaces.Orders;
@@ -19,6 +18,7 @@ using MediNet_BE.Dto.Users;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.Dto.Orders.OrderProducts;
 
 namespace MediNet_BE.Controllers.Orders
 {

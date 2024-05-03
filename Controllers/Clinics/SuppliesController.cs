@@ -20,7 +20,7 @@ using MediNet_BE.Repositories.Clinics;
 
 namespace MediNet_BE.Controllers.Clinics
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class SuppliesController : ControllerBase
     {

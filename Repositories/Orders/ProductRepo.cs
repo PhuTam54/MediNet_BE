@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Orders;
+using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;

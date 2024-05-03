@@ -17,11 +17,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using MediNet_BE.Identity;
-using MediNet_BE.Dto.Orders;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Repositories.Clinics;
+using MediNet_BE.Dto.Orders.OrderProducts;
 
 namespace MediNet_BE.Controllers.Orders
 {

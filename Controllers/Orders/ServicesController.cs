@@ -9,11 +9,11 @@ using MediNet_BE.Data;
 using MediNet_BE.Models;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Repositories;
-using MediNet_BE.Dto;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
 using System.Security.Claims;
 using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.Dto.Orders.OrderServices;
 
 namespace MediNet_BE.Controllers.Orders
 {

@@ -38,8 +38,6 @@ namespace MediNet_BE.Controllers
         /// </remarks>
         /// <returns></returns>
 
-        [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
 		[Route("Momo")]
 		public async Task<IActionResult> Momo([FromBody] OrderInfoModel model)
@@ -68,8 +66,6 @@ namespace MediNet_BE.Controllers
         /// </remarks>
         /// <returns></returns>
         
-		[Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
 		[Route("VnPay")]
 		public IActionResult VnPay([FromBody] VnPaymentRequestModel vnPaymentRequestModel)
@@ -110,8 +106,6 @@ namespace MediNet_BE.Controllers
         /// </remarks>
         /// <returns></returns>
         
-        [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
 		[Route("PayPal")]
 		public async Task<IActionResult> CreatePaymentUrl([FromBody] PaymentInformationModel model)

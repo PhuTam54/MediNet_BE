@@ -1,11 +1,11 @@
 ﻿using MediNet_BE.Dto.Orders;
-using MediNet_BE.Models;
+using MediNet_BE.Models.Clinics;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MediNet_BE.Dto
+namespace MediNet_BE.Dto.Orders.OrderServices
 {
-	public class ServiceCreateDto
-	{
+    public class ServiceDto
+    {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

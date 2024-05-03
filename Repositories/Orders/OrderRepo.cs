@@ -29,7 +29,7 @@ namespace MediNet_BE.Repositories.Orders
         }
 
 
-        public async Task<List<Order>> GetAllOrderAsync()
+        public async Task<List<OrderReturnDto>> GetAllOrderAsync()
         {
             var orders = await _context.Orders!
                 .Include(c => c.Customer)
@@ -37,30 +37,39 @@ namespace MediNet_BE.Repositories.Orders
                 .Include(os => os.OrderServices)
                 .ToListAsync();
 
-			return orders;
+            var orderMap = _mapper.Map<List<OrderReturnDto>>(orders);
+
+            return orderMap;
         }
 
-        public async Task<Order> GetOrderByIdAsync(int id)
+        public async Task<OrderReturnDto> GetOrderByIdAsync(int id)
         {
             var order = await _context.Orders!
 				.Include(c => c.Customer)
 				.Include(op => op.OrderProducts)
+                    .ThenInclude(p => p.Product)
 				.Include(os => os.OrderServices)
+                    .ThenInclude(s => s.Service)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-			return order;
+            var orderMap = _mapper.Map<OrderReturnDto>(order);
+
+            return orderMap;
         }
 
-        public async Task<List<Order>> GetOrderByUserIdAsync(int userId)
+        public async Task<List<OrderReturnDto>> GetOrderByUserIdAsync(int userId)
         {
-            var order = await _context.Orders!
+            var orders = await _context.Orders!
                 .Include(c => c.Customer)
                 .Include(op => op.OrderProducts)
+                    .ThenInclude(p => p.Product)
                 .Include(os => os.OrderServices)
+                    .ThenInclude(s => s.Service)
+                .AsNoTracking()
                 .Where(c => c.Customer.Id == userId)
                 .ToListAsync();
-            var orderMap = _mapper.Map<List<Order>>(order);
+            var orderMap = _mapper.Map<List<OrderReturnDto>>(orders);
 
             return orderMap;
         }

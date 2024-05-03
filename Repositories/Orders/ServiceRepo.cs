@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto;
+using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Models;
 using Microsoft.EntityFrameworkCore;

@@ -12,6 +12,7 @@ namespace MediNet_BE.Dto.Orders
         public string Address { get; set; }
 		public string Description { get; set; }
 		[Column(TypeName = "decimal(18, 2)")]
+        public decimal TotalAmount { get; set; }
         public string Shipping_method { get; set; }
         public string Payment_method { get; set; }
         public bool Is_paid { get; set; } = false;

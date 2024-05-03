@@ -200,16 +200,6 @@ namespace MediNet_BE.Controllers.Orders
                 _mediNetContext.Update(updatedOrder);
                 await _mediNetContext.SaveChangesAsync();
 
-                var orderMap = _mapper.Map<OrderDto>(updatedOrder);
-                foreach (var cartId in orderMap.CartIds)
-                {
-                    var cart = await _cartRepo.GetCartByIdAsync(cartId);
-                    if (cart != null)
-                    {
-                        await _cartRepo.DeleteCartAsync(cart);
-                    }
-                }
-
                 var data = new SendMailRequest
                 {
                     ToEmail = updatedOrder.Email,

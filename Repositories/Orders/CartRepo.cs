@@ -80,5 +80,12 @@ namespace MediNet_BE.Repositories.Orders
 			_context.Carts!.Remove(cart);
 			await _context.SaveChangesAsync();
 		}
+
+		public async Task<Cart> CheckCartExist(int productId, int clinicId, int customerId)
+		{
+            var cart = await _context.Carts.AsNoTracking()
+				.FirstOrDefaultAsync(c => c.Customer.Id == customerId && c.Product.Id == productId && c.Clinic.Id == clinicId);
+            return cart;
+        }
 	}
 }

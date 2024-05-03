@@ -10,5 +10,6 @@ namespace MediNet_BE.Interfaces.Orders
 		public Task<Cart> AddCartAsync(CartDto cartDto);
 		public Task UpdateCartAsync(CartDto cartDto);
 		public Task DeleteCartAsync(Cart cart);
-	}
+		public Task<Cart> CheckCartExist(int productId, int clinicId, int customerId);
+    }
 }

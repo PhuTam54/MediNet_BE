@@ -22,6 +22,7 @@ using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Repositories.Clinics;
 using MediNet_BE.Dto.Orders.OrderProducts;
+using AutoMapper;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -34,13 +35,15 @@ namespace MediNet_BE.Controllers.Orders
 		private readonly IUserRepo<Customer, CustomerDto> _customerRepo;
 		private readonly IProductRepo _productRepo;
 		private readonly IClinicRepo _clinicRepo;
+		private readonly IMapper _mapper;
 
-		public CartsController(ICartRepo cartRepo, IUserRepo<Customer, CustomerDto> customerRepo, IProductRepo productRepo, IClinicRepo clinicRepo)
+		public CartsController(ICartRepo cartRepo, IUserRepo<Customer, CustomerDto> customerRepo, IProductRepo productRepo, IClinicRepo clinicRepo, IMapper mapper)
 		{
 			_cartRepo = cartRepo;
 			_customerRepo = customerRepo;
 			_productRepo = productRepo;
 			_clinicRepo = clinicRepo;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
@@ -60,7 +63,8 @@ namespace MediNet_BE.Controllers.Orders
 			var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerID);
 			var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductID);
 			var clinic = await _clinicRepo.GetClinicByIdAsync(cartCreate.ClinicID);
-			if (customer == null || product == null || clinic == null)
+
+            if (customer == null || product == null || clinic == null)
 				return NotFound();
 
 			if (cartCreate == null)
@@ -69,8 +73,18 @@ namespace MediNet_BE.Controllers.Orders
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var newCart = await _cartRepo.AddCartAsync(cartCreate);
-			return newCart == null ? NotFound() : Ok(newCart);
+            object cart = await _cartRepo.CheckCartExist(cartCreate.ProductID, cartCreate.ClinicID, cartCreate.CustomerID);
+            if (cart != null){ 
+                ((Cart)cart).QtyCart += cartCreate.QtyCart;
+                ((Cart)cart).SubTotal = Math.Round(product.Price * ((Cart)cart).QtyCart, 2);
+				var newCart = _mapper.Map<CartDto>((Cart)cart);
+				await _cartRepo.UpdateCartAsync(newCart);
+            } else
+			{
+                cart = await _cartRepo.AddCartAsync(cartCreate);
+            }
+			
+			return Ok(cart);
 		}
 
 		[HttpPut]

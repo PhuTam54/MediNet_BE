@@ -57,37 +57,45 @@ namespace MediNet_BE.Controllers.Orders
 			return Ok(carts);
 		}
 
-		[HttpPost]
-		public async Task<ActionResult<Cart>> AddToCart([FromBody] CartDto cartCreate)
-		{
-			var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerID);
-			var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductID);
-			var clinic = await _clinicRepo.GetClinicByIdAsync(cartCreate.ClinicID);
+        [HttpPost]
+        public async Task<ActionResult<CartDto>> AddToCart([FromBody] CartDto cartCreate)
+        {
+            if (cartCreate == null)
+            {
+                return BadRequest("Cart data is null.");
+            }
+
+            var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerID);
+            var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductID);
+            var clinic = await _clinicRepo.GetClinicByIdAsync(cartCreate.ClinicID);
 
             if (customer == null || product == null || clinic == null)
-				return NotFound();
-
-			if (cartCreate == null)
-				return BadRequest(ModelState);
-
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
-            object cart = await _cartRepo.CheckCartExist(cartCreate.ProductID, cartCreate.ClinicID, cartCreate.CustomerID);
-            if (cart != null){ 
-                ((Cart)cart).QtyCart += cartCreate.QtyCart;
-                ((Cart)cart).SubTotal = Math.Round(product.Price * ((Cart)cart).QtyCart, 2);
-				var newCart = _mapper.Map<CartDto>((Cart)cart);
-				await _cartRepo.UpdateCartAsync(newCart);
-            } else
-			{
-                cart = await _cartRepo.AddCartAsync(cartCreate);
+            {
+                return NotFound("Customer, Product, or Clinic not found.");
             }
-			
-			return Ok(cart);
-		}
 
-		[HttpPut]
+            var existingCart = await _cartRepo.CheckCartExist(cartCreate.ProductID, cartCreate.ClinicID, cartCreate.CustomerID);
+
+            if (existingCart != null)
+            {
+                existingCart.QtyCart += cartCreate.QtyCart;
+                existingCart.SubTotal = Math.Round(product.Price * existingCart.QtyCart, 2);
+
+				var newCart = _mapper.Map<CartDto>(existingCart);
+                await _cartRepo.UpdateCartAsync(newCart);
+
+                return Ok(existingCart);
+            }
+            else
+            {
+                var newCart = await _cartRepo.AddCartAsync(cartCreate);
+
+                return Ok(newCart);
+            }
+        }
+
+
+        [HttpPut]
 		[Route("id")]
 		public async Task<IActionResult> UpdateCart([FromQuery] int id, [FromBody] CartDto updatedCart)
 		{

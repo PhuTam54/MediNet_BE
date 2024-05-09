@@ -13,6 +13,7 @@ using MediNet_BE.DtoCreate.Courses;
 using MediNet_BE.DtoCreate.Doctors;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Orders.OrderServices;
 using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
@@ -68,19 +69,14 @@ namespace MediNet_BE.Helpers
 			CreateMap<ProductDetailCreate, ProductDetail>();
 			CreateMap<CartCreate, Cart>();
 			CreateMap<OrderCreate, Order>();
-			CreateMap<OrderProductDto, OrderProduct>();
-			CreateMap<OrderProductReturnDto, OrderProduct>();
-			CreateMap<OrderServiceDto, OrderService>();
-			CreateMap<OrderServiceReturnDto, OrderService>();
+			CreateMap<ServiceCreate, Service>();
 
 
 			#endregion
 			CreateMap<Cart, CartDto>();
 			CreateMap<Order, OrderDto>();
 			CreateMap<OrderProduct, OrderProductDto>();
-			CreateMap<OrderProduct, OrderProductReturnDto>();
 			CreateMap<OrderService, OrderServiceDto>();
-			CreateMap<OrderService, OrderServiceReturnDto>();
 			CreateMap<Product, ProductDto>();
 			CreateMap<ProductDetail, ProductDetailDto>();
 			CreateMap<Service, ServiceDto>();

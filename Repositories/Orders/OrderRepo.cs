@@ -20,13 +20,11 @@ namespace MediNet_BE.Repositories.Orders
     {
         private readonly MediNetContext _context;
         private readonly IMapper _mapper;
-        private readonly IMailService _mailService;
 
-        public OrderRepo(MediNetContext context, IMapper mapper, IMailService mailService)
+        public OrderRepo(MediNetContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _mailService = mailService;
         }
 
 
@@ -35,7 +33,9 @@ namespace MediNet_BE.Repositories.Orders
             var orders = await _context.Orders!
                 .Include(c => c.Customer)
                 .Include(op => op.OrderProducts)
+                .ThenInclude(p => p.Product)
                 .Include(os => os.OrderServices)
+                .ThenInclude(s => s.Service)
                 .ToListAsync();
 
             var ordersMap = _mapper.Map<List<OrderDto>>(orders);
@@ -48,10 +48,10 @@ namespace MediNet_BE.Repositories.Orders
             var order = await _context.Orders!
 				.Include(c => c.Customer)
 				.Include(op => op.OrderProducts)
-                    .ThenInclude(p => p.Product)
+				.ThenInclude(p => p.Product)
 				.Include(os => os.OrderServices)
-                    .ThenInclude(s => s.Service)
-                .AsNoTracking()
+				.ThenInclude(s => s.Service)
+				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             var orderMap = _mapper.Map<OrderDto>(order);
@@ -62,12 +62,12 @@ namespace MediNet_BE.Repositories.Orders
         public async Task<List<OrderDto>> GetOrderByUserIdAsync(int userId)
         {
             var orders = await _context.Orders!
-                .Include(c => c.Customer)
-                .Include(op => op.OrderProducts)
-                    .ThenInclude(p => p.Product)
-                .Include(os => os.OrderServices)
-                    .ThenInclude(s => s.Service)
-                .AsNoTracking()
+				.Include(c => c.Customer)
+				.Include(op => op.OrderProducts)
+				.ThenInclude(p => p.Product)
+				.Include(os => os.OrderServices)
+				.ThenInclude(s => s.Service)
+				.AsNoTracking()
                 .Where(c => c.Customer.Id == userId)
                 .ToListAsync();
             var ordersMap = _mapper.Map<List<OrderDto>>(orders);

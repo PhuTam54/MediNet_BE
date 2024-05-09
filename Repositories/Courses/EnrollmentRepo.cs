@@ -22,6 +22,8 @@ namespace MediNet_BE.Repositories.Enrollments
 		public async Task<List<EnrollmentDto>> GetAllEnrollmentAsync()
 		{
 			var enrollments = await _context.Enrollments!
+				.Include(e => e.Employee)
+				.Include(c => c.Course)
 				.ToListAsync();
 
 			var enrollmentsMap = _mapper.Map<List<EnrollmentDto>>(enrollments);
@@ -32,6 +34,8 @@ namespace MediNet_BE.Repositories.Enrollments
 		public async Task<EnrollmentDto> GetEnrollmentByIdAsync(int id)
 		{
 			var enrollment = await _context.Enrollments!
+				.Include(e => e.Employee)
+				.Include(c => c.Course)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Id == id);
 			var enrollmentMap = _mapper.Map<EnrollmentDto>(enrollment);

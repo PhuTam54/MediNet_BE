@@ -24,7 +24,7 @@ namespace MediNet_BE.Dto.Orders
 		public OrderStatus Status { get; set; }
 		public int CustomerId { get; set; }
 		public CustomerDto Customer { get; set; }
-		public ICollection<OrderProductReturnDto>? OrderProducts { get; set; }
-		public ICollection<OrderServiceReturnDto>? OrderServices { get; set; }
+		public ICollection<OrderProductDto>? OrderProducts { get; set; }
+		public ICollection<OrderServiceDto>? OrderServices { get; set; }
 	}
 }

@@ -23,7 +23,7 @@ namespace MediNet_BE.Repositories.Orders
         public async Task<List<ServiceDto>> GetAllServiceAsync()
         {
             var services = await _context.Services!
-                .Include(os => os.OrderServices)
+                .Include(d => d.Doctor)
                 .ToListAsync();
 
 			var servicesMap = _mapper.Map<List<ServiceDto>>(services);
@@ -34,7 +34,8 @@ namespace MediNet_BE.Repositories.Orders
         public async Task<ServiceDto> GetServiceByIdAsync(int id)
         {
             var service = await _context.Services!
-                .Include(os => os.OrderServices)
+				.Include(d => d.Doctor)
+				.Include(os => os.OrderServices)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id);
 

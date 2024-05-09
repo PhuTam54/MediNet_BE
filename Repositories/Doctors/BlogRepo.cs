@@ -23,6 +23,8 @@ namespace MediNet_BE.Repositories.Doctors
         public async Task<List<BlogDto>> GetAllBlogAsync()
         {
             var blogs = await _context.Blogs!
+                .Include(d => d.Doctor)
+                .Include(d => d.Disease)
                 .ToListAsync();
 
             var blogsMap = _mapper.Map<List<BlogDto>>(blogs);
@@ -33,7 +35,9 @@ namespace MediNet_BE.Repositories.Doctors
         public async Task<BlogDto> GetBlogByIdAsync(int id)
         {
             var blog = await _context.Blogs!
-                .AsNoTracking()
+				.Include(d => d.Doctor)
+				.Include(d => d.Disease)
+				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             var blogMap = _mapper.Map<BlogDto>(blog);

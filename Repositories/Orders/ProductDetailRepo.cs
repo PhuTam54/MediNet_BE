@@ -23,6 +23,7 @@ namespace MediNet_BE.Repositories.Orders
 		public async Task<List<ProductDetailDto>> GetAllProductDetailAsync()
 		{
 			var productDetails = await _context.ProductDetails!
+				.Include(p => p.Product)
 				.ToListAsync();
 
 			var productDetailsMap = _mapper.Map<List<ProductDetailDto>>(productDetails);
@@ -33,6 +34,7 @@ namespace MediNet_BE.Repositories.Orders
 		public async Task<ProductDetailDto> GetProductDetailByIdAsync(int id)
 		{
 			var productDetail = await _context.ProductDetails!
+				.Include(p => p.Product)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Id == id);
 

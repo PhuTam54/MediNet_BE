@@ -26,7 +26,10 @@ namespace MediNet_BE.Repositories.Doctors
 
 		public async Task<List<DoctorDto>> GetAllUserAsync()
 		{
-			var doctors = await _context.Doctors!.ToListAsync();
+			var doctors = await _context.Doctors!
+				.Include(s => s.Specialist)
+				.Include(c => c.Clinic)
+				.ToListAsync();
 			var doctorsMap = _mapper.Map<List<DoctorDto>>(doctors);
 
 			return doctorsMap;
@@ -34,7 +37,11 @@ namespace MediNet_BE.Repositories.Doctors
 
 		public async Task<DoctorDto> GetUserByIdAsync(int id)
 		{
-			var doctor = await _context.Doctors!.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+			var doctor = await _context.Doctors!
+				.Include(s => s.Specialist)
+				.Include(c => c.Clinic)
+				.AsNoTracking()
+				.FirstOrDefaultAsync(c => c.Id == id);
 
 			var doctorMap = _mapper.Map<DoctorDto>(doctor);
 
@@ -43,7 +50,11 @@ namespace MediNet_BE.Repositories.Doctors
 
 		public async Task<DoctorDto> GetUserByEmailAsync(string email)
 		{
-			var doctor = await _context.Doctors!.AsNoTracking().FirstOrDefaultAsync(c => c.Email == email);
+			var doctor = await _context.Doctors!
+				.Include(s => s.Specialist)
+				.Include(c => c.Clinic)
+				.AsNoTracking()
+				.FirstOrDefaultAsync(c => c.Email == email);
 			var doctorMap = _mapper.Map<DoctorDto>(doctor);
 
 			return doctorMap;

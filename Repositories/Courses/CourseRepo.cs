@@ -25,6 +25,7 @@ namespace MediNet_BE.Repositories.Courses
 		public async Task<List<CourseDto>> GetAllCourseAsync()
 		{
 			var courses = await _context.Courses!
+				.Include(d => d.Doctor)
 				.ToListAsync();
 
 			var coursesMap = _mapper.Map<List<CourseDto>>(courses);
@@ -35,6 +36,7 @@ namespace MediNet_BE.Repositories.Courses
 		public async Task<CourseDto> GetCourseByIdAsync(int id)
 		{
 			var course = await _context.Courses!
+				.Include(d => d.Doctor)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Id == id);
 			var courseMap = _mapper.Map<CourseDto>(course);

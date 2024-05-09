@@ -88,7 +88,7 @@ namespace MediNet_BE.Controllers.Doctors
             {
                 return NotFound();
             }
-            await _specialistRepo.DeleteSpecialistAsync(id);
+			await _specialistRepo.DeleteSpecialistAsync(id);
             return Ok("Delete Successfully!");
         }
     }

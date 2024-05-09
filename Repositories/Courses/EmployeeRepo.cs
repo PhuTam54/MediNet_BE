@@ -27,7 +27,10 @@ namespace MediNet_BE.Repositories.Courses
 
         public async Task<List<EmployeeDto>> GetAllUserAsync()
         {
-            var employees = await _context.Employees!.ToListAsync();
+            var employees = await _context.Employees!
+                .Include(s => s.Specialist)
+                .Include(c => c.Clinic)
+                .ToListAsync();
             var employeesMap = _mapper.Map<List<EmployeeDto>>(employees);
 
             return employeesMap;
@@ -35,7 +38,10 @@ namespace MediNet_BE.Repositories.Courses
 
         public async Task<EmployeeDto> GetUserByIdAsync(int id)
         {
-            var employee = await _context.Employees!.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+            var employee = await _context.Employees!
+				.Include(s => s.Specialist)
+				.Include(c => c.Clinic)
+				.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
 
             var employeeMap = _mapper.Map<EmployeeDto>(employee);
 

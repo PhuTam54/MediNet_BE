@@ -25,7 +25,7 @@ namespace MediNet_BE.Repositories.Categories
         public async Task<List<CategoryDto>> GetAllCategoryAsync()
         {
             var categories = await _context.Categories!
-                .Include(cc => cc.CategoryChilds)
+                .Include(cp => cp.CategoryParent)
                 .ToListAsync();
 			
             var categoriesMap = _mapper.Map<List<CategoryDto>>(categories);
@@ -36,8 +36,8 @@ namespace MediNet_BE.Repositories.Categories
         public async Task<CategoryDto> GetCategoryByIdAsync(int id)
         {
             var category = await _context.Categories!
-                .Include(cc => cc.CategoryChilds)
-                .AsNoTracking()
+				.Include(cp => cp.CategoryParent)
+				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 			var categoryMap = _mapper.Map<CategoryDto>(category);
 

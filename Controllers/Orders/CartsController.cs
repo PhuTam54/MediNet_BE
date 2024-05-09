@@ -23,6 +23,8 @@ using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Repositories.Clinics;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using AutoMapper;
+using MediNet_BE.DtoCreate.Users;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -32,12 +34,12 @@ namespace MediNet_BE.Controllers.Orders
 	public class CartsController : ControllerBase
 	{
 		private readonly ICartRepo _cartRepo;
-		private readonly IUserRepo<Customer, CustomerDto> _customerRepo;
+		private readonly IUserRepo<Customer, CustomerDto, CustomerCreate> _customerRepo;
 		private readonly IProductRepo _productRepo;
 		private readonly IClinicRepo _clinicRepo;
 		private readonly IMapper _mapper;
 
-		public CartsController(ICartRepo cartRepo, IUserRepo<Customer, CustomerDto> customerRepo, IProductRepo productRepo, IClinicRepo clinicRepo, IMapper mapper)
+		public CartsController(ICartRepo cartRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo, IProductRepo productRepo, IClinicRepo clinicRepo, IMapper mapper)
 		{
 			_cartRepo = cartRepo;
 			_customerRepo = customerRepo;
@@ -48,7 +50,7 @@ namespace MediNet_BE.Controllers.Orders
 
 		[HttpGet]
 		[Route("userid")]
-		public async Task<ActionResult<IEnumerable<Cart>>> GetCartsByUserId(int userid)
+		public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId(int userid)
 		{
 			var user = await _customerRepo.GetUserByIdAsync(userid);
 			if (user == null)
@@ -58,7 +60,7 @@ namespace MediNet_BE.Controllers.Orders
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<Cart>> AddToCart([FromBody] CartDto cartCreate)
+		public async Task<ActionResult<Cart>> AddToCart([FromBody] CartCreate cartCreate)
 		{
 			var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerID);
 			var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductID);
@@ -77,7 +79,7 @@ namespace MediNet_BE.Controllers.Orders
             if (cart != null){ 
                 ((Cart)cart).QtyCart += cartCreate.QtyCart;
                 ((Cart)cart).SubTotal = Math.Round(product.Price * ((Cart)cart).QtyCart, 2);
-				var newCart = _mapper.Map<CartDto>((Cart)cart);
+				var newCart = _mapper.Map<CartCreate>((Cart)cart);
 				await _cartRepo.UpdateCartAsync(newCart);
             } else
 			{
@@ -89,7 +91,7 @@ namespace MediNet_BE.Controllers.Orders
 
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateCart([FromQuery] int id, [FromBody] CartDto updatedCart)
+		public async Task<IActionResult> UpdateCart([FromQuery] int id, [FromBody] CartCreate updatedCart)
 		{
 			var customer = await _customerRepo.GetUserByIdAsync(updatedCart.CustomerID);
 			var product = await _productRepo.GetProductByIdAsync(updatedCart.ProductID);
@@ -119,7 +121,7 @@ namespace MediNet_BE.Controllers.Orders
 			{
 				return NotFound();
 			}
-			await _cartRepo.DeleteCartAsync(cart);
+			await _cartRepo.DeleteCartAsync(id);
 			return Ok("Delete Successfully!");
 		}
 	}

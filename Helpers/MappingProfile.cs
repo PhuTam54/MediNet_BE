@@ -1,15 +1,28 @@
 ﻿using AutoMapper;
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Clinics;
+using MediNet_BE.Dto.Courses;
+using MediNet_BE.Dto.Doctors;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.Dto.Users;
+using MediNet_BE.DtoCreate.Categories;
+using MediNet_BE.DtoCreate.Clinics;
+using MediNet_BE.DtoCreate.Courses;
+using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.DtoCreate.Orders;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Clinics;
+using MediNet_BE.Models.Courses;
+using MediNet_BE.Models.Doctors;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Models.Users;
+using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 
 namespace MediNet_BE.Helpers
 {
@@ -17,59 +30,98 @@ namespace MediNet_BE.Helpers
 	{
         public MappingProfile()
         {
+			#region Users
+
+			#region UserCreate
+			CreateMap<AdminCreate, Admin>();
+			CreateMap<CustomerCreate, Customer>();
+
+			CreateMap<FeedbackCreate, Feedback>();
+
+			CreateMap<Customer, RegisterRequest>();
+			CreateMap<RegisterRequest, Customer>();
+			CreateMap<Customer, AuthenticateRequest>();
+			CreateMap<AuthenticateRequest, Customer>();
+			#endregion
+
 			CreateMap<Customer, CustomerDto>();
-			CreateMap<CustomerDto, Customer>();
-            CreateMap<Customer, RegisterRequest>();
-            CreateMap<RegisterRequest, Customer>();
-            CreateMap<Customer, AuthenticateRequest>();
-            CreateMap<AuthenticateRequest, Customer>();
-            CreateMap<Customer, CustomerReturnDto>();
-            CreateMap<CustomerReturnDto, Customer>();
+			CreateMap<Admin, AdminDto>();
+			CreateMap<Feedback, FeedbackDto>();
+			#endregion
 
-            CreateMap<Admin, AdminDto>();
-			CreateMap<AdminDto, Admin>();
+			#region Categories
+			#region CategoriesCreate
+			CreateMap<CategoryParentCreate, CategoryParent>();
+			CreateMap<CategoryCreate, Category>();
+			CreateMap<CategoryChildCreate, CategoryChild>();
+			#endregion
 
+			CreateMap<CategoryParent, CategoryParentDto>();
 			CreateMap<Category, CategoryDto>();
-			CreateMap<CategoryDto, Category>();
-
 			CreateMap<CategoryChild, CategoryChildDto>();
-			CreateMap<CategoryChildDto, CategoryChild>();
+			#endregion
 
-			CreateMap<Clinic, ClinicDto>();
-			CreateMap<ClinicDto, Clinic>();
-			CreateMap<Supply, SupplyDto>();
-			CreateMap<SupplyDto, Supply>();
 
-			CreateMap<Cart, CartDto>();
-			CreateMap<CartDto, Cart>();
-            CreateMap<Cart, CartReturnDto>();
-            CreateMap<CartReturnDto, Cart>();
-
-            CreateMap<Order, OrderDto>();
-			CreateMap<OrderDto, Order>();
-            CreateMap<Order, OrderReturnDto>();
-            CreateMap<OrderReturnDto, Order>();
-
-            CreateMap<OrderProduct, OrderProductDto>();
+			#region Orders
+			#region OrdersCreate
+			CreateMap<ProductCreate, Product>();
+			CreateMap<ProductDetailCreate, ProductDetail>();
+			CreateMap<CartCreate, Cart>();
+			CreateMap<OrderCreate, Order>();
 			CreateMap<OrderProductDto, OrderProduct>();
-			CreateMap<OrderProduct, OrderProductReturnDto>();
-            CreateMap<OrderProductReturnDto, OrderProduct>();
-
-			CreateMap<OrderService, OrderServiceDto>();
+			CreateMap<OrderProductReturnDto, OrderProduct>();
 			CreateMap<OrderServiceDto, OrderService>();
+			CreateMap<OrderServiceReturnDto, OrderService>();
+
+
+			#endregion
+			CreateMap<Cart, CartDto>();
+			CreateMap<Order, OrderDto>();
+			CreateMap<OrderProduct, OrderProductDto>();
+			CreateMap<OrderProduct, OrderProductReturnDto>();
+			CreateMap<OrderService, OrderServiceDto>();
 			CreateMap<OrderService, OrderServiceReturnDto>();
-            CreateMap<OrderServiceReturnDto, OrderService>();
-
 			CreateMap<Product, ProductDto>();
-			CreateMap<ProductDto, Product>();
+			CreateMap<ProductDetail, ProductDetailDto>();
+			CreateMap<Service, ServiceDto>();
+			#endregion
 
-            CreateMap<Service, ServiceDto>();
-			CreateMap<ServiceDto, Service>();
-            CreateMap<Service, ServiceCreateDto>();
-            CreateMap<ServiceCreateDto, Service>();
+			#region Clinics
+			#region ClinicsCreate
+			CreateMap<ClinicCreate, Clinic>();
+			CreateMap<SupplyCreate, Supply>();
 
-            CreateMap<Feedback, FeedbackDto>();
-			CreateMap<FeedbackDto, Feedback>();
+			#endregion
+			CreateMap<Clinic, ClinicDto>();
+			CreateMap<Supply, SupplyDto>();
+			#endregion
+
+			#region Doctors
+			#region DoctorsCreate
+			CreateMap<DoctorCreate, Doctor>();
+			CreateMap<BlogCreate, Blog> ();
+			CreateMap<DiseaseCreate, Disease>();
+			CreateMap<SpecialistCreate, Specialist>();
+
+			#endregion
+			CreateMap<Doctor, DoctorDto>();
+			CreateMap<Blog, BlogDto>();
+			CreateMap<Disease, DiseaseDto>();
+			CreateMap<Specialist, SpecialistDto>();
+
+			#endregion
+
+			#region Couses
+			CreateMap<EmployeeCreate, Employee>();
+			CreateMap<Employee, EmployeeDto>();
+
+			CreateMap<CourseCreate, Course>();
+			CreateMap<Course, CourseDto>();
+
+			CreateMap<EnrollmentCreate, Enrollment>();
+			CreateMap<Enrollment, EnrollmentDto>();
+			#endregion
+
 		}
 	}
 }

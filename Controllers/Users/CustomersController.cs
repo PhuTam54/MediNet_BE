@@ -15,6 +15,7 @@ using MediNet_BE.Repositories;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
+using MediNet_BE.DtoCreate.Users;
 
 namespace MediNet_BE.Controllers.Users
 {
@@ -22,17 +23,17 @@ namespace MediNet_BE.Controllers.Users
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly IUserRepo<Customer, CustomerDto> _customerRepo;
+        private readonly IUserRepo<Customer, CustomerDto, CustomerCreate> _customerRepo;
         private readonly IFileService _fileService;
 
-        public CustomersController(IUserRepo<Customer, CustomerDto> customerRepo, IFileService fileService)
+        public CustomersController(IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo, IFileService fileService)
         {
             _customerRepo = customerRepo;
             _fileService = fileService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
         {
             var customers = await _customerRepo.GetAllUserAsync();
             foreach (var customer in customers)
@@ -45,7 +46,7 @@ namespace MediNet_BE.Controllers.Users
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Customer>> GetCustomerById(int id)
+        public async Task<ActionResult<CustomerDto>> GetCustomerById(int id)
         {
             var customer = await _customerRepo.GetUserByIdAsync(id);
 			if (customer == null)
@@ -59,7 +60,7 @@ namespace MediNet_BE.Controllers.Users
 
 		[HttpGet]
 		[Route("email")]
-		public async Task<ActionResult<Customer>> GetCustomerByEmail(string email)
+		public async Task<ActionResult<CustomerDto>> GetCustomerByEmail(string email)
 		{
 			var customer = await _customerRepo.GetUserByEmailAsync(email);
 			if (customer == null)
@@ -89,7 +90,7 @@ namespace MediNet_BE.Controllers.Users
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Customer>> CreateCustomer([FromForm] CustomerDto customerCreate)
+        public async Task<ActionResult<Customer>> CreateCustomer([FromForm] CustomerCreate customerCreate)
         {
             if (customerCreate == null)
                 return BadRequest(ModelState);
@@ -120,7 +121,7 @@ namespace MediNet_BE.Controllers.Users
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateCustomer([FromQuery] int id, [FromForm] CustomerDto updatedCustomer)
+        public async Task<IActionResult> UpdateCustomer([FromQuery] int id, [FromForm] CustomerCreate updatedCustomer)
         {
             var customer = await _customerRepo.GetUserByIdAsync(id);
             if (customer == null)

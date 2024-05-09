@@ -12,6 +12,7 @@ using MediNet_BE.Models.Categories;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
+using MediNet_BE.DtoCreate.Categories;
 
 namespace MediNet_BE.Controllers.Categories
 {
@@ -29,14 +30,14 @@ namespace MediNet_BE.Controllers.Categories
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryChild>>> GetCategoryChilds()
+        public async Task<ActionResult<IEnumerable<CategoryChildDto>>> GetCategoryChilds()
         {
             return Ok(await _categoryChildRepo.GetAllCategoryChildAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<CategoryChild>> GetCategoryChildById(int id)
+        public async Task<ActionResult<CategoryChildDto>> GetCategoryChildById(int id)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(id);
             return categoryChild == null ? NotFound() : Ok(categoryChild);
@@ -60,7 +61,7 @@ namespace MediNet_BE.Controllers.Categories
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<CategoryChild>> CreateCategoryChild([FromBody] CategoryChildDto categoryChildCreate)
+        public async Task<ActionResult<CategoryChild>> CreateCategoryChild([FromBody] CategoryChildCreate categoryChildCreate)
         {
             var category = await _categoryRepo.GetCategoryByIdAsync(categoryChildCreate.CategoryId);
             if (category == null)
@@ -79,7 +80,7 @@ namespace MediNet_BE.Controllers.Categories
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateCategoryChild([FromQuery] int id, [FromBody] CategoryChildDto updatedCategoryChild)
+        public async Task<IActionResult> UpdateCategoryChild([FromQuery] int id, [FromBody] CategoryChildCreate updatedCategoryChild)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(id);
             var category = await _categoryRepo.GetCategoryByIdAsync(updatedCategoryChild.CategoryId);

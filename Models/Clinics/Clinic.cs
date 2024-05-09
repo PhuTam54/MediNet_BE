@@ -1,4 +1,6 @@
-﻿using MediNet_BE.Models.Orders;
+﻿using MediNet_BE.Models.Courses;
+using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Orders;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Models.Clinics
@@ -15,10 +17,10 @@ namespace MediNet_BE.Models.Clinics
         public DateTime ClosingHours { get; set; }
         public string Description { get; set; }
         public string ImagesClinic { get; set; }
-        [NotMapped]
-		public List<string> ImagesSrc { get; set; } = [];
-		public ICollection<Service>? Services { get; set; }
         public ICollection<Supply>? Supplies { get; set; }
-		public ICollection<Cart>? Carts { get; }
-	}
+		public ICollection<Cart>? Carts { get; set; }
+        public ICollection<Doctor>? Doctors { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
+
+    }
 }

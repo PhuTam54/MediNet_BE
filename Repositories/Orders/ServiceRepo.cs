@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
+using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Orders.OrderServices;
-using MediNet_BE.Interfaces;
-using MediNet_BE.Models;
+using MediNet_BE.DtoCreate.Orders.OrderServices;
+using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.Models.Orders;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Orders
@@ -18,44 +20,47 @@ namespace MediNet_BE.Repositories.Orders
             _mapper = mapper;
         }
 
-        public async Task<List<Service>> GetAllServiceAsync()
+        public async Task<List<ServiceDto>> GetAllServiceAsync()
         {
             var services = await _context.Services!
-                .Include(c => c.Clinic)
                 .Include(os => os.OrderServices)
                 .ToListAsync();
-            return services;
+
+			var servicesMap = _mapper.Map<List<ServiceDto>>(services);
+
+			return servicesMap;
         }
 
-        public async Task<Service> GetServiceByIdAsync(int id)
+        public async Task<ServiceDto> GetServiceByIdAsync(int id)
         {
             var service = await _context.Services!
-                .Include(c => c.Clinic)
                 .Include(os => os.OrderServices)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id);
 
-            return service;
+			var serviceMap = _mapper.Map<ServiceDto>(service);
+
+			return serviceMap;
         }
 
-        public async Task<Service> AddServiceAsync(ServiceCreateDto serviceDto)
+        public async Task<Service> AddServiceAsync(ServiceCreate serviceCreate)
         {
-            var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == serviceDto.ClinicId);
-            var serviceMap = _mapper.Map<Service>(serviceDto);
-            serviceMap.Clinic = clinic;
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(c => c.Id == serviceCreate.DoctorId);
+            var serviceMap = _mapper.Map<Service>(serviceCreate);
+            serviceMap.Doctor = doctor;
 
             _context.Services!.Add(serviceMap);
             await _context.SaveChangesAsync();
             return serviceMap;
         }
 
-        public async Task UpdateServiceAsync(ServiceCreateDto serviceDto)
+        public async Task UpdateServiceAsync(ServiceCreate serviceCreate)
         {
-            var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == serviceDto.ClinicId);
-            var serviceMap = _mapper.Map<Service>(serviceDto);
-            serviceMap.Clinic = clinic;
+			var doctor = await _context.Doctors.FirstOrDefaultAsync(c => c.Id == serviceCreate.DoctorId);
+			var serviceMap = _mapper.Map<Service>(serviceCreate);
+			serviceMap.Doctor = doctor;
 
-            _context.Services!.Update(serviceMap);
+			_context.Services!.Update(serviceMap);
             await _context.SaveChangesAsync();
         }
 

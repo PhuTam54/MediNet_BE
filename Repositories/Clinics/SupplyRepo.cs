@@ -2,6 +2,7 @@
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Clinics;
+using MediNet_BE.DtoCreate.Clinics;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Models.Categories;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Clinics
 {
-	public class SupplyRepo : ISupplyRepo
+    public class SupplyRepo : ISupplyRepo
 	{
 		private readonly MediNetContext _context;
 		private readonly IMapper _mapper;
@@ -21,16 +22,19 @@ namespace MediNet_BE.Repositories.Clinics
 			_mapper = mapper;
 		}
 
-		public async Task<List<Supply>> GetAllSupplyAsync()
+		public async Task<List<SupplyDto>> GetAllSupplyAsync()
 		{
 			var supplies = await _context.Supplies!
 				.Include(p => p.Product)
 				.Include(c => c.Clinic)
 				.ToListAsync();
-			return supplies;
+
+			var suppliesMap = _mapper.Map<List<SupplyDto>>(supplies);
+
+			return suppliesMap;
 		}
 
-		public async Task<Supply> GetSupplyByIdAsync(int id)
+		public async Task<SupplyDto> GetSupplyByIdAsync(int id)
 		{
 			var supply = await _context.Supplies!
 				.Include(p => p.Product)
@@ -38,10 +42,12 @@ namespace MediNet_BE.Repositories.Clinics
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Id == id);
 
-			return supply;
+			var supplyMap = _mapper.Map<SupplyDto>(supply);
+
+			return supplyMap;
 		}
 
-		public async Task<Supply> GetSupplyByProductIdAndClinicIdAsync(int productId, int clinicId)
+		public async Task<SupplyDto> GetSupplyByProductIdAndClinicIdAsync(int productId, int clinicId)
 		{
 			var supply = await _context.Supplies!
 				.Include(p => p.Product)
@@ -49,14 +55,16 @@ namespace MediNet_BE.Repositories.Clinics
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Product.Id == productId && c.Clinic.Id == clinicId);
 
-			return supply;
+			var supplyMap = _mapper.Map<SupplyDto>(supply);
+
+			return supplyMap;
 		}
 
-		public async Task<Supply> AddSupplyAsync(SupplyDto supplyDto)
+		public async Task<Supply> AddSupplyAsync(SupplyCreate supplyCreate)
 		{
-			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == supplyDto.ProductId);
-			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == supplyDto.ClinicId);
-			var supplyMap = _mapper.Map<Supply>(supplyDto);
+			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == supplyCreate.ProductId);
+			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == supplyCreate.ClinicId);
+			var supplyMap = _mapper.Map<Supply>(supplyCreate);
 			supplyMap.Product = product;
 			supplyMap.Clinic = clinic;
 
@@ -65,11 +73,11 @@ namespace MediNet_BE.Repositories.Clinics
 			return supplyMap;
 		}
 
-		public async Task UpdateSupplyAsync(SupplyDto supplyDto)
+		public async Task UpdateSupplyAsync(SupplyCreate supplyCreate)
 		{
-			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == supplyDto.ProductId);
-			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == supplyDto.ClinicId);
-			var supplyMap = _mapper.Map<Supply>(supplyDto);
+			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == supplyCreate.ProductId);
+			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == supplyCreate.ClinicId);
+			var supplyMap = _mapper.Map<Supply>(supplyCreate);
 			supplyMap.Product = product;
 			supplyMap.Clinic = clinic;
 

@@ -1,15 +1,28 @@
 ﻿using MediNet_BE.Data;
+using MediNet_BE.Dto.Courses;
+using MediNet_BE.Dto.Doctors;
 using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Payments.Momo;
 using MediNet_BE.Dto.Users;
+using MediNet_BE.DtoCreate.Courses;
+using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.Interfaces.Courses;
+using MediNet_BE.Interfaces.Employees;
+using MediNet_BE.Interfaces.Enrollments;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;
+using MediNet_BE.Models.Courses;
+using MediNet_BE.Models.Doctors;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Repositories.Categories;
 using MediNet_BE.Repositories.Clinics;
+using MediNet_BE.Repositories.Courses;
+using MediNet_BE.Repositories.Doctors;
+using MediNet_BE.Repositories.Enrollments;
 using MediNet_BE.Repositories.Orders;
 using MediNet_BE.Repositories.Users;
 using MediNet_BE.Services;
@@ -54,18 +67,28 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 //add repository
+builder.Services.AddScoped<ICategoryParentRepo, CategoryParentRepo>();
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<ICategoryChildRepo, CategoryChildRepo>();
-builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IClinicRepo, ClinicRepo>();
 builder.Services.AddScoped<ISupplyRepo, SupplyRepo>();
+builder.Services.AddScoped<ICourseRepo, CourseRepo>();
+builder.Services.AddScoped<IEnrollmentRepo, EnrollmentRepo>();
+builder.Services.AddScoped<IBlogRepo, BlogRepo>();
+builder.Services.AddScoped<IDiseaseRepo, DiseaseRepo>();
+builder.Services.AddScoped<ISpecialistRepo, SpecialistRepo>();
+
+builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddScoped<IProductDetailRepo, ProductDetailRepo>();
 builder.Services.AddScoped<IServiceRepo, ServiceRepo>();
-builder.Services.AddScoped<IUserRepo<Customer, CustomerDto>, CustomerRepo>();
-builder.Services.AddScoped<IUserRepo<Admin, AdminDto>, AdminRepo>();
 builder.Services.AddScoped<ICartRepo, CartRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IFeedbackRepo, FeedbackRepo>();
 
+builder.Services.AddScoped<IUserRepo<Customer, CustomerDto, CustomerCreate>, CustomerRepo>();
+builder.Services.AddScoped<IUserRepo<Admin, AdminDto, AdminCreate>, AdminRepo>();
+builder.Services.AddScoped<IUserRepo<Doctor, DoctorDto, DoctorCreate>, DoctorRepo>();
+builder.Services.AddScoped<IUserRepo<Employee, EmployeeDto, EmployeeCreate>, EmployeeRepo>();
 
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

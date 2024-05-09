@@ -11,8 +11,6 @@ namespace MediNet_BE.Models
 		public string Name { get; set; }
 		public string Slug { get; set; }
 		public string Image { get; set; }
-		[NotMapped]
-		public string ImageSrc { get; set; } = string.Empty;
 		public string Description { get; set; }
 		[Column(TypeName = "decimal(18, 2)")]
 		public decimal Price { get; set; }
@@ -21,9 +19,10 @@ namespace MediNet_BE.Models
 		public DateTime ExpiryDate { get; set; }
 		public int CategoryChildId { get; set; }
 		public CategoryChild CategoryChild { get; set; }
+		public ICollection<ProductDetail>? ProductDetails {  get; set; } 
 		public ICollection<Supply>? Supplies { get; set; }
-		public ICollection<Cart>? Carts { get; }
+		public ICollection<Cart>? Carts { get; set; }
 		public ICollection<OrderProduct>? OrderProducts { get; set; }
-		public ICollection<Feedback>? Feedbacks { get; }
+		public ICollection<Feedback>? Feedbacks { get; set; }
 	}
 }

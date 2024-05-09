@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;
@@ -14,16 +15,14 @@ namespace MediNet_BE.Repositories.Orders
     {
         private readonly MediNetContext _context;
         private readonly IMapper _mapper;
-        private readonly IFileService _fileService;
 
-        public ProductRepo(MediNetContext context, IMapper mapper, IFileService fileService)
+        public ProductRepo(MediNetContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _fileService = fileService;
         }
 
-        public async Task<List<Product>> GetAllProductAsync()
+        public async Task<List<ProductDto>> GetAllProductAsync()
         {
             var products = await _context.Products!
                 .Include(cc => cc.CategoryChild)
@@ -32,10 +31,12 @@ namespace MediNet_BE.Repositories.Orders
                 .Include(s => s.Supplies)
                 .ToListAsync();
 
-            return products;
+            var prdsMap = _mapper.Map<List<ProductDto>>(products);
+
+            return prdsMap;
         }
 
-        public async Task<Product> GetProductByIdAsync(int id)
+        public async Task<ProductDto> GetProductByIdAsync(int id)
         {
             var product = await _context.Products!
 				.Include(cc => cc.CategoryChild)
@@ -45,15 +46,17 @@ namespace MediNet_BE.Repositories.Orders
 				.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-			return product;
+			var prdMap = _mapper.Map<ProductDto>(product);
+
+			return prdMap;
         }
 
-        public async Task<Product> AddProductAsync(ProductDto productDto)
+        public async Task<Product> AddProductAsync(ProductCreate productCreate)
         {
-            var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productDto.CategoryChildId);
+            var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productCreate.CategoryChildId);
 
-            var productMap = _mapper.Map<Product>(productDto);
-            productMap.Slug = CreateSlug.Init_Slug(productDto.Name);
+            var productMap = _mapper.Map<Product>(productCreate);
+            productMap.Slug = CreateSlug.Init_Slug(productCreate.Name);
             productMap.CategoryChild = categoryChild;
 
             _context.Products!.Add(productMap);
@@ -62,12 +65,12 @@ namespace MediNet_BE.Repositories.Orders
             return productMap;
         }
 
-        public async Task UpdateProductAsync(ProductDto productDto)
+        public async Task UpdateProductAsync(ProductCreate productCreate)
         {
-            var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productDto.CategoryChildId);
+            var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productCreate.CategoryChildId);
 
-            var productMap = _mapper.Map<Product>(productDto);
-            productMap.Slug = CreateSlug.Init_Slug(productDto.Name);
+            var productMap = _mapper.Map<Product>(productCreate);
+            productMap.Slug = CreateSlug.Init_Slug(productCreate.Name);
             productMap.CategoryChild = categoryChild;
 
             _context.Products!.Update(productMap);

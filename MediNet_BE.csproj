@@ -35,10 +35,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\images\clinics\" />
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\images\users\admins\" />
+    <Folder Include="wwwroot\images\users\customers\" />
     <Folder Include="wwwroot\images\users\feedbacks\" />
-    <Folder Include="wwwroot\images\clinics\" />
+    <Folder Include="wwwroot\images\users\employees\" />
+    <Folder Include="wwwroot\images\users\doctors\" />
   </ItemGroup>
 	
 	<PropertyGroup>

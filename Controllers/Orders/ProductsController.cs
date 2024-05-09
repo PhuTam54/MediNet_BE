@@ -19,6 +19,7 @@ using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Dto.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -40,7 +41,7 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             var products = await _productRepo.GetAllProductAsync();
 			foreach (var product in products)
@@ -52,7 +53,7 @@ namespace MediNet_BE.Controllers.Orders
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
+        public async Task<ActionResult<ProductDto>> GetProductById(int id)
         {
             var product = await _productRepo.GetProductByIdAsync(id);
 			if (product == null)
@@ -77,7 +78,7 @@ namespace MediNet_BE.Controllers.Orders
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductDto productCreate)
+        public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductCreate productCreate)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(productCreate.CategoryChildId);
 
@@ -111,7 +112,7 @@ namespace MediNet_BE.Controllers.Orders
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateProduct([FromQuery] int id, [FromForm] ProductDto updatedProduct)
+        public async Task<IActionResult> UpdateProduct([FromQuery] int id, [FromForm] ProductCreate updatedProduct)
         {
             var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(updatedProduct.CategoryChildId);
 

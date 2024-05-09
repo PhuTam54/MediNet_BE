@@ -2,6 +2,7 @@
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models.Orders;
 using Microsoft.EntityFrameworkCore;
@@ -19,64 +20,68 @@ namespace MediNet_BE.Repositories.Orders
 			_mapper = mapper;
 		}
 
-		public async Task<List<CartReturnDto>> GetCartsByCustomerIdAsync(int customerId)
+		public async Task<List<CartDto>> GetCartsByCustomerIdAsync(int customerId)
 		{
 			var carts = await _context.Carts
 				.Include(c => c.Customer)
 				.Include(p => p.Product)
 				.Include(c => c.Clinic)
 				.Where(c => c.Customer.Id == customerId).ToListAsync();
-            var cartMap = _mapper.Map<List<CartReturnDto>>(carts);
+            var cartsMap = _mapper.Map<List<CartDto>>(carts);
 
-            return cartMap;
+            return cartsMap;
         }
 
-		public async Task<Cart> GetCartByIdAsync(int id)
+		public async Task<CartDto> GetCartByIdAsync(int id)
 		{
 			var cart = await _context.Carts!
 				.Include(c => c.Customer)
 				.Include(p => p.Product)
 				.Include(c => c.Clinic)
 				.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
-			return cart;
+
+			var cartMap = _mapper.Map<CartDto>(cart);
+
+			return cartMap;
 		}
 
-		public async Task<Cart> AddCartAsync(CartDto cartDto)
+		public async Task<Cart> AddCartAsync(CartCreate cartCreate)
 		{
-			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartDto.CustomerID);
-			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartDto.ProductID);
-			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id ==  cartDto.ClinicID);
+			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartCreate.CustomerID);
+			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartCreate.ProductID);
+			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartCreate.ClinicID);
 
-			var cartMap = _mapper.Map<Cart>(cartDto);
+			var cartMap = _mapper.Map<Cart>(cartCreate);
 			cartMap.Customer = customer;
 			cartMap.Product = product;
 			cartMap.Clinic = clinic;
-			cartMap.SubTotal = Math.Round(product.Price * cartDto.QtyCart, 2);
+			cartMap.SubTotal = Math.Round(product.Price * cartCreate.QtyCart, 2);
 
 			_context.Carts!.Add(cartMap);
 			await _context.SaveChangesAsync();
 			return cartMap;
 		}
 
-		public async Task UpdateCartAsync(CartDto cartDto)
+		public async Task UpdateCartAsync(CartCreate cartCreate)
 		{
-			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartDto.CustomerID);
-			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartDto.ProductID);
-			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartDto.ClinicID);
+			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartCreate.CustomerID);
+			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartCreate.ProductID);
+			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartCreate.ClinicID);
 
-			var cartMap = _mapper.Map<Cart>(cartDto);
+			var cartMap = _mapper.Map<Cart>(cartCreate);
 			cartMap.Customer = customer;
 			cartMap.Product = product;
 			cartMap.Clinic = clinic;
 
-			cartMap.SubTotal = Math.Round(product.Price * cartDto.QtyCart, 2);
+			cartMap.SubTotal = Math.Round(product.Price * cartCreate.QtyCart, 2);
 
 			_context.Carts!.Update(cartMap);
 			await _context.SaveChangesAsync();
 		}
 
-		public async Task DeleteCartAsync(Cart cart)
+		public async Task DeleteCartAsync(int id)
 		{
+			var cart = await _context.Carts!.FirstOrDefaultAsync(c => c.Id == id);
 			_context.Carts!.Remove(cart);
 			await _context.SaveChangesAsync();
 		}

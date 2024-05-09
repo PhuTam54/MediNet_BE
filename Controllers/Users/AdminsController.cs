@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
 using MediNet_BE.Repositories.Users;
 using MediNet_BE.Dto.Orders;
+using MediNet_BE.DtoCreate.Users;
 
 namespace MediNet_BE.Controllers.Users
 {
@@ -22,17 +23,17 @@ namespace MediNet_BE.Controllers.Users
     [ApiController]
     public class AdminsController : ControllerBase
     {
-		private readonly IUserRepo<Admin, AdminDto> _userRepo;
+		private readonly IUserRepo<Admin, AdminDto, AdminCreate> _userRepo;
 		private readonly IFileService _fileService;
 
-		public AdminsController(IUserRepo<Admin, AdminDto> userRepo, IFileService fileService)
+		public AdminsController(IUserRepo<Admin, AdminDto, AdminCreate> userRepo, IFileService fileService)
 		{
 			_userRepo = userRepo;
 			_fileService = fileService;
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Admin>>> GetAdmins()
+		public async Task<ActionResult<IEnumerable<AdminDto>>> GetAdmins()
 		{
 			var admins = await _userRepo.GetAllUserAsync();
 			foreach (var admin in admins)
@@ -44,7 +45,7 @@ namespace MediNet_BE.Controllers.Users
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<Admin>> GetAdminById(int id)
+		public async Task<ActionResult<AdminDto>> GetAdminById(int id)
 		{
 			var admin = await _userRepo.GetUserByIdAsync(id);
 			if(admin == null)
@@ -58,7 +59,7 @@ namespace MediNet_BE.Controllers.Users
 
 		[HttpGet]
 		[Route("email")]
-		public async Task<ActionResult<Admin>> GetAdminByEmail(string email)
+		public async Task<ActionResult<AdminDto>> GetAdminByEmail(string email)
 		{
 			var admin = await _userRepo.GetUserByEmailAsync(email);
 			if (admin == null)
@@ -87,7 +88,7 @@ namespace MediNet_BE.Controllers.Users
 		// For the test -> When deploy delete the AllowAnonymous
         [AllowAnonymous]
 		[HttpPost]
-		public async Task<ActionResult<Admin>> CreateAdmin([FromForm] AdminDto userCreate)
+		public async Task<ActionResult<Admin>> CreateAdmin([FromForm] AdminCreate userCreate)
 		{
 			if (userCreate == null)
 				return BadRequest(ModelState);
@@ -114,7 +115,7 @@ namespace MediNet_BE.Controllers.Users
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateAdmin([FromQuery] int id, [FromForm] AdminDto updatedUser)
+		public async Task<IActionResult> UpdateAdmin([FromQuery] int id, [FromForm] AdminCreate updatedUser)
 		{
 			var user = await _userRepo.GetUserByIdAsync(id);
 			if (user == null)

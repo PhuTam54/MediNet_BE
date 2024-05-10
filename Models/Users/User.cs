@@ -12,7 +12,5 @@ namespace MediNet_BE.Models.Users
 		public int Role { get; set; }
 		public int Status { get; set; }
 		public string Image { get; set; } = string.Empty;
-		[NotMapped]
-		public string ImageSrc { get; set; } = string.Empty;
 	}
 }

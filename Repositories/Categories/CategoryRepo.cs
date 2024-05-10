@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Categories;
+using MediNet_BE.Dto.Clinics;
+using MediNet_BE.DtoCreate.Categories;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Models.Categories;
+using MediNet_BE.Models.Clinics;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Categories
@@ -19,40 +22,48 @@ namespace MediNet_BE.Repositories.Categories
             _mapper = mapper;
         }
 
-        public async Task<List<Category>> GetAllCategoryAsync()
+        public async Task<List<CategoryDto>> GetAllCategoryAsync()
         {
             var categories = await _context.Categories!
-                .Include(cc => cc.CategoryChilds)
+                .Include(cp => cp.CategoryParent)
                 .ToListAsync();
-            return categories;
+			
+            var categoriesMap = _mapper.Map<List<CategoryDto>>(categories);
+
+			return categoriesMap;
         }
 
-        public async Task<Category> GetCategoryByIdAsync(int id)
+        public async Task<CategoryDto> GetCategoryByIdAsync(int id)
         {
             var category = await _context.Categories!
-                .Include(cc => cc.CategoryChilds)
-                .AsNoTracking()
+				.Include(cp => cp.CategoryParent)
+				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
+			var categoryMap = _mapper.Map<CategoryDto>(category);
 
-			return category;
+			return categoryMap;
         }
 
-        public async Task<Category> AddCategoryAsync(CategoryDto categoryDto)
+        public async Task<Category> AddCategoryAsync(CategoryCreate categoryCreate)
         {
-            var categoryMap = _mapper.Map<Category>(categoryDto);
-            categoryMap.Slug = CreateSlug.Init_Slug(categoryDto.Name);
+            var categoryParent = await _context.CategoryParents!.FirstOrDefaultAsync(cp => cp.Id == categoryCreate.CategoryParentId);
+            var categoryMap = _mapper.Map<Category>(categoryCreate);
+            categoryMap.Slug = CreateSlug.Init_Slug(categoryCreate.Name);
+            categoryMap.CategoryParent = categoryParent;
 
             _context.Categories!.Add(categoryMap);
             await _context.SaveChangesAsync();
             return categoryMap;
         }
 
-        public async Task UpdateCategoryAsync(CategoryDto categoryDto)
+        public async Task UpdateCategoryAsync(CategoryCreate categoryCreate)
         {
-            var categoryMap = _mapper.Map<Category>(categoryDto);
-            categoryMap.Slug = CreateSlug.Init_Slug(categoryDto.Name);
+			var categoryParent = await _context.CategoryParents!.FirstOrDefaultAsync(cp => cp.Id == categoryCreate.CategoryParentId);
+			var categoryMap = _mapper.Map<Category>(categoryCreate);
+			categoryMap.Slug = CreateSlug.Init_Slug(categoryCreate.Name);
+			categoryMap.CategoryParent = categoryParent;
 
-            _context.Categories!.Update(categoryMap);
+			_context.Categories!.Update(categoryMap);
             await _context.SaveChangesAsync();
         }
 

@@ -1,15 +1,16 @@
 ﻿using MediNet_BE.Dto.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
 using MediNet_BE.Models.Orders;
 
 namespace MediNet_BE.Interfaces.Orders
 {
     public interface IFeedbackRepo
     {
-        public Task<List<Feedback>> GetAllFeedbackAsync();
-        public Task<Feedback> GetFeedbackByIdAsync(int id);
-        public Task<Feedback> GetFeedbackByProductIdAsync(int productId);
-        public Task<Feedback> AddFeedbackAsync(FeedbackDto feedbackDto);
-        public Task UpdateFeedbackAsync(FeedbackDto feedbackDto);
+        public Task<List<FeedbackDto>> GetAllFeedbackAsync();
+        public Task<FeedbackDto> GetFeedbackByIdAsync(int id);
+        public Task<FeedbackDto> GetFeedbackByProductIdAsync(int productId);
+        public Task<Feedback> AddFeedbackAsync(FeedbackCreate feedbackCreate);
+        public Task UpdateFeedbackAsync(FeedbackCreate feedbackCreate);
         public Task DeleteFeedbackAsync(int id);
     }
 }

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Models.Clinics;
 using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.DtoCreate.Clinics;
 
 namespace MediNet_BE.Controllers.Clinics
 {
@@ -45,7 +46,7 @@ namespace MediNet_BE.Controllers.Clinics
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Clinic>>> GetClinics()
+        public async Task<ActionResult<IEnumerable<ClinicDto>>> GetClinics()
         {
             var clinics = await _clinicRepo.GetAllClinicAsync();
             foreach (var clinic in clinics)
@@ -57,7 +58,7 @@ namespace MediNet_BE.Controllers.Clinics
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Clinic>> GetClinic([FromQuery] int id)
+        public async Task<ActionResult<ClinicDto>> GetClinic([FromQuery] int id)
         {
             var clinic = await _clinicRepo.GetClinicByIdAsync(id);
             if (clinic == null)
@@ -84,7 +85,7 @@ namespace MediNet_BE.Controllers.Clinics
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Clinic>> CreateClinic([FromForm] ClinicDto clinicCreate)
+        public async Task<ActionResult<Clinic>> CreateClinic([FromForm] ClinicCreate clinicCreate)
         {
             if (clinicCreate == null)
                 return BadRequest(ModelState);
@@ -113,7 +114,7 @@ namespace MediNet_BE.Controllers.Clinics
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateClinic([FromQuery] int id, [FromForm] ClinicDto updatedClinic)
+        public async Task<IActionResult> UpdateClinic([FromQuery] int id, [FromForm] ClinicCreate updatedClinic)
         {
             var clinic = await _clinicRepo.GetClinicByIdAsync(id);
             if (clinic == null)

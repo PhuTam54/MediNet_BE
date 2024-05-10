@@ -2,6 +2,7 @@
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Clinics;
+using MediNet_BE.DtoCreate.Clinics;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Models.Categories;
@@ -21,41 +22,41 @@ namespace MediNet_BE.Repositories.Clinics
             _mapper = mapper;
         }
 
-        public async Task<List<Clinic>> GetAllClinicAsync()
+        public async Task<List<ClinicDto>> GetAllClinicAsync()
         {
             var clinics = await _context.Clinics!
-                .Include(s => s.Services)
-                .Include(s => s.Supplies)
                 .ToListAsync();
 
-            return clinics;
+            var clinicsMap = _mapper.Map<List<ClinicDto>>(clinics);
+
+            return clinicsMap;
         }
 
-        public async Task<Clinic> GetClinicByIdAsync(int id)
+        public async Task<ClinicDto> GetClinicByIdAsync(int id)
         {
             var clinic = await _context.Clinics!
-                .Include(s => s.Services)
-				.Include(s => s.Supplies)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            return clinic;
+			var clinicMap = _mapper.Map<ClinicDto>(clinic);
+
+			return clinicMap;
         }
 
-        public async Task<Clinic> AddClinicAsync(ClinicDto clinicDto)
+        public async Task<Clinic> AddClinicAsync(ClinicCreate clinicCreate)
         {
-            var clinicMap = _mapper.Map<Clinic>(clinicDto);
-            clinicMap.Slug = CreateSlug.Init_Slug(clinicDto.Name);
+            var clinicMap = _mapper.Map<Clinic>(clinicCreate);
+            clinicMap.Slug = CreateSlug.Init_Slug(clinicCreate.Name);
 
             _context.Clinics!.Add(clinicMap);
             await _context.SaveChangesAsync();
             return clinicMap;
         }
 
-        public async Task UpdateClinicAsync(ClinicDto clinicDto)
+        public async Task UpdateClinicAsync(ClinicCreate clinicCreate)
         {
-            var clinicMap = _mapper.Map<Clinic>(clinicDto);
-            clinicMap.Slug = CreateSlug.Init_Slug(clinicDto.Name);
+            var clinicMap = _mapper.Map<Clinic>(clinicCreate);
+            clinicMap.Slug = CreateSlug.Init_Slug(clinicCreate.Name);
 
             _context.Clinics!.Update(clinicMap);
             await _context.SaveChangesAsync();

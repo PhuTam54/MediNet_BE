@@ -17,6 +17,7 @@ using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Repositories.Orders;
 using MediNet_BE.Repositories.Clinics;
+using MediNet_BE.DtoCreate.Clinics;
 
 namespace MediNet_BE.Controllers.Clinics
 {
@@ -36,14 +37,14 @@ namespace MediNet_BE.Controllers.Clinics
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Supply>>> GetCategories()
+		public async Task<ActionResult<IEnumerable<SupplyDto>>> GetCategories()
 		{
 			return Ok(await _supplyRepo.GetAllSupplyAsync());
 		}
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<Supply>> GetSupplyById(int id)
+		public async Task<ActionResult<SupplyDto>> GetSupplyById(int id)
 		{
 			var supply = await _supplyRepo.GetSupplyByIdAsync(id);
 			return supply == null ? NotFound() : Ok(supply);
@@ -52,7 +53,7 @@ namespace MediNet_BE.Controllers.Clinics
 		[Authorize]
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPost]
-		public async Task<ActionResult<Supply>> CreateSupply([FromBody] SupplyDto supplyCreate)
+		public async Task<ActionResult<Supply>> CreateSupply([FromBody] SupplyCreate supplyCreate)
 		{
 			var product = await _productRepo.GetProductByIdAsync(supplyCreate.ProductId);
 			var clinic = await _clinicRepo.GetClinicByIdAsync(supplyCreate.ClinicId);
@@ -82,7 +83,7 @@ namespace MediNet_BE.Controllers.Clinics
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateSupply([FromQuery] int id, [FromBody] SupplyDto updatedSupply)
+		public async Task<IActionResult> UpdateSupply([FromQuery] int id, [FromBody] SupplyCreate updatedSupply)
 		{
 			var product = await _productRepo.GetProductByIdAsync(updatedSupply.ProductId);
 			var clinic = await _clinicRepo.GetClinicByIdAsync(updatedSupply.ClinicId);

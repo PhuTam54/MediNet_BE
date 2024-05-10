@@ -6,14 +6,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MediNet_BE.Data;
-using MediNet_BE.Models;
-using MediNet_BE.Interfaces;
 using MediNet_BE.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
 using System.Security.Claims;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Dto.Orders.OrderServices;
+using MediNet_BE.DtoCreate.Orders.OrderServices;
+using MediNet_BE.Models.Orders;
+using MediNet_BE.Dto.Doctors;
+using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.Interfaces;
+using MediNet_BE.Models.Doctors;
+using MediNet_BE.Repositories.Doctors;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -22,23 +27,23 @@ namespace MediNet_BE.Controllers.Orders
     public class ServicesController : ControllerBase
     {
         private readonly IServiceRepo _serviceRepo;
-        private readonly IClinicRepo _clinicRepo;
+		private readonly IUserRepo<Doctor, DoctorDto, DoctorCreate> _doctorRepo;
 
-        public ServicesController(IServiceRepo serviceRepo, IClinicRepo clinicRepo)
+        public ServicesController(IServiceRepo serviceRepo, IUserRepo<Doctor, DoctorDto, DoctorCreate> doctorRepo)
         {
             _serviceRepo = serviceRepo;
-            _clinicRepo = clinicRepo;
+			_doctorRepo = doctorRepo;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Service>>> GetServices()
+        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
         {
             return Ok(await _serviceRepo.GetAllServiceAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Service>> GetService([FromQuery] int id)
+        public async Task<ActionResult<ServiceDto>> GetService([FromQuery] int id)
         {
             var service = await _serviceRepo.GetServiceByIdAsync(id);
             return service == null ? NotFound() : Ok(service);
@@ -47,11 +52,11 @@ namespace MediNet_BE.Controllers.Orders
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Service>> CreateService([FromBody] ServiceCreateDto serviceCreate)
+        public async Task<ActionResult<Service>> CreateService([FromBody] ServiceCreate serviceCreate)
         {
-            var clinic = await _clinicRepo.GetClinicByIdAsync(serviceCreate.ClinicId);
-            if (clinic == null)
-                return NotFound("Clinic Not Found!");
+            var doctor = await _doctorRepo.GetUserByIdAsync(serviceCreate.DoctorId);
+            if (doctor == null)
+                return NotFound("Doctor Not Found!");
             if (serviceCreate == null)
                 return BadRequest(ModelState);
 
@@ -66,12 +71,12 @@ namespace MediNet_BE.Controllers.Orders
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateService([FromQuery] int id, [FromBody] ServiceCreateDto updatedService)
+        public async Task<IActionResult> UpdateService([FromQuery] int id, [FromBody] ServiceCreate updatedService)
         {
-            var clinic = await _clinicRepo.GetClinicByIdAsync(updatedService.ClinicId);
-            if (clinic == null)
-                return NotFound("Clinic Not Found!");
-            var service = await _serviceRepo.GetServiceByIdAsync(id);
+			var doctor = await _doctorRepo.GetUserByIdAsync(updatedService.DoctorId);
+			if (doctor == null)
+				return NotFound("Doctor Not Found!");
+			var service = await _serviceRepo.GetServiceByIdAsync(id);
             if (service == null)
                 return NotFound();
             if (updatedService == null)

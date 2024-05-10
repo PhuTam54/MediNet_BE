@@ -12,6 +12,8 @@ using MediNet_BE.Models.Categories;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
+using MediNet_BE.Repositories.Categories;
+using MediNet_BE.DtoCreate.Categories;
 
 namespace MediNet_BE.Controllers.Categories
 {
@@ -20,21 +22,24 @@ namespace MediNet_BE.Controllers.Categories
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepo _categoryRepo;
+		private readonly ICategoryParentRepo _categoryParentRepo;
 
-        public CategoriesController(ICategoryRepo categoryRepo)
+		public CategoriesController(ICategoryRepo categoryRepo, ICategoryParentRepo categoryParentRepo)
         {
             _categoryRepo = categoryRepo;
-        }
+			_categoryParentRepo = categoryParentRepo;
+
+		}
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
         {
             return Ok(await _categoryRepo.GetAllCategoryAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Category>> GetCategoryById(int id)
+        public async Task<ActionResult<CategoryDto>> GetCategoryById(int id)
         {
             var category = await _categoryRepo.GetCategoryByIdAsync(id);
             return category == null ? NotFound() : Ok(category);
@@ -57,9 +62,14 @@ namespace MediNet_BE.Controllers.Categories
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory([FromBody] CategoryDto categoryCreate)
+        public async Task<ActionResult<Category>> CreateCategory([FromBody] CategoryCreate categoryCreate)
         {
-            if (categoryCreate == null)
+            var categoryParent = await _categoryParentRepo!.GetCategoryParentByIdAsync(categoryCreate.CategoryParentId);
+            if(categoryParent == null)
+            {
+                return NotFound();
+            }
+			if (categoryCreate == null)
                 return BadRequest(ModelState);
 
             if (!ModelState.IsValid)
@@ -73,11 +83,14 @@ namespace MediNet_BE.Controllers.Categories
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateCategory([FromQuery] int id, [FromBody] CategoryDto updatedCategory)
+        public async Task<IActionResult> UpdateCategory([FromQuery] int id, [FromBody] CategoryCreate updatedCategory)
         {
             var category = await _categoryRepo.GetCategoryByIdAsync(id);
-            if (category == null)
-                return NotFound();
+			var categoryParent = await _categoryParentRepo!.GetCategoryParentByIdAsync(updatedCategory.CategoryParentId);
+			if (categoryParent == null || category == null)
+			{
+				return NotFound();
+			}
             if (updatedCategory == null)
                 return BadRequest(ModelState);
             if (id != updatedCategory.Id)

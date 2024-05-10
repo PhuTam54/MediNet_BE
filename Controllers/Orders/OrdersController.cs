@@ -22,7 +22,8 @@ using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Models;
 using MediNet_BE.Repositories.Orders;
-using AutoMapper;
+using MediNet_BE.DtoCreate.Orders;
+using MediNet_BE.DtoCreate.Users;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -31,18 +32,17 @@ namespace MediNet_BE.Controllers.Orders
     public class OrdersController : ControllerBase
     {
         private readonly IOrderRepo _orderRepo;
-        private readonly IUserRepo<Customer, CustomerDto> _customerRepo;
+        private readonly IUserRepo<Customer, CustomerDto, CustomerCreate> _customerRepo;
         private readonly IVnPayService _vnPayService;
         private readonly MediNetContext _mediNetContext;
         private readonly IMailService _mailService;
         private readonly IMomoService _momoService;
         private readonly IPayPalService _payPalService;
 		private readonly ICartRepo _cartRepo;
-        private readonly IMapper _mapper;
 
-		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto> customerRepo,
+		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo,
             IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService,
-            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo, IMapper mapper)
+            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo)
         {
             _orderRepo = orderRepo;
             _customerRepo = customerRepo;
@@ -52,18 +52,17 @@ namespace MediNet_BE.Controllers.Orders
             _momoService = momoService;
             _payPalService = payPalService;
 			_cartRepo = cartRepo;
-            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderReturnDto>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
             return Ok(await _orderRepo.GetAllOrderAsync());
         }
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<OrderReturnDto>> GetOrderById(int id)
+        public async Task<ActionResult<OrderDto>> GetOrderById(int id)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
             return order == null ? NotFound() : Ok(order);
@@ -71,7 +70,7 @@ namespace MediNet_BE.Controllers.Orders
 
         [HttpGet]
         [Route("userId")]
-        public async Task<ActionResult<OrderReturnDto>> GetOrderByUserId(int userId)
+        public async Task<ActionResult<OrderDto>> GetOrderByUserId(int userId)
         {
             var orderDto = await _orderRepo.GetOrderByUserIdAsync(userId);
             return orderDto == null ? NotFound() : Ok(orderDto);
@@ -91,8 +90,10 @@ namespace MediNet_BE.Controllers.Orders
         /// </remarks>
         /// <returns></returns>
 
+        [Authorize]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderDto orderCreate)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderCreate orderCreate)
         {
             var user = await _customerRepo.GetUserByIdAsync(orderCreate.CustomerId);
             if (user == null)
@@ -156,40 +157,30 @@ namespace MediNet_BE.Controllers.Orders
                 var response = await _momoService.CreatePaymentAsync(momoModel);
                 return Ok(response.PayUrl);
             }
+			if (newOrder.Payment_method == "COD")
+			{
+				await UpdateStatusOrder(newOrder.OrderCode);
+			}
 
-            var data = new SendMailRequest
-            {
-                ToEmail = newOrder.Email,
-                UserName = newOrder.Name,
-                Url = "thankyou",
-                Subject = "Thank you for your order!"
-            };
-            await _mailService.SendEmailAsync(data);
-
-            return Ok(newOrder);
+			return Ok("Order Successfully!");
         }
 
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
-        [Route("id")]
-        public async Task<IActionResult> UpdateOrder([FromQuery] int id, [FromForm] OrderDto updatedOrder)
-        {
-            var Order = await _orderRepo.GetOrderByIdAsync(id);
+		[Route("id")]
+		public async Task<IActionResult> OrderUpdate([FromQuery] int id, [FromQuery] OrderStatus status)
+		{
+			var order = await _orderRepo.GetOrderByIdAsync(id);
+			if (order == null)
+			{
+				return NotFound();
+			}
+			await _orderRepo.UpdateOrderAsync(id, status);
+			return Ok("Update Successfully!");
+		}
 
-            if (Order == null)
-                return NotFound();
-            if (updatedOrder == null)
-                return BadRequest(ModelState);
-            if (id != updatedOrder.Id)
-                return BadRequest();
-
-            await _orderRepo.UpdateOrderAsync(updatedOrder);
-
-            return Ok("Update Successfully!");
-        }
-
-        [NonAction]
+		[NonAction]
         public async Task<Order> UpdateStatusOrder(string orderCode)
         {
             var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);

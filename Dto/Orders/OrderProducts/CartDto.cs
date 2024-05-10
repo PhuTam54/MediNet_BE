@@ -1,11 +1,23 @@
-﻿namespace MediNet_BE.Dto.Orders.OrderProducts
+﻿using MediNet_BE.Models.Clinics;
+using MediNet_BE.Models.Users;
+using MediNet_BE.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+using MediNet_BE.Dto.Users;
+using MediNet_BE.Dto.Clinics;
+
+namespace MediNet_BE.Dto.Orders.OrderProducts
 {
     public class CartDto
     {
-        public int Id { get; set; }
-        public int QtyCart { get; set; }
-        public int ProductID { get; set; }
-        public int CustomerID { get; set; }
-        public int ClinicID { get; set; }
-    }
+		public int Id { get; set; }
+		public int QtyCart { get; set; }
+		[Column(TypeName = "decimal(18, 2)")]
+		public decimal SubTotal { get; set; }
+		public int CustomerId { get; set; }
+		public int ProductId { get; set; }
+		public int ClinicId { get; set; }
+		public CustomerDto Customer { get; set; }
+		public ProductDto Product { get; set; }
+		public ClinicDto Clinic { get; set; }
+	}
 }

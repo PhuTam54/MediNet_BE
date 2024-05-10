@@ -3,17 +3,20 @@ using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
 using MediNet_BE.Dto;
 using MediNet_BE.Dto.Categories;
+using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Users;
+using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
+using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Users
 {
-    public class AdminRepo : IUserRepo<Admin, AdminDto>
+    public class AdminRepo : IUserRepo<Admin, AdminDto, AdminCreate>
     {
         private readonly MediNetContext _context;
         private readonly IMapper _mapper;
@@ -24,30 +27,35 @@ namespace MediNet_BE.Repositories.Users
             _mapper = mapper;
         }
 
-        public async Task<List<Admin>> GetAllUserAsync()
+        public async Task<List<AdminDto>> GetAllUserAsync()
         {
             var admins = await _context.Admins!.ToListAsync();
+			var adminsMap = _mapper.Map<List<AdminDto>>(admins);
 
-			return admins;
+			return adminsMap;
         }
 
-        public async Task<Admin> GetUserByIdAsync(int id)
+        public async Task<AdminDto> GetUserByIdAsync(int id)
         {
             var admin = await _context.Admins!.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
 
-			return admin;
+			var adminMap = _mapper.Map<AdminDto>(admin);
+
+			return adminMap;
         }
 
-        public async Task<Admin> GetUserByEmailAsync(string email)
+        public async Task<AdminDto> GetUserByEmailAsync(string email)
         {
             var admin = await _context.Admins!.AsNoTracking().FirstOrDefaultAsync(c => c.Email == email);
-			return admin;
-        }
+			var adminMap = _mapper.Map<AdminDto>(admin);
 
-        public async Task<Admin> AddUserAsync(AdminDto userDto)
+			return adminMap;
+		}
+
+        public async Task<Admin> AddUserAsync(AdminCreate userCreate)
         {
-            var adminMap = _mapper.Map<Admin>(userDto);
-            adminMap.SEO_Name = CreateSlug.Init_Slug(userDto.Username);
+            var adminMap = _mapper.Map<Admin>(userCreate);
+            adminMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
             adminMap.Password = LoginRegisterController.HashPassword(adminMap.Password);
             adminMap.Role = 2;
 
@@ -56,10 +64,10 @@ namespace MediNet_BE.Repositories.Users
             return adminMap;
         }
 
-        public async Task UpdateUserAsync(AdminDto userDto)
+        public async Task UpdateUserAsync(AdminCreate userCreate)
         {
-            var adminMap = _mapper.Map<Admin>(userDto);
-            adminMap.SEO_Name = CreateSlug.Init_Slug(userDto.Username);
+            var adminMap = _mapper.Map<Admin>(userCreate);
+            adminMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
             adminMap.Password = LoginRegisterController.HashPassword(adminMap.Password);
             adminMap.Role = 2;
 

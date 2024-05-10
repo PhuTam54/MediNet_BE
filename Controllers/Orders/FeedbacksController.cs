@@ -18,6 +18,8 @@ using NuGet.Packaging;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Dto.Orders.OrderProducts;
+using MediNet_BE.DtoCreate.Users;
+using MediNet_BE.DtoCreate.Orders.OrderProducts;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -27,10 +29,10 @@ namespace MediNet_BE.Controllers.Orders
     {
         private readonly IFeedbackRepo _feedbackRepo;
         private readonly IFileService _fileService;
-        private readonly IUserRepo<Customer, CustomerDto> _customerRepo;
+        private readonly IUserRepo<Customer, CustomerDto, CustomerCreate> _customerRepo;
         private readonly IProductRepo _productRepo;
 
-        public FeedbacksController(IFeedbackRepo feedbackRepo, IFileService fileService, IUserRepo<Customer, CustomerDto> customerRepo, IProductRepo productRepo)
+        public FeedbacksController(IFeedbackRepo feedbackRepo, IFileService fileService, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo, IProductRepo productRepo)
         {
             _feedbackRepo = feedbackRepo;
             _fileService = fileService;
@@ -52,7 +54,7 @@ namespace MediNet_BE.Controllers.Orders
 		}
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Feedback>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetCategories()
         {
             var feedbacks = await _feedbackRepo.GetAllFeedbackAsync();
 			foreach (var feedback in feedbacks)
@@ -65,7 +67,7 @@ namespace MediNet_BE.Controllers.Orders
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<Feedback>> GetFeedbackById(int id)
+        public async Task<ActionResult<FeedbackDto>> GetFeedbackById(int id)
         {
             var feedback = await _feedbackRepo.GetFeedbackByIdAsync(id);
 			if (feedback == null)
@@ -79,7 +81,7 @@ namespace MediNet_BE.Controllers.Orders
 
         [HttpGet]
         [Route("productId")]
-        public async Task<ActionResult<Feedback>> GetFeedbackByProductId(int productId)
+        public async Task<ActionResult<FeedbackDto>> GetFeedbackByProductId(int productId)
         {
             var feedback = await _feedbackRepo.GetFeedbackByProductIdAsync(productId);
 			if (feedback == null)
@@ -94,7 +96,7 @@ namespace MediNet_BE.Controllers.Orders
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
-        public async Task<ActionResult<Feedback>> CreateFeedback([FromForm] FeedbackDto feedbackCreate)
+        public async Task<ActionResult<Feedback>> CreateFeedback([FromForm] FeedbackCreate feedbackCreate)
         {
             var customer = await _customerRepo.GetUserByIdAsync(feedbackCreate.CustomerId);
             var product = await _productRepo.GetProductByIdAsync(feedbackCreate.ProductId);
@@ -128,7 +130,7 @@ namespace MediNet_BE.Controllers.Orders
         [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateFeedback([FromQuery] int id, [FromForm] FeedbackDto updatedFeedback)
+        public async Task<IActionResult> UpdateFeedback([FromQuery] int id, [FromForm] FeedbackCreate updatedFeedback)
         {
             var feedback = await _feedbackRepo.GetFeedbackByIdAsync(id);
             if (feedback == null)

@@ -61,23 +61,23 @@ namespace MediNet_BE.Controllers.Orders
 
 
         [HttpPost]
-        public async Task<ActionResult<CartDto>> AddToCart([FromBody] CartDto cartCreate)
+        public async Task<ActionResult<CartDto>> AddToCart([FromBody] CartCreate cartCreate)
         {
             if (cartCreate == null)
             {
                 return BadRequest("Cart data is null.");
             }
 
-            var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerID);
-            var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductID);
-            var clinic = await _clinicRepo.GetClinicByIdAsync(cartCreate.ClinicID);
+            var customer = await _customerRepo.GetUserByIdAsync(cartCreate.CustomerId);
+            var product = await _productRepo.GetProductByIdAsync(cartCreate.ProductId);
+            var clinic = await _clinicRepo.GetClinicByIdAsync(cartCreate.ClinicId);
 
             if (customer == null || product == null || clinic == null)
             {
                 return NotFound("Customer, Product, or Clinic not found.");
             }
 
-            var existingCart = await _cartRepo.CheckCartExist(cartCreate.ProductID, cartCreate.ClinicID, cartCreate.CustomerID);
+            var existingCart = await _cartRepo.CheckCartExist(cartCreate.ProductId, cartCreate.ClinicId, cartCreate.CustomerId);
 
             if (existingCart != null)
             {
@@ -85,7 +85,7 @@ namespace MediNet_BE.Controllers.Orders
                 existingCart.SubTotal = Math.Round(product.Price * existingCart.QtyCart, 2);
 
 
-				var newCart = _mapper.Map<CartDto>(existingCart);
+				var newCart = _mapper.Map<CartCreate>(existingCart);
                 await _cartRepo.UpdateCartAsync(newCart);
 
                 return Ok(existingCart);
@@ -103,9 +103,9 @@ namespace MediNet_BE.Controllers.Orders
 		[Route("id")]
 		public async Task<IActionResult> UpdateCart([FromQuery] int id, [FromBody] CartCreate updatedCart)
 		{
-			var customer = await _customerRepo.GetUserByIdAsync(updatedCart.CustomerID);
-			var product = await _productRepo.GetProductByIdAsync(updatedCart.ProductID);
-			var clinic = await _clinicRepo.GetClinicByIdAsync(updatedCart.ClinicID);
+			var customer = await _customerRepo.GetUserByIdAsync(updatedCart.CustomerId);
+			var product = await _productRepo.GetProductByIdAsync(updatedCart.ProductId);
+			var clinic = await _clinicRepo.GetClinicByIdAsync(updatedCart.ClinicId);
 			var cart = await _cartRepo.GetCartByIdAsync(id);
 
 			if (customer == null || product == null || clinic == null)

@@ -4,8 +4,8 @@
     {
         public int Id { get; set; }
         public int QtyCart { get; set; }
-        public int ProductID { get; set; }
-        public int CustomerID { get; set; }
-        public int ClinicID { get; set; }
+        public int ProductId { get; set; }
+        public int CustomerId { get; set; }
+        public int ClinicId { get; set; }
     }
 }

@@ -47,9 +47,9 @@ namespace MediNet_BE.Repositories.Orders
 
 		public async Task<Cart> AddCartAsync(CartCreate cartCreate)
 		{
-			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartCreate.CustomerID);
-			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartCreate.ProductID);
-			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartCreate.ClinicID);
+			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartCreate.CustomerId);
+			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartCreate.ProductId);
+			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartCreate.ClinicId);
 
 			var cartMap = _mapper.Map<Cart>(cartCreate);
 			cartMap.Customer = customer;
@@ -64,9 +64,9 @@ namespace MediNet_BE.Repositories.Orders
 
 		public async Task UpdateCartAsync(CartCreate cartCreate)
 		{
-			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartCreate.CustomerID);
-			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartCreate.ProductID);
-			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartCreate.ClinicID);
+			var customer = await _context.Customers!.FirstOrDefaultAsync(u => u.Id == cartCreate.CustomerId);
+			var product = await _context.Products!.FirstOrDefaultAsync(p => p.Id == cartCreate.ProductId);
+			var clinic = await _context.Clinics!.FirstOrDefaultAsync(c => c.Id == cartCreate.ClinicId);
 
 			var cartMap = _mapper.Map<Cart>(cartCreate);
 			cartMap.Customer = customer;

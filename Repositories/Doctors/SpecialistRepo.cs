@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Doctors;
-using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.Dto.Employees;
+using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Employees;
-using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Employees;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Doctors

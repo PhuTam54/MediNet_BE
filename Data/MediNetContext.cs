@@ -1,8 +1,8 @@
 ﻿using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Clinics;
-using MediNet_BE.Models.Courses;
-using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Employees;
+using MediNet_BE.Models.Employees.Courses;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +11,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MediNet_BE.Data
 {
-	public class MediNetContext : DbContext
+    public class MediNetContext : DbContext
 	{
 		public MediNetContext(DbContextOptions<MediNetContext> options) : base(options) { }
 
 		#region Users
 		public DbSet<Customer> Customers { get; set; }
-		public DbSet<Doctor> Doctors { get; set; }
 		public DbSet<Admin> Admins { get; set; }
 		public DbSet<Feedback> Feedbacks { get; set; }
 		#endregion
@@ -72,17 +71,11 @@ namespace MediNet_BE.Data
 				.HasIndex(p => p.Slug).IsUnique();
 			modelBuilder.Entity<Course>().ToTable("Courses")
 				.HasIndex(c => c.Title).IsUnique();
-			modelBuilder.Entity<Employee>()
-			    .HasOne(e => e.Clinic)
-			    .WithMany(c => c.Employees)
-			    .HasForeignKey(e => e.ClinicId)
-			    .OnDelete(DeleteBehavior.NoAction);
-
-			modelBuilder.Entity<Employee>()
-			    .HasOne(e => e.Specialist)
-			    .WithMany(e => e.Employees)
-			    .HasForeignKey(e => e.SpecialistId)
-			    .OnDelete(DeleteBehavior.NoAction);
+			modelBuilder.Entity<Course>()
+				.HasOne(e => e.Employee)
+				.WithMany(c => c.Courses)
+				.HasForeignKey(e => e.EmployeeId)
+				.OnDelete(DeleteBehavior.NoAction);
 		}
 
 	}

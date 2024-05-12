@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Courses;
-using MediNet_BE.DtoCreate.Courses;
+using MediNet_BE.Dto.Employees.Courses;
+using MediNet_BE.DtoCreate.Employees.Courses;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Courses;
 using MediNet_BE.Models.Categories;
-using MediNet_BE.Models.Courses;
+using MediNet_BE.Models.Employees.Courses;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Courses
@@ -25,7 +25,7 @@ namespace MediNet_BE.Repositories.Courses
 		public async Task<List<CourseDto>> GetAllCourseAsync()
 		{
 			var courses = await _context.Courses!
-				.Include(d => d.Doctor)
+				.Include(e => e.Employee)
 				.ToListAsync();
 
 			var coursesMap = _mapper.Map<List<CourseDto>>(courses);
@@ -36,7 +36,7 @@ namespace MediNet_BE.Repositories.Courses
 		public async Task<CourseDto> GetCourseByIdAsync(int id)
 		{
 			var course = await _context.Courses!
-				.Include(d => d.Doctor)
+				.Include(e => e.Employee)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Id == id);
 			var courseMap = _mapper.Map<CourseDto>(course);
@@ -46,10 +46,10 @@ namespace MediNet_BE.Repositories.Courses
 
 		public async Task<Course> AddCourseAsync(CourseCreate courseCreate)
 		{
-			var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == courseCreate.DoctorId);
+			var employeeDoctor = await _context.Employees.FirstOrDefaultAsync(d => d.Id == courseCreate.EmployeeId);
 			var courseMap = _mapper.Map<Course>(courseCreate);
 			courseMap.CreatedAt = DateTime.UtcNow;
-			courseMap.Doctor = doctor;
+			courseMap.Employee = employeeDoctor;
 
 			_context.Courses!.Add(courseMap);
 			await _context.SaveChangesAsync();
@@ -58,10 +58,10 @@ namespace MediNet_BE.Repositories.Courses
 
 		public async Task UpdateCourseAsync(CourseCreate courseCreate)
 		{
-			var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == courseCreate.DoctorId);
+			var employeeDoctor = await _context.Employees.FirstOrDefaultAsync(d => d.Id == courseCreate.EmployeeId);
 			var courseMap = _mapper.Map<Course>(courseCreate);
 			courseMap.CreatedAt = DateTime.UtcNow;
-			courseMap.Doctor = doctor;
+			courseMap.Employee = employeeDoctor;
 
 			_context.Courses!.Update(courseMap);
 			await _context.SaveChangesAsync();

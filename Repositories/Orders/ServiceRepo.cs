@@ -23,7 +23,7 @@ namespace MediNet_BE.Repositories.Orders
         public async Task<List<ServiceDto>> GetAllServiceAsync()
         {
             var services = await _context.Services!
-                .Include(d => d.Doctor)
+                .Include(e => e.Employee)
                 .ToListAsync();
 
 			var servicesMap = _mapper.Map<List<ServiceDto>>(services);
@@ -34,7 +34,7 @@ namespace MediNet_BE.Repositories.Orders
         public async Task<ServiceDto> GetServiceByIdAsync(int id)
         {
             var service = await _context.Services!
-				.Include(d => d.Doctor)
+				.Include(e => e.Employee)
 				.Include(os => os.OrderServices)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -46,9 +46,9 @@ namespace MediNet_BE.Repositories.Orders
 
         public async Task<Service> AddServiceAsync(ServiceCreate serviceCreate)
         {
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(c => c.Id == serviceCreate.DoctorId);
+            var employeeDoctor = await _context.Employees.FirstOrDefaultAsync(c => c.Id == serviceCreate.EmployeeId);
             var serviceMap = _mapper.Map<Service>(serviceCreate);
-            serviceMap.Doctor = doctor;
+            serviceMap.Employee = employeeDoctor;
 
             _context.Services!.Add(serviceMap);
             await _context.SaveChangesAsync();
@@ -57,9 +57,9 @@ namespace MediNet_BE.Repositories.Orders
 
         public async Task UpdateServiceAsync(ServiceCreate serviceCreate)
         {
-			var doctor = await _context.Doctors.FirstOrDefaultAsync(c => c.Id == serviceCreate.DoctorId);
+			var employeeDoctor = await _context.Employees.FirstOrDefaultAsync(c => c.Id == serviceCreate.EmployeeId);
 			var serviceMap = _mapper.Map<Service>(serviceCreate);
-			serviceMap.Doctor = doctor;
+			serviceMap.Employee = employeeDoctor;
 
 			_context.Services!.Update(serviceMap);
             await _context.SaveChangesAsync();

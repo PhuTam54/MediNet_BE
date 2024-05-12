@@ -14,11 +14,12 @@ using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.DtoCreate.Orders.OrderServices;
 using MediNet_BE.Models.Orders;
-using MediNet_BE.Dto.Doctors;
-using MediNet_BE.DtoCreate.Doctors;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Models.Doctors;
 using MediNet_BE.Repositories.Doctors;
+using MediNet_BE.Dto.Employees;
+using MediNet_BE.DtoCreate.Employees;
+using MediNet_BE.Models.Employees;
+using MediNet_BE.Repositories.Courses;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -27,12 +28,12 @@ namespace MediNet_BE.Controllers.Orders
     public class ServicesController : ControllerBase
     {
         private readonly IServiceRepo _serviceRepo;
-		private readonly IUserRepo<Doctor, DoctorDto, DoctorCreate> _doctorRepo;
+		private readonly IUserRepo<Employee, EmployeeDto, EmployeeCreate> _employeeRepo;
 
-        public ServicesController(IServiceRepo serviceRepo, IUserRepo<Doctor, DoctorDto, DoctorCreate> doctorRepo)
+        public ServicesController(IServiceRepo serviceRepo, IUserRepo<Employee, EmployeeDto, EmployeeCreate> employeeRepo)
         {
             _serviceRepo = serviceRepo;
-			_doctorRepo = doctorRepo;
+			_employeeRepo = employeeRepo;
         }
 
         [HttpGet]
@@ -54,8 +55,8 @@ namespace MediNet_BE.Controllers.Orders
         [HttpPost]
         public async Task<ActionResult<Service>> CreateService([FromBody] ServiceCreate serviceCreate)
         {
-            var doctor = await _doctorRepo.GetUserByIdAsync(serviceCreate.DoctorId);
-            if (doctor == null)
+            var employeeDoctor = await _employeeRepo.GetUserByIdAsync(serviceCreate.EmployeeId);
+            if (employeeDoctor == null)
                 return NotFound("Doctor Not Found!");
             if (serviceCreate == null)
                 return BadRequest(ModelState);
@@ -73,8 +74,8 @@ namespace MediNet_BE.Controllers.Orders
         [Route("id")]
         public async Task<IActionResult> UpdateService([FromQuery] int id, [FromBody] ServiceCreate updatedService)
         {
-			var doctor = await _doctorRepo.GetUserByIdAsync(updatedService.DoctorId);
-			if (doctor == null)
+			var employeeDoctor = await _employeeRepo.GetUserByIdAsync(updatedService.EmployeeId);
+			if (employeeDoctor == null)
 				return NotFound("Doctor Not Found!");
 			var service = await _serviceRepo.GetServiceByIdAsync(id);
             if (service == null)

@@ -1,7 +1,6 @@
-﻿
-using MediNet_BE.Dto.Courses;
-using MediNet_BE.DtoCreate.Courses;
-using MediNet_BE.Models.Courses;
+﻿using MediNet_BE.Dto.Employees.Courses;
+using MediNet_BE.DtoCreate.Employees.Courses;
+using MediNet_BE.Models.Employees.Courses;
 
 namespace MediNet_BE.Interfaces.Courses
 {

@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Courses;
-using MediNet_BE.DtoCreate.Courses;
+using MediNet_BE.Dto.Employees.Courses;
+using MediNet_BE.DtoCreate.Employees.Courses;
 using MediNet_BE.Interfaces.Enrollments;
-using MediNet_BE.Models.Courses;
+using MediNet_BE.Models.Employees.Courses;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Enrollments
 {
-	public class EnrollmentRepo : IEnrollmentRepo
+    public class EnrollmentRepo : IEnrollmentRepo
 	{
 		private readonly MediNetContext _context;
 		private readonly IMapper _mapper;

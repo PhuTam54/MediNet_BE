@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Courses;
+using MediNet_BE.Dto.Employees;
 using MediNet_BE.Dto.Users;
-using MediNet_BE.DtoCreate.Courses;
+using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Models.Clinics;
-using MediNet_BE.Models.Courses;
-using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Employees;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,10 +26,14 @@ namespace MediNet_BE.Repositories.Courses
 
         public async Task<List<EmployeeDto>> GetAllUserAsync()
         {
-            var employees = await _context.Employees!
+            var employees = await _context.Employees
                 .Include(s => s.Specialist)
                 .Include(c => c.Clinic)
-                .ToListAsync();
+                .Include(c => c.Courses)
+				.Include(e => e.Enrollments)
+				.Include(b => b.Blogs)
+				.Include(s => s.Services)
+				.ToListAsync();
             var employeesMap = _mapper.Map<List<EmployeeDto>>(employees);
 
             return employeesMap;
@@ -38,9 +41,13 @@ namespace MediNet_BE.Repositories.Courses
 
         public async Task<EmployeeDto> GetUserByIdAsync(int id)
         {
-            var employee = await _context.Employees!
+            var employee = await _context.Employees
 				.Include(s => s.Specialist)
 				.Include(c => c.Clinic)
+				.Include(c => c.Courses)
+				.Include(e => e.Enrollments)
+				.Include(b => b.Blogs)
+				.Include(s => s.Services)
 				.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
 
             var employeeMap = _mapper.Map<EmployeeDto>(employee);
@@ -50,7 +57,15 @@ namespace MediNet_BE.Repositories.Courses
 
         public async Task<EmployeeDto> GetUserByEmailAsync(string email)
         {
-            var employee = await _context.Employees!.AsNoTracking().FirstOrDefaultAsync(c => c.Email == email);
+            var employee = await _context.Employees
+				.Include(s => s.Specialist)
+				.Include(c => c.Clinic)
+				.Include(c => c.Courses)
+				.Include(e => e.Enrollments)
+				.Include(b => b.Blogs)
+				.Include(s => s.Services)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Email == email);
             var employeeMap = _mapper.Map<EmployeeDto>(employee);
 
             return employeeMap;

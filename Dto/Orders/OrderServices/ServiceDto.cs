@@ -1,5 +1,4 @@
-﻿using MediNet_BE.Dto.Courses;
-using MediNet_BE.Dto.Doctors;
+﻿using MediNet_BE.Dto.Employees;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Models.Clinics;
@@ -16,8 +15,8 @@ namespace MediNet_BE.Dto.Orders.OrderServices
 		public string Description { get; set; }
 		[Column(TypeName = "decimal(18, 2)")]
 		public decimal Price { get; set; }
-		public int DoctorId { get; set; }
-		public DoctorDto Doctor { get; set; }
+		public int EmployeeId { get; set; }
+		public EmployeeDto Employee { get; set; }
 		public ICollection<OrderServiceDto>? OrderServices { get; set; }
 	}
 }

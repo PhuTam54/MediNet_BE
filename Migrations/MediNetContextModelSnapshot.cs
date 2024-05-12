@@ -177,10 +177,44 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Supplies", (string)null);
+                    b.ToTable("Supplies");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Course", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Blog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DiseaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DiseaseId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Blogs");
+                });
+
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Courses.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -195,12 +229,12 @@ namespace MediNet_BE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Duration")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -233,7 +267,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId");
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("Title")
                         .IsUnique();
@@ -241,74 +275,7 @@ namespace MediNet_BE.Migrations
                     b.ToTable("Courses", (string)null);
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Employee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ClinicId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date_Of_Birth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Full_Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SEO_Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SpecialistId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClinicId");
-
-                    b.HasIndex("SpecialistId");
-
-                    b.ToTable("Employees", (string)null);
-                });
-
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Enrollment", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Courses.Enrollment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -331,44 +298,10 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Enrollments", (string)null);
+                    b.ToTable("Enrollments");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Blog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DiseaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DiseaseId");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("Blogs", (string)null);
-                });
-
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Disease", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Disease", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -386,10 +319,10 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Diseases", (string)null);
+                    b.ToTable("Diseases");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Doctor", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Employee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -456,10 +389,10 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("SpecialistId");
 
-                    b.ToTable("Doctors", (string)null);
+                    b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Specialist", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Specialist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -477,7 +410,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specialists", (string)null);
+                    b.ToTable("Specialists");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Cart", b =>
@@ -511,7 +444,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Feedback", b =>
@@ -545,7 +478,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Feedbacks", (string)null);
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Order", b =>
@@ -560,10 +493,22 @@ namespace MediNet_BE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("District")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -603,6 +548,10 @@ namespace MediNet_BE.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 2)");
 
+                    b.Property<string>("Zip_Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
@@ -639,7 +588,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts", (string)null);
+                    b.ToTable("OrderProducts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.OrderService", b =>
@@ -668,7 +617,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("OrderServices", (string)null);
+                    b.ToTable("OrderServices");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.ProductDetail", b =>
@@ -714,7 +663,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductDetails", (string)null);
+                    b.ToTable("ProductDetails");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Service", b =>
@@ -729,7 +678,7 @@ namespace MediNet_BE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DoctorId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -741,9 +690,9 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId");
+                    b.HasIndex("EmployeeId");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Product", b =>
@@ -832,7 +781,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Users.Customer", b =>
@@ -885,7 +834,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Categories.Category", b =>
@@ -929,45 +878,45 @@ namespace MediNet_BE.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Course", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Blog", b =>
                 {
-                    b.HasOne("MediNet_BE.Models.Doctors.Doctor", "Doctor")
-                        .WithMany("Courses")
-                        .HasForeignKey("DoctorId")
+                    b.HasOne("MediNet_BE.Models.Employees.Disease", "Disease")
+                        .WithMany("Blogs")
+                        .HasForeignKey("DiseaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Doctor");
+                    b.HasOne("MediNet_BE.Models.Employees.Employee", "Employee")
+                        .WithMany("Blogs")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Disease");
+
+                    b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Employee", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Courses.Course", b =>
                 {
-                    b.HasOne("MediNet_BE.Models.Clinics.Clinic", "Clinic")
-                        .WithMany("Employees")
-                        .HasForeignKey("ClinicId")
+                    b.HasOne("MediNet_BE.Models.Employees.Employee", "Employee")
+                        .WithMany("Courses")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("MediNet_BE.Models.Doctors.Specialist", "Specialist")
-                        .WithMany("Employees")
-                        .HasForeignKey("SpecialistId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Clinic");
-
-                    b.Navigation("Specialist");
+                    b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Enrollment", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Courses.Enrollment", b =>
                 {
-                    b.HasOne("MediNet_BE.Models.Courses.Course", "Course")
+                    b.HasOne("MediNet_BE.Models.Employees.Courses.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MediNet_BE.Models.Courses.Employee", "Employee")
+                    b.HasOne("MediNet_BE.Models.Employees.Employee", "Employee")
                         .WithMany("Enrollments")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -978,35 +927,16 @@ namespace MediNet_BE.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Blog", b =>
-                {
-                    b.HasOne("MediNet_BE.Models.Doctors.Disease", "Disease")
-                        .WithMany("Blogs")
-                        .HasForeignKey("DiseaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MediNet_BE.Models.Doctors.Doctor", "Doctor")
-                        .WithMany("Blogs")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Disease");
-
-                    b.Navigation("Doctor");
-                });
-
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Doctor", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Employee", b =>
                 {
                     b.HasOne("MediNet_BE.Models.Clinics.Clinic", "Clinic")
-                        .WithMany("Doctors")
+                        .WithMany("Employees")
                         .HasForeignKey("ClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MediNet_BE.Models.Doctors.Specialist", "Specialist")
-                        .WithMany("Doctors")
+                    b.HasOne("MediNet_BE.Models.Employees.Specialist", "Specialist")
+                        .WithMany("Employees")
                         .HasForeignKey("SpecialistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1124,13 +1054,13 @@ namespace MediNet_BE.Migrations
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Service", b =>
                 {
-                    b.HasOne("MediNet_BE.Models.Doctors.Doctor", "Doctor")
+                    b.HasOne("MediNet_BE.Models.Employees.Employee", "Employee")
                         .WithMany("Services")
-                        .HasForeignKey("DoctorId")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Doctor");
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Product", b =>
@@ -1163,41 +1093,34 @@ namespace MediNet_BE.Migrations
                 {
                     b.Navigation("Carts");
 
-                    b.Navigation("Doctors");
-
                     b.Navigation("Employees");
 
                     b.Navigation("Supplies");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Course", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Courses.Course", b =>
                 {
                     b.Navigation("Enrollments");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Courses.Employee", b =>
-                {
-                    b.Navigation("Enrollments");
-                });
-
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Disease", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Disease", b =>
                 {
                     b.Navigation("Blogs");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Doctor", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Employee", b =>
                 {
                     b.Navigation("Blogs");
 
                     b.Navigation("Courses");
 
+                    b.Navigation("Enrollments");
+
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("MediNet_BE.Models.Doctors.Specialist", b =>
+            modelBuilder.Entity("MediNet_BE.Models.Employees.Specialist", b =>
                 {
-                    b.Navigation("Doctors");
-
                     b.Navigation("Employees");
                 });
 

@@ -1,6 +1,6 @@
-﻿using MediNet_BE.Dto.Doctors;
-using MediNet_BE.DtoCreate.Doctors;
-using MediNet_BE.Models.Doctors;
+﻿using MediNet_BE.Dto.Employees;
+using MediNet_BE.DtoCreate.Employees;
+using MediNet_BE.Models.Employees;
 
 namespace MediNet_BE.Interfaces.Employees
 {

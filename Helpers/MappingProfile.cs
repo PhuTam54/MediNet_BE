@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Clinics;
-using MediNet_BE.Dto.Courses;
-using MediNet_BE.Dto.Doctors;
+using MediNet_BE.Dto.Employees;
+using MediNet_BE.Dto.Employees.Courses;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.DtoCreate.Categories;
 using MediNet_BE.DtoCreate.Clinics;
-using MediNet_BE.DtoCreate.Courses;
-using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.DtoCreate.Employees;
+using MediNet_BE.DtoCreate.Employees.Courses;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
 using MediNet_BE.DtoCreate.Orders.OrderServices;
@@ -18,8 +18,8 @@ using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Clinics;
-using MediNet_BE.Models.Courses;
-using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Employees;
+using MediNet_BE.Models.Employees.Courses;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +68,7 @@ namespace MediNet_BE.Helpers
 			CreateMap<ProductCreate, Product>();
 			CreateMap<ProductDetailCreate, ProductDetail>();
 			CreateMap<CartCreate, Cart>();
+			CreateMap<Cart, CartCreate>();
 			CreateMap<OrderCreate, Order>();
 			CreateMap<ServiceCreate, Service>();
 
@@ -94,13 +95,11 @@ namespace MediNet_BE.Helpers
 
 			#region Doctors
 			#region DoctorsCreate
-			CreateMap<DoctorCreate, Doctor>();
 			CreateMap<BlogCreate, Blog> ();
 			CreateMap<DiseaseCreate, Disease>();
 			CreateMap<SpecialistCreate, Specialist>();
 
 			#endregion
-			CreateMap<Doctor, DoctorDto>();
 			CreateMap<Blog, BlogDto>();
 			CreateMap<Disease, DiseaseDto>();
 			CreateMap<Specialist, SpecialistDto>();

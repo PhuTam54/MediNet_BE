@@ -26,6 +26,8 @@ namespace MediNet_BE.Repositories.Orders
         {
             var products = await _context.Products!
                 .Include(cc => cc.CategoryChild)
+                .ThenInclude(c => c.Category)
+                .ThenInclude(cp => cp.CategoryParent)
                 .Include(op => op.OrderProducts)
                 .Include(c => c.Carts)
                 .Include(s => s.Supplies)

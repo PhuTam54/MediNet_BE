@@ -9,6 +9,6 @@ namespace MediNet_BE.DtoCreate.Orders.OrderServices
         public string Description { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
-        public int DoctorId { get; set; }
+        public int EmployeeId { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using MediNet_BE.Models.Courses;
-using MediNet_BE.Models.Doctors;
+﻿using MediNet_BE.Models.Employees;
 using MediNet_BE.Models.Orders;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,8 +18,6 @@ namespace MediNet_BE.Models.Clinics
         public string ImagesClinic { get; set; }
         public ICollection<Supply>? Supplies { get; set; }
 		public ICollection<Cart>? Carts { get; set; }
-        public ICollection<Doctor>? Doctors { get; set; }
         public ICollection<Employee>? Employees { get; set; }
-
     }
 }

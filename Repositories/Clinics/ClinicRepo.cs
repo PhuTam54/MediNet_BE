@@ -24,7 +24,8 @@ namespace MediNet_BE.Repositories.Clinics
 
         public async Task<List<ClinicDto>> GetAllClinicAsync()
         {
-            var clinics = await _context.Clinics!
+            var clinics = await _context.Clinics
+                .Include(e => e.Employees)
                 .ToListAsync();
 
             var clinicsMap = _mapper.Map<List<ClinicDto>>(clinics);
@@ -34,7 +35,8 @@ namespace MediNet_BE.Repositories.Clinics
 
         public async Task<ClinicDto> GetClinicByIdAsync(int id)
         {
-            var clinic = await _context.Clinics!
+            var clinic = await _context.Clinics
+				.Include(e => e.Employees)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 

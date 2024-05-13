@@ -18,7 +18,7 @@ using MediNet_BE.DtoCreate.Categories;
 
 namespace MediNet_BE.Controllers.Categories
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CategoryParentsController : ControllerBase
     {

@@ -26,6 +26,8 @@ namespace MediNet_BE.Repositories.Categories
         {
             var categories = await _context.Categories!
                 .Include(cp => cp.CategoryParent)
+                .Include(cc => cc.CategoryChilds)
+                .ThenInclude(p => p.Products)
                 .ToListAsync();
 			
             var categoriesMap = _mapper.Map<List<CategoryDto>>(categories);
@@ -37,6 +39,8 @@ namespace MediNet_BE.Repositories.Categories
         {
             var category = await _context.Categories!
 				.Include(cp => cp.CategoryParent)
+				.Include(cc => cc.CategoryChilds)
+				.ThenInclude(p => p.Products)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 			var categoryMap = _mapper.Map<CategoryDto>(category);

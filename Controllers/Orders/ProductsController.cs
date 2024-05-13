@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
+using MediNet_BE.Repositories.Categories;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -29,14 +30,19 @@ namespace MediNet_BE.Controllers.Orders
     {
         private readonly IProductRepo _productRepo;
         private readonly ICategoryChildRepo _categoryChildRepo;
-        private readonly IClinicRepo _clinicRepo;
+		private readonly ICategoryRepo _categoryRepo;
+		private readonly ICategoryParentRepo _categoryParentRepo;
+		private readonly IClinicRepo _clinicRepo;
         private readonly IFileService _fileService;
 
-        public ProductsController(IProductRepo productRepo, ICategoryChildRepo categoryChildRepo, IClinicRepo clinicRepo, IFileService fileService)
+        public ProductsController(IProductRepo productRepo, ICategoryChildRepo categoryChildRepo, ICategoryRepo categoryRepo, ICategoryParentRepo categoryParentRepo,
+            IClinicRepo clinicRepo, IFileService fileService)
         {
             _productRepo = productRepo;
             _categoryChildRepo = categoryChildRepo;
-            _clinicRepo = clinicRepo;
+			_categoryRepo = categoryRepo;
+			_categoryParentRepo = categoryParentRepo;
+			_clinicRepo = clinicRepo;
             _fileService = fileService;
         }
 
@@ -65,17 +71,64 @@ namespace MediNet_BE.Controllers.Orders
 			return Ok(product);
         }
 
-        /// <summary>
-        /// Create Product
-        /// </summary>
-        /// <param name="productCreate"></param>
-        /// /// <remarks>
-        /// ManufacturerDate
-        /// 2024-04-13T08:18:59.6300000
-        /// </remarks>
-        /// <returns></returns>
+		[HttpGet]
+		[Route("categoryChildId")]
+		public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategoryChildIdAsync(int categoryChildId)
+		{
+			var categoryChild = await _categoryChildRepo.GetCategoryChildByIdAsync(categoryChildId);
 
-        [Authorize]
+			if (categoryChild == null)
+				return NotFound("Category Child Not Found!");
+			var products = await _productRepo.GetProductsByCategoryChildIdAsync(categoryChildId);
+			foreach (var product in products)
+			{
+				product.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
+			}
+			return Ok(products);
+		}
+
+		[HttpGet]
+		[Route("categoryId")]
+		public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategoryIdAsync(int categoryId)
+		{
+			var category = await _categoryRepo.GetCategoryByIdAsync(categoryId);
+
+			if (category == null)
+				return NotFound("Category Not Found!");
+			var products = await _productRepo.GetProductsByCategoryIdAsync(categoryId);
+			foreach (var product in products)
+			{
+				product.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
+			}
+			return Ok(products);
+		}
+
+		[HttpGet]
+		[Route("categoryParentId")]
+		public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategoryParentIdAsync(int categoryParentId)
+		{
+			var categoryParent = await _categoryChildRepo.GetCategoryChildByIdAsync(categoryParentId);
+
+			if (categoryParent == null)
+				return NotFound("Category Parent Not Found!");
+			var products = await _productRepo.GetProductsByCategoryParentIdAsync(categoryParentId);
+			foreach (var product in products)
+			{
+				product.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
+			}
+			return Ok(products);
+		}
+		/// <summary>
+		/// Create Product
+		/// </summary>
+		/// <param name="productCreate"></param>
+		/// /// <remarks>
+		/// ManufacturerDate
+		/// 2024-04-13T08:18:59.6300000
+		/// </remarks>
+		/// <returns></returns>
+
+		[Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
         public async Task<ActionResult<Product>> CreateProduct([FromForm] ProductCreate productCreate)

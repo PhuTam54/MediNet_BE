@@ -17,7 +17,7 @@ using MediNet_BE.Repositories.Courses;
 
 namespace MediNet_BE.Controllers.Employees
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class BlogsController : ControllerBase
     {

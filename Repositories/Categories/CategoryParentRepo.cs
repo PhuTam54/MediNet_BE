@@ -22,7 +22,9 @@ namespace MediNet_BE.Repositories.Categories
 
 		public async Task<List<CategoryParentDto>> GetAllCategoryParentAsync()
 		{
-			var categoryParents = await _context.CategoryParents!
+			var categoryParents = await _context.CategoryParents
+				.Include(c => c.Categories)
+				.ThenInclude(cc => cc.CategoryChilds)
 				.ToListAsync();
 
 			var categoryParentsMap = _mapper.Map<List<CategoryParentDto>>(categoryParents);
@@ -32,7 +34,9 @@ namespace MediNet_BE.Repositories.Categories
 
 		public async Task<CategoryParentDto> GetCategoryParentByIdAsync(int id)
 		{
-			var categoryParent = await _context.CategoryParents!
+			var categoryParent = await _context.CategoryParents
+				.Include(c => c.Categories)
+				.ThenInclude(cc => cc.CategoryChilds)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Id == id);
 

@@ -1,11 +1,9 @@
 ﻿using MediNet_BE.Data;
-using MediNet_BE.Dto.Courses;
-using MediNet_BE.Dto.Doctors;
+using MediNet_BE.Dto.Employees;
 using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Payments.Momo;
 using MediNet_BE.Dto.Users;
-using MediNet_BE.DtoCreate.Courses;
-using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Interfaces.Categories;
@@ -15,8 +13,7 @@ using MediNet_BE.Interfaces.Employees;
 using MediNet_BE.Interfaces.Enrollments;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;
-using MediNet_BE.Models.Courses;
-using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Employees;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Repositories.Categories;
 using MediNet_BE.Repositories.Clinics;
@@ -87,7 +84,6 @@ builder.Services.AddScoped<IFeedbackRepo, FeedbackRepo>();
 
 builder.Services.AddScoped<IUserRepo<Customer, CustomerDto, CustomerCreate>, CustomerRepo>();
 builder.Services.AddScoped<IUserRepo<Admin, AdminDto, AdminCreate>, AdminRepo>();
-builder.Services.AddScoped<IUserRepo<Doctor, DoctorDto, DoctorCreate>, DoctorRepo>();
 builder.Services.AddScoped<IUserRepo<Employee, EmployeeDto, EmployeeCreate>, EmployeeRepo>();
 
 

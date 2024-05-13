@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Doctors;
-using MediNet_BE.DtoCreate.Doctors;
+using MediNet_BE.Dto.Employees;
+using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Employees;
-using MediNet_BE.Models.Doctors;
+using MediNet_BE.Models.Employees;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Doctors
@@ -23,7 +23,7 @@ namespace MediNet_BE.Repositories.Doctors
         public async Task<List<BlogDto>> GetAllBlogAsync()
         {
             var blogs = await _context.Blogs!
-                .Include(d => d.Doctor)
+                .Include(e => e.Employee)
                 .Include(d => d.Disease)
                 .ToListAsync();
 
@@ -35,7 +35,7 @@ namespace MediNet_BE.Repositories.Doctors
         public async Task<BlogDto> GetBlogByIdAsync(int id)
         {
             var blog = await _context.Blogs!
-				.Include(d => d.Doctor)
+				.Include(e => e.Employee)
 				.Include(d => d.Disease)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -47,11 +47,11 @@ namespace MediNet_BE.Repositories.Doctors
 
         public async Task<Blog> AddBlogAsync(BlogCreate blogCreate)
         {
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == blogCreate.DoctorId);
+            var employeeDoctor = await _context.Employees.FirstOrDefaultAsync(d => d.Id == blogCreate.EmployeeId);
             var disease = await _context.Diseases.FirstOrDefaultAsync(d => d.Id == blogCreate.DiseaseId);
             var blogMap = _mapper.Map<Blog>(blogCreate);
             blogMap.CreatedAt = DateTime.UtcNow;
-            blogMap.Doctor = doctor;
+            blogMap.Employee = employeeDoctor;
             blogMap.Disease = disease;
 
             _context.Blogs!.Add(blogMap);
@@ -61,11 +61,11 @@ namespace MediNet_BE.Repositories.Doctors
 
         public async Task UpdateBlogAsync(BlogCreate blogCreate)
         {
-            var doctor = await _context.Doctors!.FirstOrDefaultAsync(d => d.Id == blogCreate.DoctorId);
+            var employeeDoctor = await _context.Employees!.FirstOrDefaultAsync(d => d.Id == blogCreate.EmployeeId);
             var disease = await _context.Diseases!.FirstOrDefaultAsync(d => d.Id == blogCreate.DiseaseId);
             var blogMap = _mapper.Map<Blog>(blogCreate);
 			blogMap.CreatedAt = DateTime.UtcNow;
-			blogMap.Doctor = doctor;
+			blogMap.Employee = employeeDoctor;
             blogMap.Disease = disease;
 
             _context.Blogs!.Update(blogMap);

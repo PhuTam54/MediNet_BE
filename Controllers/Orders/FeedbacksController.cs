@@ -83,14 +83,16 @@ namespace MediNet_BE.Controllers.Orders
         [Route("productId")]
         public async Task<ActionResult<FeedbackDto>> GetFeedbackByProductId(int productId)
         {
-            var feedback = await _feedbackRepo.GetFeedbackByProductIdAsync(productId);
-			if (feedback == null)
+            var feedbacks = await _feedbackRepo.GetFeedbackByProductIdAsync(productId);
+			if (feedbacks == null)
 			{
 				return NotFound();
 			}
-			feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
-
-			return Ok(feedback);
+            foreach (var feedback in feedbacks)
+            {
+                feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
+            }
+            return Ok(feedbacks);
         }
 
         [Authorize]

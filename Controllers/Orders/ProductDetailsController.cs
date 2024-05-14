@@ -16,7 +16,7 @@ using MediNet_BE.DtoCreate.Orders.OrderProducts;
 
 namespace MediNet_BE.Controllers.Orders
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ProductDetailsController : ControllerBase
     {

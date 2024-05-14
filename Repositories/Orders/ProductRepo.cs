@@ -5,9 +5,11 @@ using MediNet_BE.DtoCreate.Orders.OrderProducts;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models;
+using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Services.Image;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace MediNet_BE.Repositories.Orders
 {
@@ -25,7 +27,7 @@ namespace MediNet_BE.Repositories.Orders
         public async Task<List<ProductDto>> GetAllProductAsync()
         {
             var products = await _context.Products!
-                .Include(cc => cc.CategoryChild)
+				.Include(cc => cc.CategoryChild)
                 .ThenInclude(c => c.Category)
                 .ThenInclude(cp => cp.CategoryParent)
                 .Include(op => op.OrderProducts)
@@ -53,7 +55,43 @@ namespace MediNet_BE.Repositories.Orders
 			return prdMap;
         }
 
-        public async Task<Product> AddProductAsync(ProductCreate productCreate)
+		public async Task<List<ProductDto>> GetProductsByCategoryChildIdAsync(int categoryChildId)
+		{
+            var products = await _context.Products!
+					.Where(p => p.CategoryChild.Id == categoryChildId)
+					.AsNoTracking()
+	                .ToListAsync();
+
+			var prdsMap = _mapper.Map<List<ProductDto>>(products);
+
+			return prdsMap;
+		}
+
+		public async Task<List<ProductDto>> GetProductsByCategoryIdAsync(int categoryId)
+		{
+			var products = await _context.Products!
+					.Where(p => p.CategoryChild.Category.Id == categoryId)
+					.AsNoTracking()
+					.ToListAsync();
+
+			var prdsMap = _mapper.Map<List<ProductDto>>(products);
+
+			return prdsMap;
+		}
+
+		public async Task<List<ProductDto>> GetProductsByCategoryParentIdAsync(int categoryParentId)
+		{
+			var products = await _context.Products!
+					.Where(p => p.CategoryChild.Category.CategoryParent.Id == categoryParentId)
+					.AsNoTracking()
+					.ToListAsync();
+
+			var prdsMap = _mapper.Map<List<ProductDto>>(products);
+
+			return prdsMap;
+		}
+
+		public async Task<Product> AddProductAsync(ProductCreate productCreate)
         {
             var categoryChild = await _context.CategoryChilds!.FirstOrDefaultAsync(cc => cc.Id == productCreate.CategoryChildId);
 
@@ -85,5 +123,7 @@ namespace MediNet_BE.Repositories.Orders
             _context.Products!.Remove(product);
             await _context.SaveChangesAsync();
         }
-    }
+
+		
+	}
 }

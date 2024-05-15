@@ -13,19 +13,17 @@ using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Models.Clinics;
 using Microsoft.AspNetCore.Authorization;
-using MediNet_BE.Interfaces.Enrollments;
-using MediNet_BE.Interfaces.Courses;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Models.Users;
-using MediNet_BE.Repositories.Courses;
 using MediNet_BE.Models.Employees.Courses;
 using MediNet_BE.Models.Employees;
 using MediNet_BE.DtoCreate.Employees.Courses;
 using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Dto.Employees.Courses;
 using MediNet_BE.Dto.Employees;
+using MediNet_BE.Interfaces.Employees.Courses;
 
 namespace MediNet_BE.Controllers.Employees.Courses
 {
@@ -59,7 +57,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
         [HttpPost]
         public async Task<ActionResult<Enrollment>> CreateEnrollment([FromBody] EnrollmentCreate enrollmentCreate)
         {
@@ -80,7 +78,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
         [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateEnrollment([FromQuery] int id, [FromBody] EnrollmentCreate updatedEnrollment)
@@ -105,7 +103,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteEnrollment([FromQuery] int id)

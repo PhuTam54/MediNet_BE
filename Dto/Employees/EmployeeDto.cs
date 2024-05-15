@@ -14,7 +14,8 @@ namespace MediNet_BE.Dto.Employees
         public DateTime Date_Of_Birth { get; set; }
         public int Gender { get; set; }
         public string PhoneNumber { get; set; }
-        public int SpecialistId { get; set; }
+		public int RoleEmployee { get; set; }
+		public int SpecialistId { get; set; }
         public int ClinicId { get; set; }
         public SpecialistDto Specialist { get; set; }
         public ClinicDto Clinic { get; set; }

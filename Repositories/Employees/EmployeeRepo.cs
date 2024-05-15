@@ -11,7 +11,7 @@ using MediNet_BE.Models.Employees;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediNet_BE.Repositories.Courses
+namespace MediNet_BE.Repositories.Employees
 {
     public class EmployeeRepo : IUserRepo<Employee, EmployeeDto, EmployeeCreate>
     {
@@ -30,10 +30,10 @@ namespace MediNet_BE.Repositories.Courses
                 .Include(s => s.Specialist)
                 .Include(c => c.Clinic)
                 .Include(c => c.Courses)
-				.Include(e => e.Enrollments)
-				.Include(b => b.Blogs)
-				.Include(s => s.Services)
-				.ToListAsync();
+                .Include(e => e.Enrollments)
+                .Include(b => b.Blogs)
+                .Include(s => s.Services)
+                .ToListAsync();
             var employeesMap = _mapper.Map<List<EmployeeDto>>(employees);
 
             return employeesMap;
@@ -42,13 +42,13 @@ namespace MediNet_BE.Repositories.Courses
         public async Task<EmployeeDto> GetUserByIdAsync(int id)
         {
             var employee = await _context.Employees
-				.Include(s => s.Specialist)
-				.Include(c => c.Clinic)
-				.Include(c => c.Courses)
-				.Include(e => e.Enrollments)
-				.Include(b => b.Blogs)
-				.Include(s => s.Services)
-				.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+                .Include(s => s.Specialist)
+                .Include(c => c.Clinic)
+                .Include(c => c.Courses)
+                .Include(e => e.Enrollments)
+                .Include(b => b.Blogs)
+                .Include(s => s.Services)
+                .AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
 
             var employeeMap = _mapper.Map<EmployeeDto>(employee);
 
@@ -58,12 +58,12 @@ namespace MediNet_BE.Repositories.Courses
         public async Task<EmployeeDto> GetUserByEmailAsync(string email)
         {
             var employee = await _context.Employees
-				.Include(s => s.Specialist)
-				.Include(c => c.Clinic)
-				.Include(c => c.Courses)
-				.Include(e => e.Enrollments)
-				.Include(b => b.Blogs)
-				.Include(s => s.Services)
+                .Include(s => s.Specialist)
+                .Include(c => c.Clinic)
+                .Include(c => c.Courses)
+                .Include(e => e.Enrollments)
+                .Include(b => b.Blogs)
+                .Include(s => s.Services)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Email == email);
             var employeeMap = _mapper.Map<EmployeeDto>(employee);
@@ -74,11 +74,11 @@ namespace MediNet_BE.Repositories.Courses
         public async Task<Employee> AddUserAsync(EmployeeCreate userCreate)
         {
             var specialist = await _context.Specialists.FirstOrDefaultAsync(s => s.Id == userCreate.SpecialistId);
-            var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id ==  userCreate.ClinicId);
+            var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id == userCreate.ClinicId);
             var employeeMap = _mapper.Map<Employee>(userCreate);
             employeeMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
             employeeMap.Password = LoginRegisterController.HashPassword(employeeMap.Password);
-            employeeMap.Role = 4;
+            employeeMap.Role = 3;
             employeeMap.Specialist = specialist;
             employeeMap.Clinic = clinic;
 
@@ -89,16 +89,16 @@ namespace MediNet_BE.Repositories.Courses
 
         public async Task UpdateUserAsync(EmployeeCreate userCreate)
         {
-			var specialist = await _context.Specialists.FirstOrDefaultAsync(s => s.Id == userCreate.SpecialistId);
-			var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id == userCreate.ClinicId);
-			var employeeMap = _mapper.Map<Employee>(userCreate);
+            var specialist = await _context.Specialists.FirstOrDefaultAsync(s => s.Id == userCreate.SpecialistId);
+            var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id == userCreate.ClinicId);
+            var employeeMap = _mapper.Map<Employee>(userCreate);
             employeeMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
             employeeMap.Password = LoginRegisterController.HashPassword(employeeMap.Password);
-            employeeMap.Role = 4;
-			employeeMap.Specialist = specialist;
-			employeeMap.Clinic = clinic;
+            employeeMap.Role = 3;
+            employeeMap.Specialist = specialist;
+            employeeMap.Clinic = clinic;
 
-			_context.Employees!.Update(employeeMap);
+            _context.Employees!.Update(employeeMap);
             await _context.SaveChangesAsync();
         }
 

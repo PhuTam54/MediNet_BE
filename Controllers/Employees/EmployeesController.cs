@@ -85,7 +85,7 @@ namespace MediNet_BE.Controllers.Employees
         /// "email": "employee@gmail.com",
         /// "username": "employee",
         /// "password": "123456",
-        /// "role": 4
+        /// "role": 3
         /// </remarks>
         /// <returns></returns>
 

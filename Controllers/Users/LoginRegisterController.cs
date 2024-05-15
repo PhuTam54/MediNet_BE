@@ -27,7 +27,7 @@ namespace MediNet_BE.Controllers.Users
 		private readonly IMailService _mailService;
 		const int CUSTOMER = 1;
 		const int ADMIN = 2;
-		const int DOCTOR = 3;
+		const int EMPLOYEE = 3;
 
         public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
 		{
@@ -50,7 +50,7 @@ namespace MediNet_BE.Controllers.Users
 		[AllowAnonymous]
 		[HttpPost]
 		[Route("Login")]
-		public IActionResult Login([FromBody] AuthenticateRequest loginModel)
+		public async Task<IActionResult> Login([FromBody] AuthenticateRequest loginModel)
 		{
 			IActionResult response = Unauthorized();
 			{
@@ -76,7 +76,10 @@ namespace MediNet_BE.Controllers.Users
 					{
 						userRole = "Admin";
 					}
-
+					else if (account.Role == EMPLOYEE)
+					{
+						userRole = "Employee";
+					}
 					var claims = new List<Claim>
 					{
 						new Claim(ClaimTypes.Email, account.Email),
@@ -176,6 +179,10 @@ namespace MediNet_BE.Controllers.Users
 			{
 				return UserType.Admin;
 			}
+			else if (_context.Employees.Any(u => u.Email == email))
+			{
+				return UserType.Employee;
+			}
 			else
 			{
 				return UserType.Unknown;
@@ -189,6 +196,8 @@ namespace MediNet_BE.Controllers.Users
 					return _context.Customers.FirstOrDefault(u => u.Email == email);
 				case UserType.Admin:
 					return _context.Admins.FirstOrDefault(u => u.Email == email);
+				case UserType.Employee:
+					return _context.Employees.FirstOrDefault(u => u.Email == email);
 				default:
 					return null;
 			}
@@ -209,7 +218,7 @@ namespace MediNet_BE.Controllers.Users
 			Unknown,
 			Customer,
 			Admin,
-			Doctor
+			Employee
 		}
 
 		[HttpPost]

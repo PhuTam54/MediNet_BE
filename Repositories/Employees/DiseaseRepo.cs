@@ -7,7 +7,7 @@ using MediNet_BE.Interfaces.Employees;
 using MediNet_BE.Models.Employees;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediNet_BE.Repositories.Doctors
+namespace MediNet_BE.Repositories.Employees
 {
     public class DiseaseRepo : IDiseaseRepo
     {

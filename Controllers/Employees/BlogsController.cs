@@ -13,7 +13,6 @@ using MediNet_BE.Interfaces.Employees;
 using MediNet_BE.Models.Employees;
 using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Dto.Employees;
-using MediNet_BE.Repositories.Courses;
 
 namespace MediNet_BE.Controllers.Employees
 {
@@ -47,13 +46,13 @@ namespace MediNet_BE.Controllers.Employees
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
         [HttpPost]
         public async Task<ActionResult<Blog>> CreateBlog([FromBody] BlogCreate blogCreate)
         {
             var employeeDoctor = await _employeeRepo.GetUserByIdAsync(blogCreate.EmployeeId);
             var disease = await _diseaseRepo.GetDiseaseByIdAsync(blogCreate.DiseaseId);
-            if (employeeDoctor == null || disease == null)
+            if (employeeDoctor == null || disease == null || (employeeDoctor != null && employeeDoctor.RoleEmployee != 1))
             {
                 return NotFound();
             }
@@ -68,7 +67,7 @@ namespace MediNet_BE.Controllers.Employees
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
         [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateBlog([FromQuery] int id, [FromBody] BlogCreate updatedBlog)
@@ -77,7 +76,7 @@ namespace MediNet_BE.Controllers.Employees
             var disease = await _diseaseRepo.GetDiseaseByIdAsync(updatedBlog.DiseaseId);
             var blog = await _blogRepo.GetBlogByIdAsync(id);
 
-            if (blog == null || employeeDoctor == null || disease == null)
+            if (blog == null || employeeDoctor == null || disease == null || (employeeDoctor != null && employeeDoctor.RoleEmployee != 1))
             {
                 return NotFound();
             }
@@ -92,7 +91,6 @@ namespace MediNet_BE.Controllers.Employees
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteBlog([FromQuery] int id)

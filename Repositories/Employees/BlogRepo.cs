@@ -7,7 +7,7 @@ using MediNet_BE.Interfaces.Employees;
 using MediNet_BE.Models.Employees;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediNet_BE.Repositories.Doctors
+namespace MediNet_BE.Repositories.Employees
 {
     public class BlogRepo : IBlogRepo
     {
@@ -35,9 +35,9 @@ namespace MediNet_BE.Repositories.Doctors
         public async Task<BlogDto> GetBlogByIdAsync(int id)
         {
             var blog = await _context.Blogs!
-				.Include(e => e.Employee)
-				.Include(d => d.Disease)
-				.AsNoTracking()
+                .Include(e => e.Employee)
+                .Include(d => d.Disease)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             var blogMap = _mapper.Map<BlogDto>(blog);
@@ -64,8 +64,8 @@ namespace MediNet_BE.Repositories.Doctors
             var employeeDoctor = await _context.Employees!.FirstOrDefaultAsync(d => d.Id == blogCreate.EmployeeId);
             var disease = await _context.Diseases!.FirstOrDefaultAsync(d => d.Id == blogCreate.DiseaseId);
             var blogMap = _mapper.Map<Blog>(blogCreate);
-			blogMap.CreatedAt = DateTime.UtcNow;
-			blogMap.Employee = employeeDoctor;
+            blogMap.CreatedAt = DateTime.UtcNow;
+            blogMap.Employee = employeeDoctor;
             blogMap.Disease = disease;
 
             _context.Blogs!.Update(blogMap);

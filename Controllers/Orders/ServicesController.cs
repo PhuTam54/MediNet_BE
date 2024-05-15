@@ -15,11 +15,9 @@ using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.DtoCreate.Orders.OrderServices;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Repositories.Doctors;
 using MediNet_BE.Dto.Employees;
 using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Models.Employees;
-using MediNet_BE.Repositories.Courses;
 
 namespace MediNet_BE.Controllers.Orders
 {

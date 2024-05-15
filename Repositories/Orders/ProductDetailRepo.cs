@@ -70,5 +70,13 @@ namespace MediNet_BE.Repositories.Orders
 			_context.ProductDetails!.Remove(productDetail);
 			await _context.SaveChangesAsync();
 		}
+
+		public async Task<List<ProductDetailDto>> GetProductDetailsByProductIdAsync(int productId)
+		{
+			var productDetails = await _context.ProductDetails.Where(pd => pd.Product.Id == productId).ToListAsync();
+			var productDetailsMap = _mapper.Map<List<ProductDetailDto>>(productDetails);
+
+			return productDetailsMap;
+		}
 	}
 }

@@ -124,6 +124,27 @@ namespace MediNet_BE.Repositories.Orders
             await _context.SaveChangesAsync();
         }
 
-		
+		public async Task<List<ProductDto>> GetProductsByBuyQtyAsync()
+		{
+			var products = await _context.Products!
+				.Include(cc => cc.CategoryChild)
+				.ThenInclude(c => c.Category)
+				.ThenInclude(cp => cp.CategoryParent)
+				.Include(op => op.OrderProducts)
+				.Include(c => c.Carts)
+				.Include(s => s.Supplies)
+				.Select(p => new
+				{
+					Product = p,
+					BuyQty = p.OrderProducts.Sum(op => op.Quantity)
+				})
+		        .OrderByDescending(p => p.BuyQty)
+				.ToListAsync();
+
+			var prdsMap = _mapper.Map<List<ProductDto>>(products.Select(c => c.Product).ToList());
+
+			return prdsMap;
+		}
+
 	}
 }

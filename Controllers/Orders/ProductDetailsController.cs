@@ -34,7 +34,16 @@ namespace MediNet_BE.Controllers.Orders
 		{
 			return Ok(await _productDetailRepo.GetAllProductDetailAsync());
 		}
-
+		
+		[HttpGet]
+		[Route("productId")]
+		public async Task<ActionResult<IEnumerable<ProductDetailDto>>> GetProductDetailsByProductId(int productId)
+		{
+			var product = await _productRepo.GetProductByIdAsync(productId);
+			if (product == null)
+				return NotFound("Product Not Found!");
+			return Ok(await _productDetailRepo.GetProductDetailsByProductIdAsync(productId));
+		}
 		[HttpGet]
 		[Route("id")]
 		public async Task<ActionResult<ProductDetailDto>> GetProductDetail([FromQuery] int id)

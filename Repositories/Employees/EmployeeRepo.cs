@@ -109,5 +109,10 @@ namespace MediNet_BE.Repositories.Employees
             _context.Employees!.Remove(employee);
             await _context.SaveChangesAsync();
         }
-    }
+
+		public Task<List<EmployeeDto>> GetUserByTotalAmountOrderAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

@@ -44,7 +44,20 @@ namespace MediNet_BE.Controllers.Users
             return Ok(customers);
         }
 
-        [HttpGet]
+		[HttpGet]
+		[Route("totalAmount")]
+		public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomersByTotalAmountOrder()
+		{
+			var customers = await _customerRepo.GetUserByTotalAmountOrderAsync();
+			foreach (var customer in customers)
+			{
+				customer.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, customer.Image);
+			}
+
+			return Ok(customers);
+		}
+
+		[HttpGet]
         [Route("id")]
         public async Task<ActionResult<CustomerDto>> GetCustomerById(int id)
         {

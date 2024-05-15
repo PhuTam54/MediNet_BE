@@ -7,7 +7,8 @@ namespace MediNet_BE.Interfaces.Orders
     public interface IProductRepo
     {
         public Task<List<ProductDto>> GetAllProductAsync();
-        public Task<ProductDto> GetProductByIdAsync(int id);
+		public Task<List<ProductDto>> GetProductsByBuyQtyAsync();
+		public Task<ProductDto> GetProductByIdAsync(int id);
 		public Task<List<ProductDto>> GetProductsByCategoryChildIdAsync(int categoryChildId);
 		public Task<List<ProductDto>> GetProductsByCategoryIdAsync(int categoryId);
 		public Task<List<ProductDto>> GetProductsByCategoryParentIdAsync(int categoryParentId);

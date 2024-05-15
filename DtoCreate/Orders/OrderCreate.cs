@@ -1,4 +1,6 @@
-﻿namespace MediNet_BE.DtoCreate.Orders
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MediNet_BE.DtoCreate.Orders
 {
     public class OrderCreate
     {
@@ -11,6 +13,8 @@
 		public string City { get; set; }
 		public string District { get; set; }
 		public string Zip_Code { get; set; }
+		[Column(TypeName = "decimal(18, 2)")]
+		public decimal TotalAmount { get; set; }
 		public string Description { get; set; }
         public string Shipping_method { get; set; }
         public string Payment_method { get; set; }

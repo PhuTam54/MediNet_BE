@@ -88,30 +88,24 @@ namespace MediNet_BE.Repositories.Orders
 			orderMap.OrderDate = DateTime.UtcNow;
             orderMap.Customer = customer;
 
-			var carts = new List<Cart>();
+			_context.Orders.Add(orderMap);
 			foreach (var carttId in orderCreate.CartIds)
 			{
 				var cart = await _context.Carts.Include(p => p.Product).FirstOrDefaultAsync(c => c.Id == carttId);
 				if (cart != null)
 				{
-					/*orderMap.TotalAmount += cart.SubTotal;  FE is already have this field */
-					carts.Add(cart);
+					var orderProduct = new OrderProduct { ProductId = cart.Product.Id, OrderId = orderMap.Id, Product = cart.Product, Order = orderMap, Quantity = cart.QtyCart, Subtotal = cart.SubTotal };
+					var supply = await _context.Supplies.FirstOrDefaultAsync(s => s.Product.Id == cart.ProductId && s.Clinic.Id == cart.ClinicId);
+					if (supply != null)
+						{
+							supply.StockQuantity -= cart.QtyCart;
+							_context.Supplies.Update(supply);
+						}
+					_context.OrderProducts.Add(orderProduct);
+					_context.Carts.Remove(cart);
 				}
 			}
-			_context.Orders.Add(orderMap);
-			foreach (var item in carts)
-			{
-				var orderProduct = new OrderProduct { ProductId = item.Product.Id, OrderId = orderMap.Id, Product = item.Product, Order = orderMap, Quantity = item.QtyCart, Subtotal = item.SubTotal };
-                var supply = await _context.Supplies.FirstOrDefaultAsync(s => s.Product.Id == item.ProductId && s.Clinic.Id == item.ClinicId);
-                if(supply != null)
-                {
-					supply.StockQuantity -= item.QtyCart;
-                    _context.Supplies.Update(supply);
-                }
-                _context.OrderProducts.Add(orderProduct);
-				_context.Carts.Remove(item);
-			}
-
+			
 			await _context.SaveChangesAsync();
 			return orderMap;
 		}

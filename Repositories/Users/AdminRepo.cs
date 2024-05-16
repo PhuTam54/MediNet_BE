@@ -83,6 +83,9 @@ namespace MediNet_BE.Repositories.Users
             await _context.SaveChangesAsync();
         }
 
-
-    }
+		public Task<List<AdminDto>> GetUserByTotalAmountOrderAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

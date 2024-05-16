@@ -57,7 +57,19 @@ namespace MediNet_BE.Controllers.Orders
 			return Ok(products);
         }
 
-        [HttpGet]
+		[HttpGet]
+		[Route("buyQty")]
+		public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByBuyQty()
+		{
+			var products = await _productRepo.GetProductsByBuyQtyAsync();
+			foreach (var product in products)
+			{
+				product.ImageSrc = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
+			}
+			return Ok(products);
+		}
+
+		[HttpGet]
         [Route("id")]
         public async Task<ActionResult<ProductDto>> GetProductById(int id)
         {

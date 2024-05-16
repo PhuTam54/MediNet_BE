@@ -33,6 +33,7 @@ namespace MediNet_BE.Repositories.Orders
                 .Include(op => op.OrderProducts)
                 .Include(c => c.Carts)
                 .Include(s => s.Supplies)
+				.Include(pd => pd.ProductDetails)
                 .ToListAsync();
 
             var prdsMap = _mapper.Map<List<ProductDto>>(products);
@@ -47,6 +48,7 @@ namespace MediNet_BE.Repositories.Orders
 				.Include(op => op.OrderProducts)
 				.Include(c => c.Carts)
 				.Include(s => s.Supplies)
+				.Include(pd => pd.ProductDetails)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -59,6 +61,7 @@ namespace MediNet_BE.Repositories.Orders
 		{
             var products = await _context.Products!
 					.Where(p => p.CategoryChild.Id == categoryChildId)
+				    .Include(pd => pd.ProductDetails)
 					.AsNoTracking()
 	                .ToListAsync();
 
@@ -71,6 +74,7 @@ namespace MediNet_BE.Repositories.Orders
 		{
 			var products = await _context.Products!
 					.Where(p => p.CategoryChild.Category.Id == categoryId)
+				    .Include(pd => pd.ProductDetails)
 					.AsNoTracking()
 					.ToListAsync();
 
@@ -83,6 +87,7 @@ namespace MediNet_BE.Repositories.Orders
 		{
 			var products = await _context.Products!
 					.Where(p => p.CategoryChild.Category.CategoryParent.Id == categoryParentId)
+					.Include(pd => pd.ProductDetails)
 					.AsNoTracking()
 					.ToListAsync();
 
@@ -133,6 +138,7 @@ namespace MediNet_BE.Repositories.Orders
 				.Include(op => op.OrderProducts)
 				.Include(c => c.Carts)
 				.Include(s => s.Supplies)
+				.Include(pd => pd.ProductDetails)
 				.Select(p => new
 				{
 					Product = p,

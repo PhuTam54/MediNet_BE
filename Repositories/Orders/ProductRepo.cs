@@ -47,6 +47,7 @@ namespace MediNet_BE.Repositories.Orders
 				.Include(op => op.OrderProducts)
 				.Include(c => c.Carts)
 				.Include(s => s.Supplies)
+				.Include(pd => pd.ProductDetails)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id);
 

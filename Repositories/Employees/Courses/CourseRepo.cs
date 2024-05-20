@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Employees.Courses;
 using MediNet_BE.DtoCreate.Employees.Courses;
-using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Employees.Courses;
-using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Employees.Courses;
 using Microsoft.EntityFrameworkCore;
 

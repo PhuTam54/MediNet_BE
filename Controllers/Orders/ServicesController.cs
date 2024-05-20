@@ -2,14 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediNet_BE.Data;
-using MediNet_BE.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
-using System.Security.Claims;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.DtoCreate.Orders.OrderServices;
@@ -26,12 +21,12 @@ namespace MediNet_BE.Controllers.Orders
     public class ServicesController : ControllerBase
     {
         private readonly IServiceRepo _serviceRepo;
-		private readonly IUserRepo<Employee, EmployeeDto, EmployeeCreate> _employeeRepo;
+        private readonly IUserRepo<Employee, EmployeeDto, EmployeeCreate> _employeeRepo;
 
         public ServicesController(IServiceRepo serviceRepo, IUserRepo<Employee, EmployeeDto, EmployeeCreate> employeeRepo)
         {
             _serviceRepo = serviceRepo;
-			_employeeRepo = employeeRepo;
+            _employeeRepo = employeeRepo;
         }
 
         [HttpGet]
@@ -72,10 +67,10 @@ namespace MediNet_BE.Controllers.Orders
         [Route("id")]
         public async Task<IActionResult> UpdateService([FromQuery] int id, [FromBody] ServiceCreate updatedService)
         {
-			var employeeDoctor = await _employeeRepo.GetUserByIdAsync(updatedService.EmployeeId);
-			if (employeeDoctor == null)
-				return NotFound("Doctor Not Found!");
-			var service = await _serviceRepo.GetServiceByIdAsync(id);
+            var employeeDoctor = await _employeeRepo.GetUserByIdAsync(updatedService.EmployeeId);
+            if (employeeDoctor == null)
+                return NotFound("Doctor Not Found!");
+            var service = await _serviceRepo.GetServiceByIdAsync(id);
             if (service == null)
                 return NotFound();
             if (updatedService == null)

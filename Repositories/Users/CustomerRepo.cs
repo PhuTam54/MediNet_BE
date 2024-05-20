@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
 using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
-using MediNet_BE.Dto;
-using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Employees;
 using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Models;
-using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Services;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +30,8 @@ namespace MediNet_BE.Repositories.Users
 				.Include(o => o.Orders)
 				.Include(f => f.Feedbacks)
 				.Include(c => c.Carts)
+				.Include(bm => bm.BlogComments)
+				.Include(fp => fp.FavoriteProducts)
 				.ToListAsync();
 
 			var customersMap = _mapper.Map<List<CustomerDto>>(customers);
@@ -48,6 +45,8 @@ namespace MediNet_BE.Repositories.Users
 								.Include(o => o.Orders)
 								.Include(f => f.Feedbacks)
 								.Include(c => c.Carts)
+								.Include(bm => bm.BlogComments)
+				                .Include(fp => fp.FavoriteProducts)
 								.AsNoTracking()
 								.FirstOrDefaultAsync(c => c.Id == id);
 			var customerMap = _mapper.Map<CustomerDto>(customer);
@@ -61,6 +60,8 @@ namespace MediNet_BE.Repositories.Users
 				.Include(o => o.Orders)
 				.Include(f => f.Feedbacks)
 				.Include(c => c.Carts)
+				.Include(bm => bm.BlogComments)
+				.Include(fp => fp.FavoriteProducts)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(c => c.Email == email);
 
@@ -115,6 +116,8 @@ namespace MediNet_BE.Repositories.Users
 		.Include(o => o.Orders)
 		.Include(f => f.Feedbacks)
 		.Include(c => c.Carts)
+		.Include(bm => bm.BlogComments)
+		.Include(fp => fp.FavoriteProducts)
 		.Select(c => new
 		{
 			Customer = c,

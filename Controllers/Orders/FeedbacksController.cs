@@ -2,24 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediNet_BE.Data;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Dto.Users;
-using MediNet_BE.Repositories;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Orders;
-using MediNet_BE.Dto;
-using NuGet.Packaging;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
+using MediNet_BE.Interfaces.Products;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -44,25 +39,25 @@ namespace MediNet_BE.Controllers.Orders
         public List<string> GetImagesPath(string path)
         {
             var imagesPath = new List<string>();
-			string[] picturePaths = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
-			foreach (string picturePath in picturePaths)
-			{
-				var imageLink = String.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, picturePath);
-				imagesPath.Add(imageLink);
-			}
+            string[] picturePaths = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            foreach (string picturePath in picturePaths)
+            {
+                var imageLink = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, picturePath);
+                imagesPath.Add(imageLink);
+            }
             return imagesPath;
-		}
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetCategories()
         {
             var feedbacks = await _feedbackRepo.GetAllFeedbackAsync();
-			foreach (var feedback in feedbacks)
-			{
-				feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
-			}
-            
-			return Ok(feedbacks);
+            foreach (var feedback in feedbacks)
+            {
+                feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
+            }
+
+            return Ok(feedbacks);
         }
 
         [HttpGet]
@@ -70,13 +65,13 @@ namespace MediNet_BE.Controllers.Orders
         public async Task<ActionResult<FeedbackDto>> GetFeedbackById(int id)
         {
             var feedback = await _feedbackRepo.GetFeedbackByIdAsync(id);
-			if (feedback == null)
-			{
-				return NotFound();
-			}
-			feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+            feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
 
-			return Ok(feedback);
+            return Ok(feedback);
         }
 
         [HttpGet]
@@ -84,13 +79,13 @@ namespace MediNet_BE.Controllers.Orders
         public async Task<ActionResult<FeedbackDto>> GetFeedbackByProductId(int productId)
         {
             var feedback = await _feedbackRepo.GetFeedbackByProductIdAsync(productId);
-			if (feedback == null)
-			{
-				return NotFound();
-			}
-			feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+            feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
 
-			return Ok(feedback);
+            return Ok(feedback);
         }
 
         [Authorize]

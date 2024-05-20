@@ -1,10 +1,11 @@
 ﻿using MediNet_BE.Models.Clinics;
+using MediNet_BE.Models.Products;
 using MediNet_BE.Models.Users;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Models.Orders
 {
-	public class Cart
+    public class Cart
 	{
 		public int Id { get; set; }
 		public int QtyCart { get; set; }

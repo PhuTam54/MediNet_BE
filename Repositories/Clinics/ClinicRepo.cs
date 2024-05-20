@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Clinics;
 using MediNet_BE.DtoCreate.Clinics;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Clinics;
-using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Clinics;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +24,9 @@ namespace MediNet_BE.Repositories.Clinics
         {
             var clinics = await _context.Clinics
                 .Include(e => e.Employees)
+                .Include(i => i.InStocks)
+                .Include(s => s.StockIns)
+                .Include(s => s.StockOuts)
                 .ToListAsync();
 
             var clinicsMap = _mapper.Map<List<ClinicDto>>(clinics);
@@ -37,6 +38,9 @@ namespace MediNet_BE.Repositories.Clinics
         {
             var clinic = await _context.Clinics
 				.Include(e => e.Employees)
+				.Include(i => i.InStocks)
+				.Include(s => s.StockIns)
+				.Include(s => s.StockOuts)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 

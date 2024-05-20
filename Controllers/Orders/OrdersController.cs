@@ -4,7 +4,6 @@ using MediNet_BE.Data;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Models.Users;
-using MediNet_BE.Helpers;
 using Microsoft.CodeAnalysis;
 using MediNet_BE.Dto.Payments.VNPay;
 using MediNet_BE.Services.VNPay;
@@ -20,8 +19,6 @@ using MediNet_BE.Models.Orders;
 using MediNet_BE.Interfaces.Orders;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
-using MediNet_BE.Models;
-using MediNet_BE.Repositories.Orders;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.DtoCreate.Users;
 
@@ -38,9 +35,9 @@ namespace MediNet_BE.Controllers.Orders
         private readonly IMailService _mailService;
         private readonly IMomoService _momoService;
         private readonly IPayPalService _payPalService;
-		private readonly ICartRepo _cartRepo;
+        private readonly ICartRepo _cartRepo;
 
-		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo,
+        public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo,
             IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService,
             IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo)
         {
@@ -51,13 +48,22 @@ namespace MediNet_BE.Controllers.Orders
             _mailService = mailService;
             _momoService = momoService;
             _payPalService = payPalService;
-			_cartRepo = cartRepo;
+            _cartRepo = cartRepo;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
-            return Ok(await _orderRepo.GetAllOrderAsync());
+            var orders = await _orderRepo.GetAllOrderAsync();
+            foreach (var order in orders)
+            {
+                foreach (var item in order.OrderProducts)
+                {
+                    item.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, item.Product.Image);
+                }
+                order.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, order.Customer.Image);
+            }
+            return Ok(orders);
         }
 
         [HttpGet]
@@ -65,6 +71,13 @@ namespace MediNet_BE.Controllers.Orders
         public async Task<ActionResult<OrderDto>> GetOrderById(int id)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
+
+            foreach (var item in order.OrderProducts)
+            {
+                item.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, item.Product.Image);
+            }
+            order.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, order.Customer.Image);
+
             return order == null ? NotFound() : Ok(order);
         }
 
@@ -72,8 +85,17 @@ namespace MediNet_BE.Controllers.Orders
         [Route("userId")]
         public async Task<ActionResult<OrderDto>> GetOrderByUserId(int userId)
         {
-            var orderDto = await _orderRepo.GetOrderByUserIdAsync(userId);
-            return orderDto == null ? NotFound() : Ok(orderDto);
+            var orders = await _orderRepo.GetOrderByUserIdAsync(userId);
+            foreach (var order in orders)
+            {
+                foreach (var item in order.OrderProducts)
+                {
+                    item.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, item.Product.Image);
+                }
+                order.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, order.Customer.Image);
+            }
+
+            return orders == null ? NotFound() : Ok(orders);
         }
 
         /// <summary>
@@ -99,14 +121,14 @@ namespace MediNet_BE.Controllers.Orders
             if (user == null)
                 return NotFound("User Not Found!");
 
-			foreach (var cartId in orderCreate.CartIds)
-			{
-				var cart = await _cartRepo.GetCartByIdAsync(cartId);
-				if (cart == null)
-				{
-					return NotFound("Cart Not Found");
-				}
-			}
+            foreach (var cartId in orderCreate.CartIds)
+            {
+                var cart = await _cartRepo.GetCartByIdAsync(cartId);
+                if (cart == null)
+                {
+                    return NotFound("Cart Not Found");
+                }
+            }
 
             if (orderCreate == null)
                 return BadRequest(ModelState);
@@ -122,7 +144,7 @@ namespace MediNet_BE.Controllers.Orders
 
             if (newOrder.Payment_method == "Paypal")
             {
-				var paypalModel = new PaymentInformationModel
+                var paypalModel = new PaymentInformationModel
                 {
                     OrderId = newOrder.OrderCode,
                     Name = newOrder.Name,
@@ -134,15 +156,15 @@ namespace MediNet_BE.Controllers.Orders
             }
             if (newOrder.Payment_method == "VnPay")
             {
-				
-				var vnPayModel = new VnPaymentRequestModel
+
+                var vnPayModel = new VnPaymentRequestModel
                 {
-					OrderId = newOrder.OrderCode,
-					Amount = (double)newOrder.TotalAmount,
+                    OrderId = newOrder.OrderCode,
+                    Amount = (double)newOrder.TotalAmount,
                     CreatedDate = DateTime.Now,
                     Description = $"{newOrder.Name} {newOrder.Tel}",
                     FullName = newOrder.Name,
-				};
+                };
                 return Ok(_vnPayService.CreatePaymentUrl(HttpContext, vnPayModel));
             }
             if (newOrder.Payment_method == "Momo")
@@ -157,30 +179,30 @@ namespace MediNet_BE.Controllers.Orders
                 var response = await _momoService.CreatePaymentAsync(momoModel);
                 return Ok(response.PayUrl);
             }
-			if (newOrder.Payment_method == "COD")
-			{
-				await UpdateStatusOrder(newOrder.OrderCode);
-			}
+            if (newOrder.Payment_method == "COD")
+            {
+                await UpdateStatusOrder(newOrder.OrderCode);
+            }
 
-			return Ok("Order Successfully!");
+            return Ok("Order Successfully!");
         }
 
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
-		[Route("id")]
-		public async Task<IActionResult> OrderUpdate([FromQuery] int id, [FromQuery] OrderStatus status)
-		{
-			var order = await _orderRepo.GetOrderByIdAsync(id);
-			if (order == null)
-			{
-				return NotFound();
-			}
-			await _orderRepo.UpdateOrderAsync(id, status);
-			return Ok("Update Successfully!");
-		}
+        [Route("id")]
+        public async Task<IActionResult> OrderUpdate([FromQuery] int id, [FromQuery] OrderStatus status)
+        {
+            var order = await _orderRepo.GetOrderByIdAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            await _orderRepo.UpdateOrderAsync(id, status);
+            return Ok("Update Successfully!");
+        }
 
-		[NonAction]
+        [NonAction]
         public async Task<Order> UpdateStatusOrder(string orderCode)
         {
             var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);

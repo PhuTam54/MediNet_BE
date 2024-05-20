@@ -1,13 +1,12 @@
-﻿using MediNet_BE.Models;
-using MediNet_BE.Models.Categories;
+﻿using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Employees;
+using MediNet_BE.Models.Employees.Blogs;
 using MediNet_BE.Models.Employees.Courses;
 using MediNet_BE.Models.Orders;
+using MediNet_BE.Models.Products;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace MediNet_BE.Data
 {
@@ -26,34 +25,46 @@ namespace MediNet_BE.Data
 		public DbSet<CategoryChild> CategoryChilds { get; set; }
 		#endregion
 
+		#region Products
+		public DbSet<Product> Products { get; set; }
+		public DbSet<ProductDetail> ProductDetails { get; set; }
+		public DbSet<FavoriteProduct> FavoriteProducts { get; set; }
+		#endregion
+
 		#region Orders
 		public DbSet<Cart> Carts { get; set; }
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<OrderProduct> OrderProducts { get; set; }
 		public DbSet<OrderService> OrderServices { get; set; }
-		public DbSet<Product> Products { get; set; }
-		public DbSet<ProductDetail> ProductDetails { get; set; }
 		public DbSet<Service> Services { get; set; }
 		#endregion
 
 		#region Employees
 		public DbSet<Employee> Employees { get; set; }
-		public DbSet<Blog> Blogs { get; set; }
-		public DbSet<Disease> Diseases { get; set; }
 		public DbSet<Specialist> Specialists { get; set; }
 
-		#endregion
-
-		#region Clinics
-		public DbSet<Clinic> Clinics { get; set; }
-		public DbSet<Supply> Supplies { get; set; }
+		#region Blogs
+		public DbSet<Blog> Blogs { get; set; }
+		public DbSet<BlogComment> BlogComments { get; set; }
+		public DbSet<Disease> Diseases { get; set; }
 		#endregion
 
 		#region Courses
 		public DbSet<Course> Courses { get; set; }
 		public DbSet<Enrollment> Enrollments { get; set; }
+		#endregion
 
 		#endregion
+
+		#region Clinics
+		public DbSet<Clinic> Clinics { get; set; }
+		public DbSet<InStock> InStocks { get; set; }
+		public DbSet<StockIn> StockIns { get; set; }
+		public DbSet<StockOut> StockOuts { get; set; }
+
+		#endregion
+
+		
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

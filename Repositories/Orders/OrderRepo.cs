@@ -1,17 +1,9 @@
 ﻿using AutoMapper;
-using Humanizer.Localisation;
 using MediNet_BE.Data;
-using MediNet_BE.Dto;
-using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Orders;
-using MediNet_BE.Dto.Payments.VNPay;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.Interfaces.Orders;
-using MediNet_BE.Models;
-using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Orders;
-using MediNet_BE.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Orders
@@ -36,9 +28,10 @@ namespace MediNet_BE.Repositories.Orders
                 .ThenInclude(p => p.Product)
                 .Include(os => os.OrderServices)
                 .ThenInclude(s => s.Service)
-                .ToListAsync();
+				.OrderByDescending(o => o.Id)
+				.ToListAsync();
 
-            var ordersMap = _mapper.Map<List<OrderDto>>(orders);
+			var ordersMap = _mapper.Map<List<OrderDto>>(orders);
 
             return ordersMap;
         }
@@ -51,6 +44,7 @@ namespace MediNet_BE.Repositories.Orders
 				.ThenInclude(p => p.Product)
 				.Include(os => os.OrderServices)
 				.ThenInclude(s => s.Service)
+				.OrderByDescending(o => o.Id)
 				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -69,7 +63,7 @@ namespace MediNet_BE.Repositories.Orders
 				.ThenInclude(s => s.Service)
 				.AsNoTracking()
                 .Where(c => c.Customer.Id == userId)
-                .OrderByDescending(c => c.Id)
+                .OrderByDescending(o => o.Id)
                 .ToListAsync();
             var ordersMap = _mapper.Map<List<OrderDto>>(orders);
 
@@ -95,11 +89,11 @@ namespace MediNet_BE.Repositories.Orders
 				if (cart != null)
 				{
 					var orderProduct = new OrderProduct { ProductId = cart.Product.Id, OrderId = orderMap.Id, Product = cart.Product, Order = orderMap, Quantity = cart.QtyCart, Subtotal = cart.SubTotal };
-					var supply = await _context.Supplies.FirstOrDefaultAsync(s => s.Product.Id == cart.ProductId && s.Clinic.Id == cart.ClinicId);
+					var supply = await _context.InStocks.FirstOrDefaultAsync(s => s.Product.Id == cart.ProductId && s.Clinic.Id == cart.ClinicId);
 					if (supply != null)
 						{
 							supply.StockQuantity -= cart.QtyCart;
-							_context.Supplies.Update(supply);
+							_context.InStocks.Update(supply);
 						}
 					_context.OrderProducts.Add(orderProduct);
 					_context.Carts.Remove(cart);

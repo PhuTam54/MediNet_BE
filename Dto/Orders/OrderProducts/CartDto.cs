@@ -1,9 +1,7 @@
-﻿using MediNet_BE.Models.Clinics;
-using MediNet_BE.Models.Users;
-using MediNet_BE.Models;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Dto.Clinics;
+using MediNet_BE.Dto.Products;
 
 namespace MediNet_BE.Dto.Orders.OrderProducts
 {

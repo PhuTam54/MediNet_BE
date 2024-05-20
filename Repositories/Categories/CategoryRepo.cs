@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Clinics;
 using MediNet_BE.DtoCreate.Categories;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Models.Categories;
-using MediNet_BE.Models.Clinics;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Categories

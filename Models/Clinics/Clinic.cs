@@ -1,6 +1,5 @@
 ﻿using MediNet_BE.Models.Employees;
 using MediNet_BE.Models.Orders;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Models.Clinics
 {
@@ -16,7 +15,9 @@ namespace MediNet_BE.Models.Clinics
         public DateTime ClosingHours { get; set; }
         public string Description { get; set; }
         public string ImagesClinic { get; set; }
-        public ICollection<Supply>? Supplies { get; set; }
+        public ICollection<InStock>? InStocks { get; set; }
+		public ICollection<StockIn>? StockIns { get; set; }
+		public ICollection<StockOut>? StockOuts { get; set; }
 		public ICollection<Cart>? Carts { get; set; }
         public ICollection<Employee>? Employees { get; set; }
     }

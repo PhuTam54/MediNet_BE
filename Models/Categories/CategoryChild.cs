@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MediNet_BE.Models.Orders;
+﻿using MediNet_BE.Models.Products;
 
 namespace MediNet_BE.Models.Categories
 {

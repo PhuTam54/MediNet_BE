@@ -1,4 +1,4 @@
-﻿using MediNet_BE.Models;
+﻿using MediNet_BE.Dto.Products;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Dto.Orders.OrderProducts

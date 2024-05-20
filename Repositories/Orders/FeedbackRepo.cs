@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto;
-using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
-using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Orders;
-using MediNet_BE.Models;
-using MediNet_BE.Models.Categories;
-using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Orders;
 using Microsoft.EntityFrameworkCore;
 

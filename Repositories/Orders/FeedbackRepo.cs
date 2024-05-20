@@ -44,17 +44,18 @@ namespace MediNet_BE.Repositories.Orders
 			return feedbackMap;
         }
 
-        public async Task<FeedbackDto> GetFeedbackByProductIdAsync(int productId)
+        public async Task<List<FeedbackDto>> GetFeedbacksByProductIdAsync(int productId)
         {
-            var feedback = await _context.Feedbacks!
-				.Include(c => c.Customer)
+            var feedbacks = await _context.Feedbacks!
+                .Include(c => c.Customer)
                 .Include(p => p.Product)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Product.Id == productId);
+                .Where(f => f.Product.Id == productId)
+                .ToListAsync();
 
-			var feedbackMap = _mapper.Map<FeedbackDto>(feedback);
+			var feedbacksMap = _mapper.Map<List<FeedbackDto>>(feedbacks);
 
-			return feedbackMap;
+			return feedbacksMap;
         }
 
         public async Task<Feedback> AddFeedbackAsync(FeedbackCreate feedbackCreate)

@@ -79,16 +79,18 @@ namespace MediNet_BE.Controllers.Orders
         public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetFeedbacksByProductId(int productId)
         {
 			var feedbacks = await _feedbackRepo.GetFeedbacksByProductIdAsync(productId);
+
 			if (feedbacks == null)
 			{
 				return NotFound();
 			}
-			foreach (var feedback in feedbacks)
-			{
-				feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
-			}
-			return Ok(feedbacks);
-		}
+
+            foreach (var feedback in feedbacks)
+            {
+                feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
+            }
+            return Ok(feedbacks);
+        }
 
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Customer")]

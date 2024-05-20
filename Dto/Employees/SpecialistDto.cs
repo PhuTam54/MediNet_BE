@@ -1,7 +1,4 @@
-﻿using MediNet_BE.Dto.Users;
-using MediNet_BE.Models.Users;
-
-namespace MediNet_BE.Dto.Employees
+﻿namespace MediNet_BE.Dto.Employees
 {
     public class SpecialistDto
     {

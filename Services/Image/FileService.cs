@@ -1,8 +1,4 @@
-﻿using MediNet_BE.Dto.Orders;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
-
-namespace MediNet_BE.Services.Image
+﻿namespace MediNet_BE.Services.Image
 {
 	public class FileService : IFileService
 	{

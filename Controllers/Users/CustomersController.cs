@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediNet_BE.Data;
 using MediNet_BE.Models.Users;
-using MediNet_BE.Dto;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Models;
 using MediNet_BE.Dto.Users;
-using MediNet_BE.Repositories;
 using MediNet_BE.Services.Image;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;

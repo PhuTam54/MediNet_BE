@@ -1,9 +1,4 @@
 ﻿using MediNet_BE.Dto.Employees;
-using MediNet_BE.Dto.Orders;
-using MediNet_BE.Dto.Users;
-using MediNet_BE.Models.Clinics;
-using MediNet_BE.Models.Orders;
-using MediNet_BE.Models.Users;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Dto.Orders.OrderServices

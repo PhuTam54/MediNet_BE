@@ -1,5 +1,4 @@
-﻿using MediNet_BE.Dto.Users;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Dto.Employees.Courses
 {
@@ -9,7 +8,9 @@ namespace MediNet_BE.Dto.Employees.Courses
         public string Title { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
-        public string Description { get; set; }
+		public string ImagesCourse { get; set; }
+		public List<string> ImagesSrc { get; set; } = [];
+		public string Description { get; set; }
         public string Duration { get; set; }
         public string Location { get; set; }
         public string Topics { get; set; }

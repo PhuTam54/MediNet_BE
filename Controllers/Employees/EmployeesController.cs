@@ -2,18 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediNet_BE.Data;
 using MediNet_BE.Identity;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Services.Image;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Interfaces.Employees;
-using MediNet_BE.Repositories.Clinics;
-using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Models.Employees;
 using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Dto.Employees;
@@ -110,8 +105,15 @@ namespace MediNet_BE.Controllers.Employees
                 return BadRequest(ModelState);
             if (userCreate.ImageFile != null)
             {
-                var fileResult = _fileService.SaveImage(userCreate.ImageFile, "images/users/employees/");
-                if (fileResult.Item1 == 1)
+				var imgPath = "";
+				if (userCreate.Role == 3)
+					imgPath = "images/users/doctors/";
+				if (userCreate.Role == 4)
+					imgPath = "images/users/employees/";
+
+				var fileResult = _fileService.SaveImage(userCreate.ImageFile, imgPath);
+
+				if (fileResult.Item1 == 1)
                 {
                     userCreate.Image = fileResult.Item2;
                 }
@@ -145,7 +147,13 @@ namespace MediNet_BE.Controllers.Employees
                 return BadRequest();
             if (updatedUser.ImageFile != null)
             {
-                var fileResult = _fileService.SaveImage(updatedUser.ImageFile, "images/users/employees/");
+                var imgPath = "";
+                if(updatedUser.Role == 3)
+                    imgPath = "images/users/doctors/";
+                if (updatedUser.Role == 4)
+                    imgPath = "images/users/employees/";
+
+				var fileResult = _fileService.SaveImage(updatedUser.ImageFile, imgPath);
                 if (fileResult.Item1 == 1)
                 {
                     updatedUser.Image = fileResult.Item2;

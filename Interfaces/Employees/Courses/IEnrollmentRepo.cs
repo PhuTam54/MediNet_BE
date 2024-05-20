@@ -8,7 +8,8 @@ namespace MediNet_BE.Interfaces.Employees.Courses
     {
         public Task<List<EnrollmentDto>> GetAllEnrollmentAsync();
         public Task<EnrollmentDto> GetEnrollmentByIdAsync(int id);
-        public Task<Enrollment> AddEnrollmentAsync(EnrollmentCreate enrollmentCreate);
+		public Task<List<EnrollmentDto>> GetEnrollmentsByUserIdAsync(int employeeId);
+		public Task<Enrollment> AddEnrollmentAsync(EnrollmentCreate enrollmentCreate);
         public Task UpdateEnrollmentAsync(EnrollmentCreate enrollmentCreate);
         public Task DeleteEnrollmentAsync(int id);
     }

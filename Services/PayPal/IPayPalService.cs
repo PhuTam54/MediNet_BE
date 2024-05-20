@@ -1,5 +1,4 @@
-﻿
-using MediNet_BE.Dto.Payments.PayPal;
+﻿using MediNet_BE.Dto.Payments.PayPal;
 
 namespace MediNet_BE.Services.PayPal;
 public interface IPayPalService

@@ -2,28 +2,31 @@
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Employees;
+using MediNet_BE.Dto.Employees.Blogs;
 using MediNet_BE.Dto.Employees.Courses;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.Dto.Orders.OrderServices;
+using MediNet_BE.Dto.Products;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.DtoCreate.Categories;
 using MediNet_BE.DtoCreate.Clinics;
 using MediNet_BE.DtoCreate.Employees;
+using MediNet_BE.DtoCreate.Employees.Blogs;
 using MediNet_BE.DtoCreate.Employees.Courses;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
 using MediNet_BE.DtoCreate.Orders.OrderServices;
+using MediNet_BE.DtoCreate.Products;
 using MediNet_BE.DtoCreate.Users;
-using MediNet_BE.Models;
 using MediNet_BE.Models.Categories;
 using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Employees;
+using MediNet_BE.Models.Employees.Blogs;
 using MediNet_BE.Models.Employees.Courses;
 using MediNet_BE.Models.Orders;
+using MediNet_BE.Models.Products;
 using MediNet_BE.Models.Users;
-using Microsoft.EntityFrameworkCore;
-using System.Numerics;
 
 namespace MediNet_BE.Helpers
 {
@@ -65,8 +68,6 @@ namespace MediNet_BE.Helpers
 
 			#region Orders
 			#region OrdersCreate
-			CreateMap<ProductCreate, Product>();
-			CreateMap<ProductDetailCreate, ProductDetail>();
 			CreateMap<CartCreate, Cart>();
 			CreateMap<Cart, CartCreate>();
 			CreateMap<OrderCreate, Order>();
@@ -78,19 +79,34 @@ namespace MediNet_BE.Helpers
 			CreateMap<Order, OrderDto>();
 			CreateMap<OrderProduct, OrderProductDto>();
 			CreateMap<OrderService, OrderServiceDto>();
+			CreateMap<Service, ServiceDto>();
+			#endregion
+
+			#region Products
+			#region ProductsCreate
+			CreateMap<ProductCreate, Product>();
+			CreateMap<ProductDetailCreate, ProductDetail>();
+			CreateMap<FavoriteProductCreate, FavoriteProduct>();
+			#endregion
+
 			CreateMap<Product, ProductDto>();
 			CreateMap<ProductDetail, ProductDetailDto>();
-			CreateMap<Service, ServiceDto>();
+			CreateMap<FavoriteProduct, FavoriteProductDto>();
 			#endregion
 
 			#region Clinics
 			#region ClinicsCreate
 			CreateMap<ClinicCreate, Clinic>();
-			CreateMap<SupplyCreate, Supply>();
+			CreateMap<InStockCreate, InStock>();
+			CreateMap<StockInCreate, StockIn>();
+			CreateMap<StockOutCreate, StockOut>();
 
 			#endregion
 			CreateMap<Clinic, ClinicDto>();
-			CreateMap<Supply, SupplyDto>();
+			CreateMap<InStock, InStockDto>();
+			CreateMap<StockIn, StockInDto>();
+			CreateMap<StockOut, StockOutDto>();
+
 			#endregion
 
 			#region Doctors
@@ -98,17 +114,20 @@ namespace MediNet_BE.Helpers
 			CreateMap<BlogCreate, Blog> ();
 			CreateMap<DiseaseCreate, Disease>();
 			CreateMap<SpecialistCreate, Specialist>();
+			CreateMap<BlogCommentCreate, BlogComment>();
 
 			#endregion
 			CreateMap<Blog, BlogDto>();
 			CreateMap<Disease, DiseaseDto>();
 			CreateMap<Specialist, SpecialistDto>();
+			CreateMap<BlogComment, BlogCommentDto>();
 
 			#endregion
 
 			#region Couses
 			CreateMap<EmployeeCreate, Employee>();
 			CreateMap<Employee, EmployeeDto>();
+			CreateMap<EmployeeDto, Employee>();
 
 			CreateMap<CourseCreate, Course>();
 			CreateMap<Course, CourseDto>();

@@ -1,9 +1,8 @@
 ﻿using MediNet_BE.Dto.Clinics;
+using MediNet_BE.Dto.Employees.Blogs;
 using MediNet_BE.Dto.Employees.Courses;
 using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.Dto.Users;
-using MediNet_BE.Models.Employees;
-using MediNet_BE.Models.Orders;
 
 namespace MediNet_BE.Dto.Employees
 {
@@ -14,7 +13,6 @@ namespace MediNet_BE.Dto.Employees
         public DateTime Date_Of_Birth { get; set; }
         public int Gender { get; set; }
         public string PhoneNumber { get; set; }
-		public int RoleEmployee { get; set; }
 		public int SpecialistId { get; set; }
         public int ClinicId { get; set; }
         public SpecialistDto Specialist { get; set; }

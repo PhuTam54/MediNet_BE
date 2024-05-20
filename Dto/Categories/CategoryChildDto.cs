@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MediNet_BE.Dto.Orders;
-using MediNet_BE.Models.Categories;
-using MediNet_BE.Models;
-using MediNet_BE.Dto.Orders.OrderProducts;
+﻿using MediNet_BE.Dto.Products;
 
 namespace MediNet_BE.Dto.Categories
 {

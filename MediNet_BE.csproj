@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\Doctors\" />
     <Folder Include="wwwroot\images\clinics\" />
+    <Folder Include="wwwroot\images\courses\" />
     <Folder Include="wwwroot\images\products\" />
     <Folder Include="wwwroot\images\users\admins\" />
     <Folder Include="wwwroot\images\users\customers\" />

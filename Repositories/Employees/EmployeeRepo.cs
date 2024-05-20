@@ -2,13 +2,10 @@
 using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
 using MediNet_BE.Dto.Employees;
-using MediNet_BE.Dto.Users;
 using MediNet_BE.DtoCreate.Employees;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Employees;
-using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Employees
@@ -78,7 +75,6 @@ namespace MediNet_BE.Repositories.Employees
             var employeeMap = _mapper.Map<Employee>(userCreate);
             employeeMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
             employeeMap.Password = LoginRegisterController.HashPassword(employeeMap.Password);
-            employeeMap.Role = 3;
             employeeMap.Specialist = specialist;
             employeeMap.Clinic = clinic;
 
@@ -94,7 +90,6 @@ namespace MediNet_BE.Repositories.Employees
             var employeeMap = _mapper.Map<Employee>(userCreate);
             employeeMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
             employeeMap.Password = LoginRegisterController.HashPassword(employeeMap.Password);
-            employeeMap.Role = 3;
             employeeMap.Specialist = specialist;
             employeeMap.Clinic = clinic;
 

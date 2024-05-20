@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediNet_BE.Data;
-using MediNet_BE.Repositories;
 using MediNet_BE.Dto.Categories;
 using MediNet_BE.Models.Categories;
 using MediNet_BE.Interfaces.Categories;
 using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
-using MediNet_BE.Repositories.Categories;
 using MediNet_BE.DtoCreate.Categories;
 
 namespace MediNet_BE.Controllers.Categories

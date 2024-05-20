@@ -1,6 +1,5 @@
 ﻿using MediNet_BE.Dto.Employees;
 using MediNet_BE.Dto.Orders.OrderProducts;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Dto.Clinics
 {
@@ -17,7 +16,9 @@ namespace MediNet_BE.Dto.Clinics
 		public string Description { get; set; }
 		public string ImagesClinic { get; set; }
 		public List<string> ImagesSrc { get; set; } = [];
-		public ICollection<SupplyDto>? Supplies { get; set; }
+		public ICollection<InStockDto>? InStocks { get; set; }
+		public ICollection<StockInDto>? StockIns { get; set; }
+		public ICollection<StockOutDto>? StockOuts { get; set; }
 		public ICollection<CartDto>? Carts { get; set; }
 		public ICollection<EmployeeDto>? Employees { get; set; }
 

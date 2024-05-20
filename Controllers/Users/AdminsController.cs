@@ -4,17 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MediNet_BE.Data;
 using MediNet_BE.Models.Users;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.Interfaces;
 using MediNet_BE.Services.Image;
-using MediNet_BE.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.Identity;
-using MediNet_BE.Repositories.Users;
-using MediNet_BE.Dto.Orders;
 using MediNet_BE.DtoCreate.Users;
 
 namespace MediNet_BE.Controllers.Users

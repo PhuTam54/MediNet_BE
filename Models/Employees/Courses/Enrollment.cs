@@ -1,5 +1,4 @@
-﻿using MediNet_BE.Models.Users;
-
+﻿
 namespace MediNet_BE.Models.Employees.Courses
 {
     public class Enrollment

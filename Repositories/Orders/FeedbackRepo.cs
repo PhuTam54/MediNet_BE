@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto;
-using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Orders.OrderProducts;
 using MediNet_BE.DtoCreate.Orders.OrderProducts;
-using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces.Orders;
-using MediNet_BE.Models;
-using MediNet_BE.Models.Categories;
-using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Orders;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,18 +44,18 @@ namespace MediNet_BE.Repositories.Orders
 			return feedbackMap;
         }
 
-        public async Task<List<FeedbackDto>> GetFeedbackByProductIdAsync(int productId)
+        public async Task<List<FeedbackDto>> GetFeedbacksByProductIdAsync(int productId)
         {
-            var feedback = await _context.Feedbacks!
-				.Include(c => c.Customer)
+            var feedbacks = await _context.Feedbacks!
+                .Include(c => c.Customer)
                 .Include(p => p.Product)
                 .AsNoTracking()
-                .Where(c => c.Product.Id == productId)
+                .Where(f => f.Product.Id == productId)
                 .ToListAsync();
 
-			var feedbackMap = _mapper.Map<List<FeedbackDto>>(feedback);
+			var feedbacksMap = _mapper.Map<List<FeedbackDto>>(feedbacks);
 
-			return feedbackMap;
+			return feedbacksMap;
         }
 
         public async Task<Feedback> AddFeedbackAsync(FeedbackCreate feedbackCreate)

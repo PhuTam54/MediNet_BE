@@ -43,7 +43,20 @@ namespace MediNet_BE.Repositories.Employees.Courses
             return enrollmentMap;
         }
 
-        public async Task<Enrollment> AddEnrollmentAsync(EnrollmentCreate enrollmentCreate)
+		public async Task<List<EnrollmentDto>> GetEnrollmentsByUserIdAsync(int employeeId)
+		{
+			var enrollments = await _context.Enrollments!
+				.Include(e => e.Employee)
+				.Include(c => c.Course)
+                .Where(e => e.Employee.Id == employeeId)
+				.ToListAsync();
+
+			var enrollmentsMap = _mapper.Map<List<EnrollmentDto>>(enrollments);
+
+			return enrollmentsMap;
+		}
+
+		public async Task<Enrollment> AddEnrollmentAsync(EnrollmentCreate enrollmentCreate)
         {
             var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == enrollmentCreate.CourseId);
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == enrollmentCreate.EmployeeId);
@@ -77,5 +90,7 @@ namespace MediNet_BE.Repositories.Employees.Courses
             _context.Enrollments!.Remove(enrollment);
             await _context.SaveChangesAsync();
         }
-    }
+
+		
+	}
 }

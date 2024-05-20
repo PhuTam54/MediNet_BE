@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
 using MediNet_BE.Controllers.Users;
 using MediNet_BE.Data;
-using MediNet_BE.Dto;
-using MediNet_BE.Dto.Categories;
-using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Users;
 using MediNet_BE.DtoCreate.Users;
 using MediNet_BE.Helpers;
 using MediNet_BE.Interfaces;
-using MediNet_BE.Models;
-using MediNet_BE.Models.Categories;
-using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Users;
 using Microsoft.EntityFrameworkCore;
 

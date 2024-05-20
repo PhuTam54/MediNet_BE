@@ -27,9 +27,11 @@ namespace MediNet_BE.Controllers.Users
 		private readonly IMailService _mailService;
 		const int CUSTOMER = 1;
 		const int ADMIN = 2;
-		const int EMPLOYEE = 3;
+		const int DOCTOR = 3;
+		const int EMPLOYEE = 4;
 
-        public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
+
+		public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
 		{
 			_context = context;
 			_config = config;
@@ -76,10 +78,15 @@ namespace MediNet_BE.Controllers.Users
 					{
 						userRole = "Admin";
 					}
+					else if (account.Role == DOCTOR)
+					{
+						userRole = "Doctor";
+					}
 					else if (account.Role == EMPLOYEE)
 					{
 						userRole = "Employee";
 					}
+					
 					var claims = new List<Claim>
 					{
 						new Claim(ClaimTypes.Email, account.Email),
@@ -179,7 +186,11 @@ namespace MediNet_BE.Controllers.Users
 			{
 				return UserType.Admin;
 			}
-			else if (_context.Employees.Any(u => u.Email == email))
+			else if (_context.Employees.Any(u => u.Email == email && u.Role == 3))
+			{
+				return UserType.Doctor;
+			}
+			else if (_context.Employees.Any(u => u.Email == email && u.Role == 4))
 			{
 				return UserType.Employee;
 			}
@@ -196,8 +207,10 @@ namespace MediNet_BE.Controllers.Users
 					return _context.Customers.FirstOrDefault(u => u.Email == email);
 				case UserType.Admin:
 					return _context.Admins.FirstOrDefault(u => u.Email == email);
+				case UserType.Doctor:
+					return _context.Employees.FirstOrDefault(u => u.Email == email && u.Role == 3);
 				case UserType.Employee:
-					return _context.Employees.FirstOrDefault(u => u.Email == email);
+					return _context.Employees.FirstOrDefault(u => u.Email == email && u.Role == 4);
 				default:
 					return null;
 			}
@@ -218,7 +231,8 @@ namespace MediNet_BE.Controllers.Users
 			Unknown,
 			Customer,
 			Admin,
-			Employee
+			Employee,
+			Doctor
 		}
 
 		[HttpPost]
@@ -277,10 +291,7 @@ namespace MediNet_BE.Controllers.Users
 			{
 				return NotFound();
 			}
-
-
 		}
-
 
 	}
 }

@@ -1,8 +1,8 @@
 ﻿using MediNet_BE.Models.Clinics;
+using MediNet_BE.Models.Employees.Blogs;
 using MediNet_BE.Models.Employees.Courses;
 using MediNet_BE.Models.Orders;
 using MediNet_BE.Models.Users;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MediNet_BE.Models.Employees
 {
@@ -13,8 +13,6 @@ namespace MediNet_BE.Models.Employees
 		public DateTime Date_Of_Birth { get; set; }
 		public int Gender { get; set; }
 		public string PhoneNumber { get; set; }
-		public int RoleEmployee {  get; set; }
-		public int PositionId { get; set; }
 		public int SpecialistId { get; set; }
 		public int ClinicId { get; set; }
 		public Specialist Specialist { get; set; }

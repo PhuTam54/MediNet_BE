@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MediNet_BE.Data;
-using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Dto.Orders.OrderServices;
 using MediNet_BE.DtoCreate.Orders.OrderServices;
 using MediNet_BE.Interfaces.Clinics;

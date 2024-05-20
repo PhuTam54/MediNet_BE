@@ -1,6 +1,4 @@
-﻿using MediNet_BE.Dto;
-using MediNet_BE.Models.Users;
-using System.ComponentModel.DataAnnotations;
+﻿using MediNet_BE.Models.Users;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.Models.Orders

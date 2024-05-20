@@ -1,5 +1,4 @@
-﻿using MediNet_BE.Models.Categories;
-
+﻿
 namespace MediNet_BE.Dto.Categories
 {
 	public class CategoryParentDto

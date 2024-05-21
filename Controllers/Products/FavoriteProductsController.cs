@@ -35,10 +35,30 @@ namespace MediNet_BE.Controllers.Products
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<FavoriteProductDto>> GetFavoriteProduct([FromQuery] int id)
+		public async Task<ActionResult<FavoriteProductDto>> GetFavoriteProductById([FromQuery] int id)
 		{
 			var favoriteProduct = await _favoriteProductRepo.GetFavoriteProductByIdAsync(id);
 			return favoriteProduct == null ? NotFound() : Ok(favoriteProduct);
+		}
+
+		[HttpGet]
+		[Route("customerId")]
+		public async Task<ActionResult<IEnumerable<FavoriteProductDto>>> GetFavoriteProductsByCustomerId([FromQuery] int customerId)
+		{
+			var customer = await _customerRepo.GetUserByIdAsync(customerId);
+			if(customer == null)
+				return NotFound();
+			return Ok(await _favoriteProductRepo.GetFavoriteProductsByCustomerIdAsync(customerId));
+		}
+
+		[HttpGet]
+		[Route("productId")]
+		public async Task<ActionResult<IEnumerable<FavoriteProductDto>>> GetFavoriteProductsByProductId([FromQuery] int productId)
+		{
+			var product = await _productRepo.GetProductByIdAsync(productId);
+			if (product == null)
+				return NotFound();
+			return Ok(await _favoriteProductRepo.GetFavoriteProductsByProductIdAsync(productId));
 		}
 
 		[Authorize]

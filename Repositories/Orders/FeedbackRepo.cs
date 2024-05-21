@@ -58,7 +58,21 @@ namespace MediNet_BE.Repositories.Orders
 			return feedbacksMap;
         }
 
-        public async Task<Feedback> AddFeedbackAsync(FeedbackCreate feedbackCreate)
+		public async Task<List<FeedbackDto>> GetFeedbacksByCustomerIdAsync(int customerId)
+		{
+			var feedbacks = await _context.Feedbacks!
+				.Include(c => c.Customer)
+				.Include(p => p.Product)
+				.AsNoTracking()
+				.Where(f => f.Customer.Id == customerId)
+				.ToListAsync();
+
+			var feedbacksMap = _mapper.Map<List<FeedbackDto>>(feedbacks);
+
+			return feedbacksMap;
+		}
+
+		public async Task<Feedback> AddFeedbackAsync(FeedbackCreate feedbackCreate)
         {
             var feedbackMap = _mapper.Map<Feedback>(feedbackCreate);
 
@@ -83,6 +97,6 @@ namespace MediNet_BE.Repositories.Orders
             await _context.SaveChangesAsync();
         }
 
-
-    }
+		
+	}
 }

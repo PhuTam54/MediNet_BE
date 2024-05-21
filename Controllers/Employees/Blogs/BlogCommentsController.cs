@@ -35,7 +35,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<BlogCommentDto>> GetBlogComment([FromQuery] int id)
+		public async Task<ActionResult<BlogCommentDto>> GetBlogCommentById([FromQuery] int id)
 		{
 			var blogComment = await _blogCommentRepo.GetBlogCommentByIdAsync(id);
 			return blogComment == null ? NotFound() : Ok(blogComment);

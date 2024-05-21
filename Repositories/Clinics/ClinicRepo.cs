@@ -49,7 +49,21 @@ namespace MediNet_BE.Repositories.Clinics
 			return clinicMap;
         }
 
-        public async Task<Clinic> AddClinicAsync(ClinicCreate clinicCreate)
+		public async Task<List<ClinicDto>> GetClinicsByProductIdAsync(int productId)
+		{
+			var clinics = await _context.InStocks
+                .Include(p => p.Product)
+                .Include(c => c.Clinic)
+                .Where(c => c.Product.Id == productId)
+                .Select(c => c.Clinic)
+				.ToListAsync();
+
+			var clinicsMap = _mapper.Map<List<ClinicDto>>(clinics);
+
+			return clinicsMap;
+		}
+
+		public async Task<Clinic> AddClinicAsync(ClinicCreate clinicCreate)
         {
             var clinicMap = _mapper.Map<Clinic>(clinicCreate);
             clinicMap.Slug = CreateSlug.Init_Slug(clinicCreate.Name);
@@ -75,5 +89,6 @@ namespace MediNet_BE.Repositories.Clinics
             await _context.SaveChangesAsync();
         }
 
-    }
+		
+	}
 }

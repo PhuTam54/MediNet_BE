@@ -31,7 +31,7 @@ namespace MediNet_BE.Controllers.Categories
 
 		[HttpGet]
 		[Route("id")]
-		public async Task<ActionResult<CategoryParentDto>> GetCategoryParent([FromQuery] int id)
+		public async Task<ActionResult<CategoryParentDto>> GetCategoryParentById([FromQuery] int id)
 		{
 			var categoryParent = await _categoryParentRepo.GetCategoryParentByIdAsync(id);
 			return categoryParent == null ? NotFound() : Ok(categoryParent);

@@ -31,7 +31,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<DiseaseDto>> GetDisease([FromQuery] int id)
+        public async Task<ActionResult<DiseaseDto>> GetDiseaseById([FromQuery] int id)
         {
             var disease = await _diseaseRepo.GetDiseaseByIdAsync(id);
             return disease == null ? NotFound() : Ok(disease);

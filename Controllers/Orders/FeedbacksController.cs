@@ -78,13 +78,10 @@ namespace MediNet_BE.Controllers.Orders
         [Route("productId")]
         public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetFeedbacksByProductId(int productId)
         {
+            var product = await _productRepo.GetProductByIdAsync(productId);
+            if(product == null)
+                return NotFound();
 			var feedbacks = await _feedbackRepo.GetFeedbacksByProductIdAsync(productId);
-
-			if (feedbacks == null)
-			{
-				return NotFound();
-			}
-
             foreach (var feedback in feedbacks)
             {
                 feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
@@ -92,7 +89,22 @@ namespace MediNet_BE.Controllers.Orders
             return Ok(feedbacks);
         }
 
-        [Authorize]
+		[HttpGet]
+		[Route("customerId")]
+		public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetFeedbacksByCustomerId(int customerId)
+		{
+			var customer = await _customerRepo.GetUserByIdAsync(customerId);
+			if (customer == null)
+				return NotFound();
+			var feedbacks = await _feedbackRepo.GetFeedbacksByCustomerIdAsync(customerId);
+			foreach (var feedback in feedbacks)
+			{
+				feedback.ImagesSrc.AddRange(GetImagesPath(feedback.ImagesFeedback));
+			}
+			return Ok(feedbacks);
+		}
+
+		[Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
         public async Task<ActionResult<Feedback>> CreateFeedback([FromForm] FeedbackCreate feedbackCreate)

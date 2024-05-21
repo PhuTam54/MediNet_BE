@@ -32,7 +32,7 @@ namespace MediNet_BE.Controllers.Employees
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<SpecialistDto>> GetSpecialist([FromQuery] int id)
+        public async Task<ActionResult<SpecialistDto>> GetSpecialistById([FromQuery] int id)
         {
             var specialist = await _specialistRepo.GetSpecialistByIdAsync(id);
             return specialist == null ? NotFound() : Ok(specialist);

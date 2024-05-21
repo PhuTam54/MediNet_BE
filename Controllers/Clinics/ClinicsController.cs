@@ -10,6 +10,7 @@ using MediNet_BE.Dto.Clinics;
 using MediNet_BE.Models.Clinics;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.DtoCreate.Clinics;
+using MediNet_BE.Interfaces.Products;
 
 namespace MediNet_BE.Controllers.Clinics
 {
@@ -19,13 +20,15 @@ namespace MediNet_BE.Controllers.Clinics
     {
         private readonly IClinicRepo _clinicRepo;
         private readonly IFileService _fileService;
+		private readonly IProductRepo _productRepo;
 
-        public ClinicsController(IClinicRepo clinicRepo, IFileService fileService)
+		public ClinicsController(IClinicRepo clinicRepo, IFileService fileService, IProductRepo productRepo)
         {
             _clinicRepo = clinicRepo;
             _fileService = fileService;
+			_productRepo = productRepo;
 
-        }
+		}
 
         [NonAction]
         public List<string> GetImagesPath(string path)
@@ -53,7 +56,7 @@ namespace MediNet_BE.Controllers.Clinics
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<ClinicDto>> GetClinic([FromQuery] int id)
+        public async Task<ActionResult<ClinicDto>> GetClinicById([FromQuery] int id)
         {
             var clinic = await _clinicRepo.GetClinicByIdAsync(id);
             if (clinic == null)
@@ -65,19 +68,34 @@ namespace MediNet_BE.Controllers.Clinics
             return Ok(clinic);
         }
 
-        /// <summary>
-        /// Create Clinic
-        /// </summary>
-        /// <param name="clinicCreate"></param>
-        /// <remarks>
-        ///  "name": "Abc",
-        ///  "address": "Abc-123",
-        ///  "phone": "0987654321",
-        ///  "email": "abc@gmail.com"
-        /// </remarks>
-        /// <returns></returns>
+		[HttpGet]
+		[Route("productId")]
+		public async Task<ActionResult<IEnumerable<ClinicDto>>> GetClinicByProductId([FromQuery] int productId)
+		{
+            var product = await _productRepo.GetProductByIdAsync(productId);
+            if (product == null)
+                return NotFound();
+			var clinics = await _clinicRepo.GetClinicsByProductIdAsync(productId);
+			foreach (var clinic in clinics)
+			{
+				clinic.ImagesSrc.AddRange(GetImagesPath(clinic.ImagesClinic));
+			}
+			return Ok(clinics);
+		}
 
-        [Authorize]
+		/// <summary>
+		/// Create Clinic
+		/// </summary>
+		/// <param name="clinicCreate"></param>
+		/// <remarks>
+		///  "name": "Abc",
+		///  "address": "Abc-123",
+		///  "phone": "0987654321",
+		///  "email": "abc@gmail.com"
+		/// </remarks>
+		/// <returns></returns>
+
+		[Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
         public async Task<ActionResult<Clinic>> CreateClinic([FromForm] ClinicCreate clinicCreate)

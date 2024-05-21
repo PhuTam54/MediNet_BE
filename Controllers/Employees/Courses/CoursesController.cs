@@ -49,6 +49,30 @@ namespace MediNet_BE.Controllers.Employees.Courses
 			return course == null ? NotFound() : Ok(course);
 		}
 
+		[HttpGet]
+		[Route("employeeId")]
+		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourseByEmployeeId(int employeeId)
+		{
+			var employeeDto = await _employeeRepo.GetUserByIdAsync(employeeId);
+			if (employeeDto == null)
+			{
+				return NotFound();
+			}
+			return Ok(await _courseRepo.GetCoursesByEmployeeIdAsync(employeeId));
+		}
+
+		[HttpGet]
+		[Route("doctorId")]
+		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourseByDoctorId(int doctorId)
+		{
+			var employeeDto = await _employeeRepo.GetUserByIdAsync(doctorId);
+			if (employeeDto == null || (employeeDto != null && employeeDto.Role != 3))
+			{
+				return NotFound();
+			}
+			return Ok(await _courseRepo.GetCoursesByDoctorIdAsync(doctorId));
+		}
+
 		[Authorize]
 		[RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
 		[HttpPost]

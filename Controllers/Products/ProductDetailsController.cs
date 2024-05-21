@@ -42,7 +42,7 @@ namespace MediNet_BE.Controllers.Products
         }
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<ProductDetailDto>> GetProductDetail([FromQuery] int id)
+        public async Task<ActionResult<ProductDetailDto>> GetProductDetailById([FromQuery] int id)
         {
             var productDetail = await _productDetailRepo.GetProductDetailByIdAsync(id);
             return productDetail == null ? NotFound() : Ok(productDetail);

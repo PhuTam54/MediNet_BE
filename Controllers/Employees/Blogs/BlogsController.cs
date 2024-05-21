@@ -43,7 +43,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 
         [HttpGet]
         [Route("id")]
-        public async Task<ActionResult<BlogDto>> GetBlog([FromQuery] int id)
+        public async Task<ActionResult<BlogDto>> GetBlogById([FromQuery] int id)
         {
             var blog = await _blogRepo.GetBlogByIdAsync(id);
             return blog == null ? NotFound() : Ok(blog);

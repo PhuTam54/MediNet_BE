@@ -45,9 +45,8 @@ namespace MediNet_BE.Controllers.Employees.Courses
             return enrollment == null ? NotFound() : Ok(enrollment);
         }
 
-        [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
-        [HttpPost]
+		[AllowAnonymous]
+		[HttpPost]
         public async Task<ActionResult<Enrollment>> CreateEnrollment([FromBody] EnrollmentCreate enrollmentCreate)
         {
             var course = await _courseRepo.GetCourseByIdAsync(enrollmentCreate.CourseId);
@@ -66,9 +65,8 @@ namespace MediNet_BE.Controllers.Employees.Courses
             return newEnrollment == null ? NotFound() : Ok(newEnrollment);
         }
 
-        [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
-        [HttpPut]
+		[AllowAnonymous]
+		[HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateEnrollment([FromQuery] int id, [FromBody] EnrollmentCreate updatedEnrollment)
         {
@@ -91,9 +89,8 @@ namespace MediNet_BE.Controllers.Employees.Courses
             return Ok("Update Successfully!");
         }
 
-        [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Employee")]
-        [HttpDelete]
+		[AllowAnonymous]
+		[HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteEnrollment([FromQuery] int id)
         {

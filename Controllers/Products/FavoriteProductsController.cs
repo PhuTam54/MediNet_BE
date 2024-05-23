@@ -30,7 +30,14 @@ namespace MediNet_BE.Controllers.Products
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<FavoriteProductDto>>> GetFavoriteProducts()
 		{
-			return Ok(await _favoriteProductRepo.GetAllFavoriteProductAsync());
+			var favoriteProducts = await _favoriteProductRepo.GetAllFavoriteProductAsync();
+			foreach (var favoriteProduct in favoriteProducts)
+			{
+				favoriteProduct.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Product.Image);
+				favoriteProduct.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Customer.Image);
+
+			}
+			return Ok(favoriteProducts);
 		}
 
 		[HttpGet]
@@ -38,6 +45,9 @@ namespace MediNet_BE.Controllers.Products
 		public async Task<ActionResult<FavoriteProductDto>> GetFavoriteProductById([FromQuery] int id)
 		{
 			var favoriteProduct = await _favoriteProductRepo.GetFavoriteProductByIdAsync(id);
+			favoriteProduct.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Product.Image);
+			favoriteProduct.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Customer.Image);
+
 			return favoriteProduct == null ? NotFound() : Ok(favoriteProduct);
 		}
 
@@ -48,7 +58,14 @@ namespace MediNet_BE.Controllers.Products
 			var customer = await _customerRepo.GetUserByIdAsync(customerId);
 			if(customer == null)
 				return NotFound();
-			return Ok(await _favoriteProductRepo.GetFavoriteProductsByCustomerIdAsync(customerId));
+
+			var favoriteProducts = await _favoriteProductRepo.GetFavoriteProductsByCustomerIdAsync(customerId);
+			foreach (var favoriteProduct in favoriteProducts)
+			{
+				favoriteProduct.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Product.Image);
+				favoriteProduct.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Customer.Image);
+			}
+			return Ok(favoriteProducts);
 		}
 
 		[HttpGet]
@@ -58,7 +75,15 @@ namespace MediNet_BE.Controllers.Products
 			var product = await _productRepo.GetProductByIdAsync(productId);
 			if (product == null)
 				return NotFound();
-			return Ok(await _favoriteProductRepo.GetFavoriteProductsByProductIdAsync(productId));
+
+			var favoriteProducts = await _favoriteProductRepo.GetFavoriteProductsByProductIdAsync(productId);
+			foreach (var favoriteProduct in favoriteProducts)
+			{
+				favoriteProduct.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Product.Image);
+				favoriteProduct.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, favoriteProduct.Customer.Image);
+
+			}
+			return Ok(favoriteProducts);
 		}
 
 		[Authorize]

@@ -52,11 +52,6 @@ namespace MediNet_BE.Controllers.Clinics
 				return NotFound("Product or Cinic Not Found!");
 			}
 
-			if (stockIn != null)
-			{
-				return BadRequest("StockIn already exists!");
-			}
-
 			if (stockInCreate == null)
 				return BadRequest(ModelState);
 

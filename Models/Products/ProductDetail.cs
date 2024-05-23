@@ -3,7 +3,8 @@
     public class ProductDetail
     {
         public int Id { get; set; }
-        public string Ingredient { get; set; }
+		public string ImagesProductDetail { get; set; }
+		public string Ingredient { get; set; }
         public string Usage { get; set; }
         public string UsageInstructions { get; set; }
         public string Description { get; set; }

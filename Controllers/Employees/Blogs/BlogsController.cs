@@ -14,6 +14,10 @@ using MediNet_BE.DtoCreate.Employees.Blogs;
 using MediNet_BE.Dto.Employees.Blogs;
 using AutoMapper;
 using MediNet_BE.Interfaces.Employees.Blogs;
+using MediNet_BE.Services.Image;
+using MediNet_BE.DtoCreate.Products;
+using MediNet_BE.Models.Products;
+using MediNet_BE.Models.Clinics;
 
 namespace MediNet_BE.Controllers.Employees.Blogs
 {
@@ -24,21 +28,25 @@ namespace MediNet_BE.Controllers.Employees.Blogs
         private readonly IBlogRepo _blogRepo;
         private readonly IUserRepo<Employee, EmployeeDto, EmployeeCreate> _employeeRepo;
         private readonly IDiseaseRepo _diseaseRepo;
-        private readonly IMapper _mapper;
+		private readonly IFileService _fileService;
 
-        public BlogsController(IBlogRepo blogRepo, IUserRepo<Employee, EmployeeDto, EmployeeCreate> employeeRepo, IDiseaseRepo diseaseRepo, IMapper mapper)
+		public BlogsController(IBlogRepo blogRepo, IUserRepo<Employee, EmployeeDto, EmployeeCreate> employeeRepo, IDiseaseRepo diseaseRepo, IFileService fileService)
         {
             _blogRepo = blogRepo;
             _employeeRepo = employeeRepo;
             _diseaseRepo = diseaseRepo;
-            _mapper = mapper;
+			_fileService = fileService;
+		}
 
-        }
-
-        [HttpGet]
+		[HttpGet]
         public async Task<ActionResult<IEnumerable<BlogDto>>> GetBlogs()
         {
-            return Ok(await _blogRepo.GetAllBlogAsync());
+            var blogs = await _blogRepo.GetAllBlogAsync();
+			foreach (var blog in blogs)
+			{
+				blog.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blog.Image);
+			}
+			return Ok(blogs);
         }
 
         [HttpGet]
@@ -46,13 +54,19 @@ namespace MediNet_BE.Controllers.Employees.Blogs
         public async Task<ActionResult<BlogDto>> GetBlogById([FromQuery] int id)
         {
             var blog = await _blogRepo.GetBlogByIdAsync(id);
-            return blog == null ? NotFound() : Ok(blog);
+			if (blog == null)
+			{
+				return NotFound();
+			}
+			blog.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blog.Image);
+
+			return Ok(blog);
         }
 
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
         [HttpPost]
-        public async Task<ActionResult<Blog>> CreateBlog([FromBody] BlogCreate blogCreate)
+        public async Task<ActionResult<Blog>> CreateBlog([FromForm] BlogCreate blogCreate)
         {
             var doctorDto = await _employeeRepo.GetUserByIdAsync(blogCreate.EmployeeId);
             var disease = await _diseaseRepo.GetDiseaseByIdAsync(blogCreate.DiseaseId);
@@ -65,9 +79,22 @@ namespace MediNet_BE.Controllers.Employees.Blogs
                 return BadRequest(ModelState);
 
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+				return BadRequest(ModelState);
 
-            var newBlog = await _blogRepo.AddBlogAsync(blogCreate);
+			if (blogCreate.ImageFile != null)
+			{
+				var fileResult = _fileService.SaveImage(blogCreate.ImageFile, "images/blogs/");
+				if (fileResult.Item1 == 1)
+				{
+					blogCreate.Image = fileResult.Item2;
+				}
+				else
+				{
+					return NotFound("An error occurred while saving the image!");
+				}
+			}
+
+			var newBlog = await _blogRepo.AddBlogAsync(blogCreate);
             return newBlog == null ? NotFound() : Ok(newBlog);
         }
 
@@ -75,7 +102,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
         [RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateBlog([FromQuery] int id, [FromBody] BlogCreate updatedBlog)
+        public async Task<IActionResult> UpdateBlog([FromQuery] int id, [FromForm] BlogCreate updatedBlog)
         {
             var doctorDto = await _employeeRepo.GetUserByIdAsync(updatedBlog.EmployeeId);
             var disease = await _diseaseRepo.GetDiseaseByIdAsync(updatedBlog.DiseaseId);
@@ -90,7 +117,21 @@ namespace MediNet_BE.Controllers.Employees.Blogs
             if (id != updatedBlog.Id)
                 return BadRequest();
 
-            await _blogRepo.UpdateBlogAsync(updatedBlog);
+			if (updatedBlog.ImageFile != null)
+			{
+				var fileResult = _fileService.SaveImage(updatedBlog.ImageFile, "images/blogs/");
+				if (fileResult.Item1 == 1)
+				{
+					updatedBlog.Image = fileResult.Item2;
+					await _fileService.DeleteImage(blog.Image);
+				}
+				else
+				{
+					return NotFound("An error occurred while saving the image!");
+				}
+			}
+
+			await _blogRepo.UpdateBlogAsync(updatedBlog);
 
             return Ok("Update Successfully!");
         }
@@ -106,7 +147,9 @@ namespace MediNet_BE.Controllers.Employees.Blogs
                 return NotFound();
             }
             await _blogRepo.DeleteBlogAsync(id);
-            return Ok("Delete Successfully!");
+			await _fileService.DeleteImage(blog.Image);
+
+			return Ok("Delete Successfully!");
         }
     }
 }

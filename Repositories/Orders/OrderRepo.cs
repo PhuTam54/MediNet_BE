@@ -19,7 +19,6 @@ namespace MediNet_BE.Repositories.Orders
             _mapper = mapper;
         }
 
-
         public async Task<List<OrderDto>> GetAllOrderAsync()
         {
             var orders = await _context.Orders!
@@ -88,7 +87,7 @@ namespace MediNet_BE.Repositories.Orders
 				var cart = await _context.Carts.Include(p => p.Product).FirstOrDefaultAsync(c => c.Id == carttId);
 				if (cart != null)
 				{
-					var orderProduct = new OrderProduct { ProductId = cart.Product.Id, OrderId = orderMap.Id, Product = cart.Product, Order = orderMap, Quantity = cart.QtyCart, Subtotal = cart.SubTotal };
+					var orderProduct = new OrderProduct { ProductId = cart.Product.Id, OrderId = orderMap.Id, Product = cart.Product, Order = orderMap, Quantity = cart.QtyCart, PriceSale = cart.Product.Price };
 					var supply = await _context.InStocks.FirstOrDefaultAsync(s => s.Product.Id == cart.ProductId && s.Clinic.Id == cart.ClinicId);
 					if (supply != null)
 						{

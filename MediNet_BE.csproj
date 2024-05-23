@@ -37,7 +37,8 @@
   <ItemGroup>
     <Folder Include="wwwroot\images\clinics\" />
     <Folder Include="wwwroot\images\courses\" />
-    <Folder Include="wwwroot\images\products\" />
+    <Folder Include="wwwroot\images\blogs\" />
+    <Folder Include="wwwroot\images\products\productDetails\" />
     <Folder Include="wwwroot\images\users\admins\" />
     <Folder Include="wwwroot\images\users\customers\" />
     <Folder Include="wwwroot\images\users\feedbacks\" />

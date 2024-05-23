@@ -3,7 +3,9 @@
     public class ProductDetailCreate
     {
         public int Id { get; set; }
-        public string Ingredient { get; set; }
+		public string ImagesProductDetail { get; set; } = string.Empty;
+		public IFormFile[] ImagesProductDetailFile { get; set; }
+		public string Ingredient { get; set; }
         public string Usage { get; set; }
         public string UsageInstructions { get; set; }
         public string Description { get; set; }

@@ -9,6 +9,9 @@ using MediNet_BE.Models.Products;
 using MediNet_BE.DtoCreate.Products;
 using MediNet_BE.Dto.Products;
 using MediNet_BE.Interfaces.Products;
+using MediNet_BE.DtoCreate.Clinics;
+using MediNet_BE.Services.Image;
+using MediNet_BE.Models.Clinics;
 
 namespace MediNet_BE.Controllers.Products
 {
@@ -18,17 +21,38 @@ namespace MediNet_BE.Controllers.Products
     {
         private readonly IProductDetailRepo _productDetailRepo;
         private readonly IProductRepo _productRepo;
+		private readonly IFileService _fileService;
 
-        public ProductDetailsController(IProductDetailRepo productDetailRepo, IProductRepo productRepo)
+		public ProductDetailsController(IProductDetailRepo productDetailRepo, IProductRepo productRepo, IFileService fileService)
         {
             _productDetailRepo = productDetailRepo;
             _productRepo = productRepo;
-        }
+			_fileService = fileService;
 
-        [HttpGet]
+		}
+
+		[NonAction]
+		public List<string> GetImagesPath(string path)
+		{
+			var imagesPath = new List<string>();
+			string[] picturePaths = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
+			foreach (string picturePath in picturePaths)
+			{
+				var imageLink = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, picturePath);
+				imagesPath.Add(imageLink);
+			}
+			return imagesPath;
+		}
+
+		[HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDetailDto>>> GetProductDetails()
         {
-            return Ok(await _productDetailRepo.GetAllProductDetailAsync());
+            var productDetails = await _productDetailRepo.GetAllProductDetailAsync();
+			foreach (var productDetail in productDetails)
+			{
+				productDetail.ImagesSrc.AddRange(GetImagesPath(productDetail.ImagesProductDetail));
+			}
+			return Ok(productDetails);
         }
 
         [HttpGet]
@@ -38,20 +62,32 @@ namespace MediNet_BE.Controllers.Products
             var product = await _productRepo.GetProductByIdAsync(productId);
             if (product == null)
                 return NotFound("Product Not Found!");
-            return Ok(await _productDetailRepo.GetProductDetailsByProductIdAsync(productId));
+
+			var productDetails = await _productDetailRepo.GetProductDetailsByProductIdAsync(productId);
+			foreach (var productDetail in productDetails)
+			{
+				productDetail.ImagesSrc.AddRange(GetImagesPath(productDetail.ImagesProductDetail));
+			}
+			return Ok(productDetails);
         }
         [HttpGet]
         [Route("id")]
         public async Task<ActionResult<ProductDetailDto>> GetProductDetailById([FromQuery] int id)
         {
             var productDetail = await _productDetailRepo.GetProductDetailByIdAsync(id);
-            return productDetail == null ? NotFound() : Ok(productDetail);
+			if (productDetail == null)
+			{
+				return NotFound();
+			}
+			productDetail.ImagesSrc.AddRange(GetImagesPath(productDetail.ImagesProductDetail));
+
+			return Ok(productDetail);
         }
 
         [Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
-        public async Task<ActionResult<ProductDetail>> CreateProductDetail([FromBody] ProductDetailCreate productDetailCreate)
+        public async Task<ActionResult<ProductDetail>> CreateProductDetail([FromForm] ProductDetailCreate productDetailCreate)
         {
             var product = await _productRepo.GetProductByIdAsync(productDetailCreate.ProductId);
             if (product == null)
@@ -60,9 +96,22 @@ namespace MediNet_BE.Controllers.Products
                 return BadRequest(ModelState);
 
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+				return BadRequest(ModelState);
 
-            var newProductDetail = await _productDetailRepo.AddProductDetailAsync(productDetailCreate);
+			if (productDetailCreate.ImagesProductDetailFile != null)
+			{
+				var fileResult = _fileService.SaveImages(productDetailCreate.ImagesProductDetailFile, "images/products/productDetails/");
+				if (fileResult.Item1 == 1)
+				{
+					productDetailCreate.ImagesProductDetail = fileResult.Item2;
+				}
+				else
+				{
+					return NotFound("An error occurred while saving the image!");
+				}
+			}
+
+			var newProductDetail = await _productDetailRepo.AddProductDetailAsync(productDetailCreate);
             return newProductDetail == null ? NotFound() : Ok(newProductDetail);
         }
 
@@ -70,7 +119,7 @@ namespace MediNet_BE.Controllers.Products
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateProductDetail([FromQuery] int id, [FromBody] ProductDetailCreate updatedProductDetail)
+        public async Task<IActionResult> UpdateProductDetail([FromQuery] int id, [FromForm] ProductDetailCreate updatedProductDetail)
         {
             var product = await _productRepo.GetProductByIdAsync(updatedProductDetail.ProductId);
             var productDetail = await _productDetailRepo.GetProductDetailByIdAsync(id);
@@ -84,7 +133,22 @@ namespace MediNet_BE.Controllers.Products
             if (id != updatedProductDetail.Id)
                 return BadRequest();
 
-            await _productDetailRepo.UpdateProductDetailAsync(updatedProductDetail);
+			if (updatedProductDetail.ImagesProductDetailFile != null)
+			{
+				var fileResult = _fileService.SaveImages(updatedProductDetail.ImagesProductDetailFile, "images/products/productDetails/");
+				if (fileResult.Item1 == 1)
+				{
+					updatedProductDetail.ImagesProductDetail = fileResult.Item2;
+					await _fileService.DeleteImages(productDetail.ImagesProductDetail);
+
+				}
+				else
+				{
+					return NotFound("An error occurred while saving the image!");
+				}
+			}
+
+			await _productDetailRepo.UpdateProductDetailAsync(updatedProductDetail);
 
             return Ok("Update Successfully!");
         }
@@ -101,7 +165,9 @@ namespace MediNet_BE.Controllers.Products
                 return NotFound();
             }
             await _productDetailRepo.DeleteProductDetailAsync(id);
-            return Ok("Delete Successfully!");
+			await _fileService.DeleteImages(productDetail.ImagesProductDetail);
+
+			return Ok("Delete Successfully!");
         }
     }
 }

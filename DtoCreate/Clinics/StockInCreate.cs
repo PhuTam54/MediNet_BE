@@ -1,9 +1,7 @@
-﻿namespace MediNet_BE.DtoCreate.Clinics
+﻿using MediNet_BE.Models.Clinics;
+
+namespace MediNet_BE.DtoCreate.Clinics
 {
-	public enum StockInStatus
-	{
-		CONFIRMED, COMPLETE
-	}
 	public class StockInCreate
 	{
 		public int Id { get; set; }

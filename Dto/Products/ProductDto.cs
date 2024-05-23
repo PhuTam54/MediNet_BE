@@ -16,8 +16,6 @@ namespace MediNet_BE.Dto.Products
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
         public string Manufacturer { get; set; }
-        public DateTime ManufacturerDate { get; set; }
-        public DateTime ExpiryDate { get; set; }
         public int CategoryChildId { get; set; }
         public CategoryChildDto CategoryChild { get; set; }
         public ICollection<ProductDetailDto>? ProductDetails { get; set; }

@@ -1,4 +1,5 @@
 ﻿using MediNet_BE.Dto.Products;
+using MediNet_BE.Models.Clinics;
 
 namespace MediNet_BE.Dto.Clinics
 {
@@ -12,7 +13,7 @@ namespace MediNet_BE.Dto.Clinics
 		public string Supplier { get; set; }
 		public DateTime ManufacturerDate { get; set; }
 		public DateTime ExpiryDate { get; set; }
-		public int Status { get; set; }
+		public StockInStatus Status { get; set; }
 		public ClinicDto Clinic { get; set; }
 		public ProductDto Product { get; set; }
 	}

@@ -1,4 +1,5 @@
 ﻿using MediNet_BE.Dto.Products;
+using MediNet_BE.Models.Clinics;
 
 namespace MediNet_BE.Dto.Clinics
 {
@@ -9,7 +10,7 @@ namespace MediNet_BE.Dto.Clinics
 		public int ProductId { get; set; }
 		public int Quantity { get; set; }
 		public DateTime DateOut { get; set; }
-		public string Reason { get; set; }
+		public StockOutReason Reason { get; set; }
 		public ClinicDto Clinic { get; set; }
 		public ProductDto Product { get; set; }
 	}

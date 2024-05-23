@@ -35,10 +35,28 @@ namespace MediNet_BE.Controllers.Employees.Courses
 			_mapper = mapper;
 		}
 
+		[NonAction]
+		public List<string> GetImagesPath(string path)
+		{
+			var imagesPath = new List<string>();
+			string[] picturePaths = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
+			foreach (string picturePath in picturePaths)
+			{
+				var imageLink = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, picturePath);
+				imagesPath.Add(imageLink);
+			}
+			return imagesPath;
+		}
+
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourses()
 		{
-			return Ok(await _courseRepo.GetAllCourseAsync());
+			var courses = await _courseRepo.GetAllCourseAsync();
+			foreach (var course in courses)
+			{
+				course.ImagesSrc.AddRange(GetImagesPath(course.ImagesCourse));
+			}
+			return Ok(courses);
 		}
 
 		[HttpGet]
@@ -46,31 +64,46 @@ namespace MediNet_BE.Controllers.Employees.Courses
 		public async Task<ActionResult<CourseDto>> GetCourseById(int id)
 		{
 			var course = await _courseRepo.GetCourseByIdAsync(id);
-			return course == null ? NotFound() : Ok(course);
+			if (course == null)
+			{
+				return NotFound();
+			}
+			course.ImagesSrc.AddRange(GetImagesPath(course.ImagesCourse));
+			return Ok(course);
 		}
 
 		[HttpGet]
 		[Route("employeeId")]
-		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourseByEmployeeId(int employeeId)
+		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCoursesByEmployeeId(int employeeId)
 		{
 			var employeeDto = await _employeeRepo.GetUserByIdAsync(employeeId);
 			if (employeeDto == null)
 			{
 				return NotFound();
 			}
-			return Ok(await _courseRepo.GetCoursesByEmployeeIdAsync(employeeId));
+			var courses = await _courseRepo.GetCoursesByEmployeeIdAsync(employeeId);
+			foreach (var course in courses)
+			{
+				course.ImagesSrc.AddRange(GetImagesPath(course.ImagesCourse));
+			}
+			return Ok(courses);
 		}
 
 		[HttpGet]
 		[Route("doctorId")]
-		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourseByDoctorId(int doctorId)
+		public async Task<ActionResult<IEnumerable<CourseDto>>> GetCoursesByDoctorId(int doctorId)
 		{
 			var employeeDto = await _employeeRepo.GetUserByIdAsync(doctorId);
 			if (employeeDto == null || (employeeDto != null && employeeDto.Role != 3))
 			{
 				return NotFound();
 			}
-			return Ok(await _courseRepo.GetCoursesByDoctorIdAsync(doctorId));
+			var courses = await _courseRepo.GetCoursesByDoctorIdAsync(doctorId);
+			foreach (var course in courses)
+			{
+				course.ImagesSrc.AddRange(GetImagesPath(course.ImagesCourse));
+			}
+			return Ok(courses);
 		}
 
 		[Authorize]
@@ -101,7 +134,6 @@ namespace MediNet_BE.Controllers.Employees.Courses
 					return NotFound("An error occurred while saving the image!");
 				}
 			}
-
 
 			var newCourse = await _courseRepo.AddCourseAsync(courseCreate);
 			return newCourse == null ? NotFound() : Ok(newCourse);
@@ -140,7 +172,6 @@ namespace MediNet_BE.Controllers.Employees.Courses
 			}
 
 			await _courseRepo.UpdateCourseAsync(updatedCourse);
-
 			return Ok("Update Successfully!");
 		}
 
@@ -155,6 +186,8 @@ namespace MediNet_BE.Controllers.Employees.Courses
 				return NotFound();
 			}
 			await _courseRepo.DeleteCourseAsync(id);
+			await _fileService.DeleteImages(course.ImagesCourse);
+
 			return Ok("Delete Successfully!");
 		}
 	}

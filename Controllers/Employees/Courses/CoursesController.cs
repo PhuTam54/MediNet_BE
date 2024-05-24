@@ -107,7 +107,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
 		}
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
+		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPost]
 		public async Task<ActionResult<Course>> CreateCourse([FromForm] CourseCreate courseCreate)
 		{
@@ -140,7 +140,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
 		}
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
+		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPut]
 		[Route("id")]
 		public async Task<IActionResult> UpdateCourse([FromQuery] int id, [FromBody] CourseCreate updatedCourse)
@@ -176,6 +176,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
 		}
 
 		[Authorize]
+		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpDelete]
 		[Route("id")]
 		public async Task<IActionResult> DeleteCourse([FromQuery] int id)

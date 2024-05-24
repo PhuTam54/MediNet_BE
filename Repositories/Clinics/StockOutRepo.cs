@@ -66,6 +66,12 @@ namespace MediNet_BE.Repositories.Clinics
 			stockOutMap.Clinic = clinic;
 
 			_context.StockOuts!.Add(stockOutMap);
+
+			var inStock = await _context.InStocks.FirstOrDefaultAsync(i => i.Product.Id == product.Id && i.Clinic.Id == clinic.Id);
+			inStock.StockQuantity -= stockOutMap.Quantity;
+			inStock.LastUpdatedAt = DateTime.UtcNow;
+			_context.InStocks.Update(inStock);
+
 			await _context.SaveChangesAsync();
 			return stockOutMap;
 		}

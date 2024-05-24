@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -27,9 +26,8 @@ namespace MediNet_BE.Controllers.Users
 		private readonly IMailService _mailService;
 		const int CUSTOMER = 1;
 		const int ADMIN = 2;
-		const int DOCTOR = 3;
-		const int EMPLOYEE = 4;
-
+		const int EMPLOYEE = 3;
+		const int DOCTOR = 4;
 
 		public LoginRegisterController(MediNetContext context, IConfiguration config, IMapper mapper, IMailService mailService)
 		{
@@ -78,11 +76,7 @@ namespace MediNet_BE.Controllers.Users
 					{
 						userRole = "Admin";
 					}
-					else if (account.Role == DOCTOR)
-					{
-						userRole = "Doctor";
-					}
-					else if (account.Role == EMPLOYEE)
+					else if (account.Role == EMPLOYEE && account.Role == DOCTOR)
 					{
 						userRole = "Employee";
 					}
@@ -150,6 +144,12 @@ namespace MediNet_BE.Controllers.Users
 			if (_context.Customers.Any(x => x.Email == registerModel.Email))
 				throw new ApplicationException("Email '" + registerModel.Email + "' is already taken");
 
+			if (_context.Admins.Any(x => x.Email == registerModel.Email))
+				throw new ApplicationException("Email '" + registerModel.Email + "' is already taken");
+
+			if (_context.Employees.Any(x => x.Email == registerModel.Email))
+				throw new ApplicationException("Email '" + registerModel.Email + "' is already taken");
+
 			var user = _mapper.Map<Customer>(registerModel);
 
 			user.Password = HashPassword(registerModel.Password);
@@ -186,11 +186,7 @@ namespace MediNet_BE.Controllers.Users
 			{
 				return UserType.Admin;
 			}
-			else if (_context.Employees.Any(u => u.Email == email && u.Role == 3))
-			{
-				return UserType.Doctor;
-			}
-			else if (_context.Employees.Any(u => u.Email == email && u.Role == 4))
+			else if (_context.Employees.Any(u => u.Email == email))
 			{
 				return UserType.Employee;
 			}
@@ -207,10 +203,8 @@ namespace MediNet_BE.Controllers.Users
 					return _context.Customers.FirstOrDefault(u => u.Email == email);
 				case UserType.Admin:
 					return _context.Admins.FirstOrDefault(u => u.Email == email);
-				case UserType.Doctor:
-					return _context.Employees.FirstOrDefault(u => u.Email == email && u.Role == 3);
 				case UserType.Employee:
-					return _context.Employees.FirstOrDefault(u => u.Email == email && u.Role == 4);
+					return _context.Employees.FirstOrDefault(u => u.Email == email);
 				default:
 					return null;
 			}
@@ -231,8 +225,7 @@ namespace MediNet_BE.Controllers.Users
 			Unknown,
 			Customer,
 			Admin,
-			Employee,
-			Doctor
+			Employee
 		}
 
 		[HttpPost]

@@ -64,7 +64,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
         public async Task<ActionResult<Blog>> CreateBlog([FromForm] BlogCreate blogCreate)
         {
@@ -99,7 +99,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Doctor")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateBlog([FromQuery] int id, [FromForm] BlogCreate updatedBlog)
@@ -137,7 +137,8 @@ namespace MediNet_BE.Controllers.Employees.Blogs
         }
 
         [Authorize]
-        [HttpDelete]
+		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+		[HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteBlog([FromQuery] int id)
         {

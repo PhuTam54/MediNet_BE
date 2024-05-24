@@ -4,6 +4,7 @@ using MediNet_BE.Dto.Clinics;
 using MediNet_BE.DtoCreate.Clinics;
 using MediNet_BE.Interfaces.Clinics;
 using MediNet_BE.Models.Clinics;
+using MediNet_BE.Models.Products;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediNet_BE.Repositories.Clinics
@@ -65,7 +66,29 @@ namespace MediNet_BE.Repositories.Clinics
 			stockInMap.Product = product;
 			stockInMap.Clinic = clinic;
 
-			_context.StockIns!.Add(stockInMap);
+			_context.StockIns.Add(stockInMap);
+
+			var inStock = await _context.InStocks.FirstOrDefaultAsync(i => i.Product.Id == product.Id && i.Clinic.Id == clinic.Id);
+			if(inStock == null)
+			{
+				var newInStock = new InStock
+				{
+					ClinicId = clinic.Id,
+					ProductId = product.Id,
+					Clinic = clinic,
+					Product = product,
+					StockQuantity = stockInMap.Quantity,
+					LastUpdatedAt = DateTime.UtcNow
+				};
+			_context.InStocks.Add(newInStock);
+			}
+			else
+			{
+				inStock.StockQuantity += stockInMap.Quantity;
+				inStock.LastUpdatedAt = DateTime.UtcNow;
+				_context.InStocks.Update(inStock);
+			}
+			
 			await _context.SaveChangesAsync();
 			return stockInMap;
 		}
@@ -87,6 +110,23 @@ namespace MediNet_BE.Repositories.Clinics
 			var stockIn = await _context.StockIns!.SingleOrDefaultAsync(c => c.Id == id);
 
 			_context.StockIns!.Remove(stockIn);
+
+			var stockOut = new StockOut
+			{
+				ClinicId = stockIn.Clinic.Id,
+				ProductId = stockIn.Product.Id,
+				Clinic = stockIn.Clinic,
+				Product = stockIn.Product,
+				Quantity = stockIn.Quantity,
+				DateOut = DateTime.UtcNow,
+				Reason = StockOutReason.EXPIRED
+			};
+
+			var inStock = await _context.InStocks.FirstOrDefaultAsync(i => i.Product.Id == stockIn.Product.Id && i.Clinic.Id == stockIn.Clinic.Id);
+			inStock.StockQuantity -= stockIn.Quantity;
+			inStock.LastUpdatedAt = DateTime.UtcNow;
+			_context.InStocks.Update(inStock);
+
 			await _context.SaveChangesAsync();
 		}
 	}

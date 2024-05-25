@@ -76,10 +76,14 @@ namespace MediNet_BE.Controllers.Users
 					{
 						userRole = "Admin";
 					}
-					else if (account.Role == EMPLOYEE && account.Role == DOCTOR)
+					else if (account.Role == EMPLOYEE)
 					{
 						userRole = "Employee";
 					}
+					else if (account.Role == DOCTOR)
+					{
+                        userRole = "Doctor";
+                    }
 					
 					var claims = new List<Claim>
 					{

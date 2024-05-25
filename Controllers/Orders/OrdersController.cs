@@ -184,7 +184,7 @@ namespace MediNet_BE.Controllers.Orders
                 await UpdateStatusOrder(newOrder.OrderCode);
             }
 
-            return Ok("Order Successfully!");
+            return Ok(newOrder.OrderCode);
         }
 
         [Authorize]

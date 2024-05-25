@@ -30,7 +30,12 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<BlogCommentDto>>> GetBlogComments()
 		{
-			return Ok(await _blogCommentRepo.GetAllBlogCommentAsync());
+			var blogComments = await _blogCommentRepo.GetAllBlogCommentAsync();
+			foreach (var blogComment in blogComments)
+			{
+				blogComment.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blogComment.Customer.Image);
+			}
+			return Ok(blogComments);
 		}
 
 		[HttpGet]
@@ -38,7 +43,24 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 		public async Task<ActionResult<BlogCommentDto>> GetBlogCommentById([FromQuery] int id)
 		{
 			var blogComment = await _blogCommentRepo.GetBlogCommentByIdAsync(id);
+			blogComment.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blogComment.Customer.Image);
+
 			return blogComment == null ? NotFound() : Ok(blogComment);
+		}
+
+		[HttpGet]
+		[Route("blogId")]
+		public async Task<ActionResult<IEnumerable<BlogCommentDto>>> GetBlogCommentByBlogId([FromQuery] int blogId)
+		{
+			var blog = await _blogRepo.GetBlogByIdAsync(blogId);
+			if(blog == null)
+				return NotFound();
+			var blogComments = await _blogCommentRepo.GetBlogCommentByBlogIdAsync(blogId);
+			foreach (var blogComment in blogComments)
+			{
+				blogComment.Customer.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blogComment.Customer.Image);
+			}
+			return Ok(blogComments);
 		}
 
 		[Authorize]

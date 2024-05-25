@@ -27,7 +27,6 @@ namespace MediNet_BE.Controllers.Clinics
             _clinicRepo = clinicRepo;
             _fileService = fileService;
 			_productRepo = productRepo;
-
 		}
 
         [NonAction]

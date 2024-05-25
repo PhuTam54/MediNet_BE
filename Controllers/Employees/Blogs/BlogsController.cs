@@ -63,7 +63,37 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 			return Ok(blog);
         }
 
-        [Authorize]
+		[HttpGet]
+		[Route("diseaseId")]
+		public async Task<ActionResult<IEnumerable<BlogDto>>> GetBlogsByDiseaseId(int diseaseId)
+		{
+			var disease = await _diseaseRepo.GetDiseaseByIdAsync(diseaseId);
+			if(disease == null)
+			{ return NotFound(); }
+			var blogs = await _blogRepo.GetBlogsByDiseaseIdAsync(diseaseId);
+			foreach (var blog in blogs)
+			{
+				blog.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blog.Image);
+			}
+			return Ok(blogs);
+		}
+
+		[HttpGet]
+		[Route("employeeId")]
+		public async Task<ActionResult<IEnumerable<BlogDto>>> GetBlogsByEmployeeId(int employeeId)
+		{
+			var employee = await _employeeRepo.GetUserByIdAsync(employeeId);
+			if (employee == null)
+			{ return NotFound(); }
+			var blogs = await _blogRepo.GetBlogsByEmployeeIdAsync(employeeId);
+			foreach (var blog in blogs)
+			{
+				blog.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, blog.Image);
+			}
+			return Ok(blogs);
+		}
+
+		[Authorize]
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPost]
         public async Task<ActionResult<Blog>> CreateBlog([FromForm] BlogCreate blogCreate)

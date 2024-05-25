@@ -22,29 +22,37 @@ namespace MediNet_BE.Controllers.Products
         private readonly IProductRepo _productRepo;
         private readonly ICategoryChildRepo _categoryChildRepo;
         private readonly ICategoryRepo _categoryRepo;
-        private readonly ICategoryParentRepo _categoryParentRepo;
-        private readonly IClinicRepo _clinicRepo;
         private readonly IFileService _fileService;
 
-        public ProductsController(IProductRepo productRepo, ICategoryChildRepo categoryChildRepo, ICategoryRepo categoryRepo, ICategoryParentRepo categoryParentRepo,
-            IClinicRepo clinicRepo, IFileService fileService)
+        public ProductsController(IProductRepo productRepo, ICategoryChildRepo categoryChildRepo, ICategoryRepo categoryRepo, IFileService fileService)
         {
             _productRepo = productRepo;
             _categoryChildRepo = categoryChildRepo;
             _categoryRepo = categoryRepo;
-            _categoryParentRepo = categoryParentRepo;
-            _clinicRepo = clinicRepo;
             _fileService = fileService;
         }
 
-        [HttpGet]
+		[NonAction]
+		public List<string> GetImagesPath(string path)
+		{
+			var imagesPath = new List<string>();
+			string[] picturePaths = path.Split(';', StringSplitOptions.RemoveEmptyEntries);
+			foreach (string picturePath in picturePaths)
+			{
+				var imageLink = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, picturePath);
+				imagesPath.Add(imageLink);
+			}
+			return imagesPath;
+		}
+
+		[HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
             var products = await _productRepo.GetAllProductAsync();
             foreach (var product in products)
             {
                 product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
-            }
+			}
             return Ok(products);
         }
 
@@ -56,7 +64,7 @@ namespace MediNet_BE.Controllers.Products
             foreach (var product in products)
             {
                 product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
-            }
+			}
             return Ok(products);
         }
 
@@ -70,8 +78,11 @@ namespace MediNet_BE.Controllers.Products
                 return NotFound();
             }
             product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
-
-            return Ok(product);
+			//foreach (var productDetail in product.ProductDetails)
+			//{
+			//	productDetail.ImagesSrc.AddRange(GetImagesPath(productDetail.ImagesProductDetail));
+			//}
+			return Ok(product);
         }
 
         [HttpGet]
@@ -86,7 +97,7 @@ namespace MediNet_BE.Controllers.Products
             foreach (var product in products)
             {
                 product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
-            }
+			}
             return Ok(products);
         }
 
@@ -102,7 +113,7 @@ namespace MediNet_BE.Controllers.Products
             foreach (var product in products)
             {
                 product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
-            }
+			}
             return Ok(products);
         }
 
@@ -118,7 +129,7 @@ namespace MediNet_BE.Controllers.Products
             foreach (var product in products)
             {
                 product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, product.Image);
-            }
+			}
             return Ok(products);
         }
         /// <summary>

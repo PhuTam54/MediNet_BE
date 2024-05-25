@@ -34,7 +34,7 @@ namespace MediNet_BE.Repositories.Employees.Blogs
 
 		public async Task<BlogCommentDto> GetBlogCommentByIdAsync(int id)
 		{
-			var blogComment = await _context.BlogComments!
+			var blogComment = await _context.BlogComments
 				.Include(b => b.Blog)
 				.Include(c => c.Customer)
 				.AsNoTracking()
@@ -47,10 +47,23 @@ namespace MediNet_BE.Repositories.Employees.Blogs
 
 		public async Task<List<BlogCommentDto>> GetBlogCommentByParentIdAsync(int parentId)
 		{
-			var blogComments = await _context.BlogComments!
+			var blogComments = await _context.BlogComments
 				.Include(b => b.Blog)
 				.Include(c => c.Customer)
 				.Where(bc => bc.Parent_Id == parentId)
+				.ToListAsync();
+
+			var blogCommentsMap = _mapper.Map<List<BlogCommentDto>>(blogComments);
+
+			return blogCommentsMap;
+		}
+
+		public async Task<List<BlogCommentDto>> GetBlogCommentByBlogIdAsync(int blogId)
+		{
+			var blogComments = await _context.BlogComments
+				.Include(b => b.Blog)
+				.Include(c => c.Customer)
+				.Where(bm => bm.Blog.Id == blogId)
 				.ToListAsync();
 
 			var blogCommentsMap = _mapper.Map<List<BlogCommentDto>>(blogComments);

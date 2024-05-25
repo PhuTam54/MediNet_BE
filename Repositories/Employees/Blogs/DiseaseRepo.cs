@@ -21,7 +21,8 @@ namespace MediNet_BE.Repositories.Employees.Blogs
 
         public async Task<List<DiseaseDto>> GetAllDiseaseAsync()
         {
-            var diseases = await _context.Diseases!
+            var diseases = await _context.Diseases
+                .Include(b => b.Blogs)
                 .ToListAsync();
 
             var diseasesMap = _mapper.Map<List<DiseaseDto>>(diseases);
@@ -31,8 +32,9 @@ namespace MediNet_BE.Repositories.Employees.Blogs
 
         public async Task<DiseaseDto> GetDiseaseByIdAsync(int id)
         {
-            var disease = await _context.Diseases!
-                .AsNoTracking()
+            var disease = await _context.Diseases
+				.Include(b => b.Blogs)
+				.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             var diseaseMap = _mapper.Map<DiseaseDto>(disease);

@@ -195,7 +195,7 @@ namespace MediNet_BE.Controllers.Orders
         [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> OrderUpdate([FromQuery] int id, [FromQuery] OrderStatus status)
+        public async Task<IActionResult> OrderStatusUpdate([FromQuery] int id, [FromQuery] OrderStatus status)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
             if (order == null)
@@ -203,16 +203,37 @@ namespace MediNet_BE.Controllers.Orders
                 return NotFound();
             }
             await _orderRepo.UpdateOrderAsync(id, status);
-            return Ok("Update Successfully!");
+            return Ok("Update Status Order Successfully!");
         }
 
-        [NonAction]
+		[Authorize]
+		[HttpPut]
+		[Route("id")]
+		public async Task<IActionResult> OrderUpdate([FromQuery] string orderCode)
+		{
+			var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);
+            if (updatedOrder == null)
+            {
+                return NotFound();
+            }
+			await UpdateStatusOrder(orderCode);
+			return Ok("Update Successfully!");
+		}
+
+		[NonAction]
         public async Task<Order> UpdateStatusOrder(string orderCode)
         {
             var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);
             if (updatedOrder != null)
             {
-                updatedOrder.Is_paid = true;
+                if (updatedOrder.Payment_method == "COD")
+                {
+					updatedOrder.Is_paid = false;
+                }
+                else
+                {
+					updatedOrder.Is_paid = true;
+				}
                 updatedOrder.Status = OrderStatus.CONFIRMED;
                 _mediNetContext.Update(updatedOrder);
                 await _mediNetContext.SaveChangesAsync();

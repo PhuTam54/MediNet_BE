@@ -2,6 +2,10 @@
 
 namespace MediNet_BE.Models.Employees.Courses
 {
+    public enum CourseStatus
+    {
+        PENDING, STARTED, HAPPENING, CLOSED
+	}
     public class Course
     {
         public int Id { get; set; }
@@ -17,6 +21,7 @@ namespace MediNet_BE.Models.Employees.Courses
         public string SkillCovered { get; set; }
         public bool MedicineSalesTraining { get; set; }
         public bool MedicalExaminationTraining { get; set; }
+        public CourseStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }

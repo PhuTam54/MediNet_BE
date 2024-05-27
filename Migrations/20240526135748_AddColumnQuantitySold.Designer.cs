@@ -4,6 +4,7 @@ using MediNet_BE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MediNet_BE.Migrations
 {
     [DbContext(typeof(MediNetContext))]
-    partial class MediNetContextModelSnapshot : ModelSnapshot
+    [Migration("20240526135748_AddColumnQuantitySold")]
+    partial class AddColumnQuantitySold
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -183,7 +186,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("InStocks", (string)null);
+                    b.ToTable("InStocks");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Clinics.StockIn", b =>
@@ -225,7 +228,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("StockIns", (string)null);
+                    b.ToTable("StockIns");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Clinics.StockOut", b =>
@@ -257,7 +260,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("StockOuts", (string)null);
+                    b.ToTable("StockOuts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Employees.Blogs.Blog", b =>
@@ -298,7 +301,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Blogs", (string)null);
+                    b.ToTable("Blogs");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Employees.Blogs.BlogComment", b =>
@@ -334,7 +337,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("BlogComments", (string)null);
+                    b.ToTable("BlogComments");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Employees.Blogs.Disease", b =>
@@ -355,7 +358,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Diseases", (string)null);
+                    b.ToTable("Diseases");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Employees.Courses.Course", b =>
@@ -449,7 +452,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Enrollments", (string)null);
+                    b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Employees.Employee", b =>
@@ -516,7 +519,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("SpecialistId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Employees.Specialist", b =>
@@ -537,7 +540,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specialists", (string)null);
+                    b.ToTable("Specialists");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Cart", b =>
@@ -571,7 +574,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Feedback", b =>
@@ -605,7 +608,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Feedbacks", (string)null);
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Order", b =>
@@ -715,7 +718,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts", (string)null);
+                    b.ToTable("OrderProducts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.OrderService", b =>
@@ -744,7 +747,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("OrderServices", (string)null);
+                    b.ToTable("OrderServices");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Orders.Service", b =>
@@ -773,7 +776,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Products.FavoriteProduct", b =>
@@ -799,7 +802,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("FavoriteProducts", (string)null);
+                    b.ToTable("FavoriteProducts");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Products.Product", b =>
@@ -893,7 +896,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductDetails", (string)null);
+                    b.ToTable("ProductDetails");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Users.Admin", b =>
@@ -932,7 +935,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Users.Customer", b =>
@@ -985,7 +988,7 @@ namespace MediNet_BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("MediNet_BE.Models.Categories.Category", b =>

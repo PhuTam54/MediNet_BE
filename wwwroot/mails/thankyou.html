@@ -5,6 +5,47 @@
     <title></title>
 </head>
 <body>
-    <h3>Thank You!!!</h3>
+    <div className="col-lg-9 content-area">
+        <h2>Order Details</h2>
+        
+        <table style={{width: '100%', marginBottom: '1rem', color: '#212529'}}>
+            <thead>
+                <tr>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Name</th>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Quantity</th>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Price</th>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>SubTotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {DataList}
+            </tbody>
+        </table>
+        <p>Thank you for your purchase!</p>
+    </div>
+    <div className="col-lg-3 widget-area sidebar-right ttm-col-bgcolor-yes ttm-bg ttm-right-span ttm-bgcolor-grey">
+        <h2>Buyer Information</h2>
+        <table style={{width: '100%', marginBottom: '1rem', color: '#212529'}}>
+            <tbody>
+                <tr>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Name</th>
+                    <td style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>[Name]</td>
+                </tr>
+                <tr>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Phone Number</th>
+                    <td style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>[Phone]</td>
+                </tr>
+                <tr>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Email</th>
+                    <td style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>[Email]</td>
+                </tr>
+                <tr>
+                    <th style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>Address</th>
+                    <td style={{padding: '0.75rem', verticalAlign: 'top', borderTop: '1px solid #dee2e6'}}>[Address]</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h4>To view detailed order information, please visit our website: <a href="https://localhost:3000/">MediNet</a></h4>
 </body>
 </html>

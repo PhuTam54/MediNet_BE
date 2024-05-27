@@ -21,6 +21,8 @@ using MediNet_BE.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.DtoCreate.Users;
+using AutoMapper;
+using MediNet_BE.Models.Products;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -36,10 +38,11 @@ namespace MediNet_BE.Controllers.Orders
         private readonly IMomoService _momoService;
         private readonly IPayPalService _payPalService;
         private readonly ICartRepo _cartRepo;
+		private readonly IMapper _mapper;
 
-        public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo,
+		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo,
             IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService,
-            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo)
+            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo, IMapper mapper)
         {
             _orderRepo = orderRepo;
             _customerRepo = customerRepo;
@@ -49,7 +52,8 @@ namespace MediNet_BE.Controllers.Orders
             _momoService = momoService;
             _payPalService = payPalService;
             _cartRepo = cartRepo;
-        }
+			_mapper = mapper;
+		}
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
@@ -213,14 +217,20 @@ namespace MediNet_BE.Controllers.Orders
                 _mediNetContext.Update(updatedOrder);
                 await _mediNetContext.SaveChangesAsync();
 
-                var data = new SendMailRequest
+                var orderDto = _mapper.Map<OrderDto>(updatedOrder);
+                foreach(var orderProduct in orderDto.OrderProducts)
+				{
+                    orderProduct.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, orderProduct.Product.Image);
+				}
+				var data = new OrderMailRequest
                 {
                     ToEmail = updatedOrder.Email,
                     UserName = updatedOrder.Name,
                     Url = "ThankYou",
-                    Subject = "Thank you for your order!"
+                    Subject = "Thank you for your order!",
+                    Data = orderDto
                 };
-                await _mailService.SendEmailAsync(data);
+                await _mailService.SendOrderEmailAsync(data);
             }
             return updatedOrder;
         }

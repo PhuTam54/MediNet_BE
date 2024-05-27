@@ -29,7 +29,7 @@ namespace MediNet_BE.Controllers.Clinics
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<InStockDto>>> GetCategories()
+		public async Task<ActionResult<IEnumerable<InStockDto>>> GetInStocks()
 		{
 			return Ok(await _inStockRepo.GetAllInStockAsync());
 		}
@@ -39,6 +39,20 @@ namespace MediNet_BE.Controllers.Clinics
 		public async Task<ActionResult<InStockDto>> GetInStockById(int id)
 		{
 			var inStock = await _inStockRepo.GetInStockByIdAsync(id);
+			return inStock == null ? NotFound() : Ok(inStock);
+		}
+
+		[HttpGet]
+		[Route("productIdAndClinicId")]
+		public async Task<ActionResult<InStockDto>> GetInStockByProductIdAndClinicId(int productId, int clinicId)
+		{
+			var product = await _productRepo.GetProductByIdAsync(productId);
+			var clinic = await _clinicRepo.GetClinicByIdAsync(clinicId);
+			if(product == null && clinic == null)
+			{
+				return NotFound();
+			}
+			var inStock = await _inStockRepo.GetInStockByProductIdAndClinicIdAsync(productId, clinicId);
 			return inStock == null ? NotFound() : Ok(inStock);
 		}
 

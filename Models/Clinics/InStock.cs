@@ -8,6 +8,7 @@ namespace MediNet_BE.Models.Clinics
         public int ClinicId { get; set; }
         public int ProductId { get; set; }
         public int StockQuantity { get; set; }
+		public int QuantitySold { get; set; }
 		public DateTime LastUpdatedAt { get; set; }
 		public Clinic Clinic { get; set; }
         public Product Product { get; set; }

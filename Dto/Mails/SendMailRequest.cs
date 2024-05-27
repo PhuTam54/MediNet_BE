@@ -1,4 +1,6 @@
-﻿namespace MediNet_BE.Dto.Mails
+﻿using MediNet_BE.Models.Orders;
+
+namespace MediNet_BE.Dto.Mails
 {
 	public class SendMailRequest
     {

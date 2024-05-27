@@ -143,7 +143,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
 		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
 		[HttpPut]
 		[Route("id")]
-		public async Task<IActionResult> UpdateCourse([FromQuery] int id, [FromBody] CourseCreate updatedCourse)
+		public async Task<IActionResult> UpdateCourse([FromQuery] int id, [FromForm] CourseCreate updatedCourse)
 		{
 			var course = await _courseRepo.GetCourseByIdAsync(id);
 			var doctorDto = await _employeeRepo.GetUserByIdAsync(updatedCourse.EmployeeId);

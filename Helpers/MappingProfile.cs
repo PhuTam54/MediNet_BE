@@ -77,6 +77,7 @@ namespace MediNet_BE.Helpers
 			#endregion
 			CreateMap<Cart, CartDto>();
 			CreateMap<Order, OrderDto>();
+			CreateMap<OrderDto, Order>();
 			CreateMap<OrderProduct, OrderProductDto>();
 			CreateMap<OrderService, OrderServiceDto>();
 			CreateMap<Service, ServiceDto>();

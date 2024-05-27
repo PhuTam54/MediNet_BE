@@ -4,7 +4,7 @@ namespace MediNet_BE.Models.Clinics
 {
 	public enum StockOutReason
 	{
-		SALE, CANCEL, MOVING_STORE, EXPIRED
+		SALE, CANCEL, MOVING_STORE, EXPIRED, SOLD
 	}
 	public class StockOut
 	{

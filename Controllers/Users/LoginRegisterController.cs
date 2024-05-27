@@ -263,13 +263,13 @@ namespace MediNet_BE.Controllers.Users
 
 		[HttpPost]
 		[Route("ResetPwd")]
-		public async Task<IActionResult> ResetPassword(int? userId, string pwd, string confirmpwd)
+		public async Task<IActionResult> ResetPassword(string email, string pwd, string confirmpwd)
 		{
-			if (userId == null)
+			if (email == null)
 			{
 				return NotFound();
 			}
-			var account = await _context.Customers.FirstOrDefaultAsync(c => c.Id == userId);
+			var account = await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
 
 			if (account != null)
 			{

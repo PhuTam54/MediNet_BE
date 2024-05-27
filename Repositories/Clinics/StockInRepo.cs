@@ -107,27 +107,44 @@ namespace MediNet_BE.Repositories.Clinics
 
 		public async Task DeleteStockInAsync(int id)
 		{
-			var stockIn = await _context.StockIns!.SingleOrDefaultAsync(c => c.Id == id);
+			var stockIn = await _context.StockIns
+				.Include(c => c.Clinic)
+				.Include(p => p.Product)
+				.FirstOrDefaultAsync(c => c.Id == id);
 
-			_context.StockIns!.Remove(stockIn);
+			//if(stockIn != null)
+			//{
+			//	var stockInSold = 0;
+			//	var stockOuts = await _context.StockOuts.Where(so => so.Clinic.Id == stockIn.Clinic.Id && so.Product.Id == stockIn.Product.Id).ToListAsync();
+			//	foreach (var stockOut in stockOuts)
+			//	{
+			//		stockInSold += stockOut.Quantity;
+			//	}
 
-			var stockOut = new StockOut
-			{
-				ClinicId = stockIn.Clinic.Id,
-				ProductId = stockIn.Product.Id,
-				Clinic = stockIn.Clinic,
-				Product = stockIn.Product,
-				Quantity = stockIn.Quantity,
-				DateOut = DateTime.UtcNow,
-				Reason = StockOutReason.EXPIRED
-			};
+			//	var remainingStockIn = stockIn.Quantity - stockInSold;
 
-			var inStock = await _context.InStocks.FirstOrDefaultAsync(i => i.Product.Id == stockIn.Product.Id && i.Clinic.Id == stockIn.Clinic.Id);
-			inStock.StockQuantity -= stockIn.Quantity;
-			inStock.LastUpdatedAt = DateTime.UtcNow;
-			_context.InStocks.Update(inStock);
+			//	var newStockOut = new StockOut
+			//	{
+			//		ClinicId = stockIn.Clinic.Id,
+			//		ProductId = stockIn.Product.Id,
+			//		Clinic = stockIn.Clinic,
+			//		Product = stockIn.Product,
+			//		Quantity = remainingStockIn,
+			//		DateOut = DateTime.UtcNow,
+			//		Reason = StockOutReason.EXPIRED
+			//	};
+			//	var inStock = await _context.InStocks.FirstOrDefaultAsync(i => i.Product.Id == stockIn.Product.Id && i.Clinic.Id == stockIn.Clinic.Id);
+			//	if(inStock != null)
+			//	{
+			//		inStock.StockQuantity -= remainingStockIn;
+			//		inStock.LastUpdatedAt = DateTime.UtcNow;
+			//		_context.InStocks.Update(inStock);
+			//	}
+			//	_context.StockOuts.Add(newStockOut);
+			//	_context.StockIns!.Remove(stockIn);
 
-			await _context.SaveChangesAsync();
+			//	await _context.SaveChangesAsync();
+			//}
 		}
 	}
 }

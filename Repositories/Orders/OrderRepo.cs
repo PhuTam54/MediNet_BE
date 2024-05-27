@@ -3,6 +3,7 @@ using MediNet_BE.Data;
 using MediNet_BE.Dto.Orders;
 using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.Interfaces.Orders;
+using MediNet_BE.Models.Clinics;
 using MediNet_BE.Models.Orders;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +53,7 @@ namespace MediNet_BE.Repositories.Orders
             return orderMap;
         }
 
-        public async Task<List<OrderDto>> GetOrderByUserIdAsync(int userId)
+        public async Task<List<OrderDto>> GetOrdersByUserIdAsync(int userId)
         {
             var orders = await _context.Orders!
 				.Include(c => c.Customer)
@@ -76,7 +77,6 @@ namespace MediNet_BE.Repositories.Orders
 			var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == orderCreate.CustomerId);
             var orderMap = _mapper.Map<Order>(orderCreate);
             orderMap.OrderCode = (DateTime.UtcNow.Ticks + random).ToString();
-			orderMap.Status = OrderStatus.PENDING;
 			orderMap.Is_paid = false;
 			orderMap.OrderDate = DateTime.UtcNow;
             orderMap.Customer = customer;
@@ -95,6 +95,7 @@ namespace MediNet_BE.Repositories.Orders
 						    inStock.QuantitySold += cart.QtyCart;
 							_context.InStocks.Update(inStock);
 						}
+
 					_context.OrderProducts.Add(orderProduct);
 					_context.Carts.Remove(cart);
 				}

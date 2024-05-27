@@ -44,6 +44,19 @@ namespace MediNet_BE.Repositories.Clinics
 			return inStockMap;
 		}
 
+		public async Task<List<InStockDto>> GetInStockByProductIdAsync(int productId)
+		{
+			var inStocks = await _context.InStocks!
+				.Include(p => p.Product)
+				.Include(c => c.Clinic)
+				.Where(i => i.Product.Id == productId)
+				.ToListAsync();
+
+			var inStocksMap = _mapper.Map<List<InStockDto>>(inStocks);
+
+			return inStocksMap;
+		}
+
 		public async Task<InStockDto> GetInStockByProductIdAndClinicIdAsync(int productId, int clinicId)
 		{
 			var inStock = await _context.InStocks!
@@ -92,6 +105,6 @@ namespace MediNet_BE.Repositories.Clinics
 			await _context.SaveChangesAsync();
 		}
 
-
+		
 	}
 }

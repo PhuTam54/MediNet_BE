@@ -23,6 +23,11 @@ using MediNet_BE.DtoCreate.Orders;
 using MediNet_BE.DtoCreate.Users;
 using AutoMapper;
 using MediNet_BE.Models.Products;
+using MediNet_BE.Models.Clinics;
+using MediNet_BE.Dto.Clinics;
+using MediNet_BE.Interfaces.Clinics;
+using MediNet_BE.DtoCreate.Clinics;
+using MediNet_BE.Repositories.Clinics;
 
 namespace MediNet_BE.Controllers.Orders
 {
@@ -39,10 +44,12 @@ namespace MediNet_BE.Controllers.Orders
         private readonly IPayPalService _payPalService;
         private readonly ICartRepo _cartRepo;
 		private readonly IMapper _mapper;
+		private readonly IStockOutRepo _stockOutRepo;
+		private readonly IInStockRepo _inStockRepo;
 
 		public OrdersController(IOrderRepo orderRepo, IUserRepo<Customer, CustomerDto, CustomerCreate> customerRepo,
             IVnPayService vnPayService, MediNetContext mediNetContext, IMailService mailService,
-            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo, IMapper mapper)
+            IMomoService momoService, IPayPalService payPalService, ICartRepo cartRepo, IMapper mapper, IStockOutRepo stockOutRepo, IInStockRepo inStockRepo)
         {
             _orderRepo = orderRepo;
             _customerRepo = customerRepo;
@@ -53,6 +60,8 @@ namespace MediNet_BE.Controllers.Orders
             _payPalService = payPalService;
             _cartRepo = cartRepo;
 			_mapper = mapper;
+			_stockOutRepo = stockOutRepo;
+			_inStockRepo = inStockRepo;
 		}
 
         [HttpGet]
@@ -75,7 +84,10 @@ namespace MediNet_BE.Controllers.Orders
         public async Task<ActionResult<OrderDto>> GetOrderById(int id)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
-
+            if(order == null)
+            {
+                return NotFound();
+            }
             foreach (var item in order.OrderProducts)
             {
                 item.Product.ImageSrc = string.Format("{0}://{1}{2}/{3}", Request.Scheme, Request.Host, Request.PathBase, item.Product.Image);
@@ -89,7 +101,7 @@ namespace MediNet_BE.Controllers.Orders
         [Route("userId")]
         public async Task<ActionResult<OrderDto>> GetOrderByUserId(int userId)
         {
-            var orders = await _orderRepo.GetOrderByUserIdAsync(userId);
+            var orders = await _orderRepo.GetOrdersByUserIdAsync(userId);
             foreach (var order in orders)
             {
                 foreach (var item in order.OrderProducts)
@@ -197,18 +209,43 @@ namespace MediNet_BE.Controllers.Orders
         [Route("id")]
         public async Task<IActionResult> OrderStatusUpdate([FromQuery] int id, [FromQuery] OrderStatus status)
         {
-            var order = await _orderRepo.GetOrderByIdAsync(id);
-            if (order == null)
+            var orderDto = await _orderRepo.GetOrderByIdAsync(id);
+            if (orderDto == null)
             {
                 return NotFound();
             }
             await _orderRepo.UpdateOrderAsync(id, status);
+
+			//if (orderDto.Status == OrderStatus.SHIPPING)
+   //         {
+   //             foreach(var orderProduct in orderDto.OrderProducts)
+   //             {
+   //                 var inStocks = await _inStockRepo.GetInStockByProductIdAsync(orderProduct.Product.Id);
+                    
+			//		foreach (var inStock in inStocks)
+   //                 {
+			//			var newStockOut = new StockOutCreate
+			//			{
+			//				ClinicId = inStock.Clinic.Id,
+			//				ProductId = inStock.Product.Id,
+			//				Quantity = orderProduct.Quantity,
+			//				DateOut = DateTime.UtcNow,
+			//				Reason = StockOutReason.SOLD
+			//			};
+   //                     await _stockOutRepo.AddStockOutAsync(newStockOut);
+			//		}
+			//	}
+			//}
+   //         if(orderDto.Status == OrderStatus.SHIPPED && orderDto.Payment_method == "COD")
+   //         {
+			//	orderDto.Is_paid = true;
+			//}
             return Ok("Update Status Order Successfully!");
         }
 
 		[Authorize]
 		[HttpPut]
-		[Route("id")]
+		[Route("orderCode")]
 		public async Task<IActionResult> OrderUpdate([FromQuery] string orderCode)
 		{
 			var updatedOrder = await _mediNetContext.Orders.FirstOrDefaultAsync(m => m.OrderCode == orderCode);

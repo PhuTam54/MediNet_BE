@@ -2,16 +2,9 @@
 using MailKit.Security;
 using MediNet_BE.Dto.Mails;
 using MediNet_BE.Dto.Orders;
-using MediNet_BE.Models.Orders;
-using MediNet_BE.Models.Products;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using NUnit.Framework.Interfaces;
-using Org.BouncyCastle.Asn1.Pkcs;
-using PayPal.v1.Identity;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MediNet_BE.Services
 {
@@ -31,7 +24,7 @@ namespace MediNet_BE.Services
 			str.Close();
             MailText = MailText.Replace("[username]", request.UserName).Replace("[email]", request.ToEmail)
                 .Replace("verify", $"https://localhost:3000/Acccount/verify?email={request.ToEmail}")
-                .Replace("forgotpwd", $"https://localhost:3000/Acccount/resetPassword?email={request.ToEmail}");
+				.Replace("forgotpwd", $"http://localhost:3000/resetpassword?email={request.ToEmail}");
 			var email = new MimeMessage();
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
 			email.To.Add(MailboxAddress.Parse(request.ToEmail));
@@ -88,7 +81,7 @@ namespace MediNet_BE.Services
 			}
 			sb.Append("<tr>");
 			sb.Append($"<td colspan='5' style='padding:0.75rem;vertical-align:top;border-top:1px solid #dee2e6;'>GrandTotal</td>");
-			sb.Append($"<td style='padding:0.75rem;vertical-align:top;border-top:1px solid #dee2e6;'>{orderDto.TotalAmount}</td>");
+			sb.Append($"<td style='padding:0.75rem;vertical-align:top;border-top:1px solid #dee2e6;'>{orderDto.TotalAmount}.00</td>");
 			sb.Append("</tr>");
 
 			return sb.ToString();

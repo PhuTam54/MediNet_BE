@@ -6,5 +6,6 @@
         public int ClinicId { get; set; }
         public int ProductId { get; set; }
         public int StockQuantity { get; set; }
-    }
+		public int QuantitySold { get; set; }
+	}
 }

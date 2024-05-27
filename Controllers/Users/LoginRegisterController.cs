@@ -104,6 +104,7 @@ namespace MediNet_BE.Controllers.Users
 
 					return Ok(new { Token = token });
 				}
+
 			}
 
 			return response;

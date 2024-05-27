@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using MediNet_BE.Models.Employees.Courses;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MediNet_BE.DtoCreate.Employees.Courses
 {
@@ -18,6 +19,7 @@ namespace MediNet_BE.DtoCreate.Employees.Courses
         public string SkillCovered { get; set; }
         public bool MedicineSalesTraining { get; set; }
         public bool MedicalExaminationTraining { get; set; }
-        public int EmployeeId { get; set; }
+		public CourseStatus Status { get; set; }
+		public int EmployeeId { get; set; }
     }
 }

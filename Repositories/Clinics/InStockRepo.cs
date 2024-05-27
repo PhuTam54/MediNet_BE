@@ -92,6 +92,6 @@ namespace MediNet_BE.Repositories.Clinics
 			await _context.SaveChangesAsync();
 		}
 
-		
+
 	}
 }

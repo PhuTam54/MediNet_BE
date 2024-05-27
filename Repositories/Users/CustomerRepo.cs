@@ -70,46 +70,6 @@ namespace MediNet_BE.Repositories.Users
 			return customerMap;
 		}
 
-		public async Task<Customer> AddUserAsync(CustomerCreate userCreate)
-		{
-			var customerMap = _mapper.Map<Customer>(userCreate);
-			customerMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
-			customerMap.Role = 1;
-			customerMap.Status = 0;
-			customerMap.Date_Of_Birth = DateTime.UtcNow;
-			customerMap.Password = LoginRegisterController.HashPassword(customerMap.Password);
-
-			var data = new SendMailRequest
-			{
-				ToEmail = customerMap.Email,
-				UserName = customerMap.Username,
-				Url = "verifyaccount",
-				Subject = $"Verify Account for {customerMap.Username}"
-			};
-			await _mailService.SendEmailAsync(data);
-
-			_context.Customers!.Add(customerMap);
-			await _context.SaveChangesAsync();
-			return customerMap;
-		}
-
-		public async Task UpdateUserAsync(CustomerCreate userCreate)
-		{
-			var customerMap = _mapper.Map<Customer>(userCreate);
-			customerMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
-
-			_context.Customers!.Update(customerMap);
-			await _context.SaveChangesAsync();
-		}
-
-		public async Task DeleteUserAsync(int userId)
-		{
-			var customer = await _context.Customers!.FirstOrDefaultAsync(c => c.Id == userId);
-
-			_context.Customers!.Remove(customer);
-			await _context.SaveChangesAsync();
-		}
-
 		public async Task<List<CustomerDto>> GetUserByTotalAmountOrderAsync()
 		{
 			var customers = await _context.Customers!
@@ -129,6 +89,47 @@ namespace MediNet_BE.Repositories.Users
 			var customersMap = _mapper.Map<List<CustomerDto>>(customers.Select(c => c.Customer).ToList());
 
 			return customersMap;
+		}
+
+		public async Task<Customer> AddUserAsync(CustomerCreate userCreate)
+		{
+			var customerMap = _mapper.Map<Customer>(userCreate);
+			customerMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
+			customerMap.Role = 1;
+			customerMap.Status = 0;
+			customerMap.Date_Of_Birth = DateTime.UtcNow;
+			customerMap.Password = LoginRegisterController.HashPassword(customerMap.Password);
+
+			//var data = new SendMailRequest
+			//{
+			//	ToEmail = customerMap.Email,
+			//	UserName = customerMap.Username,
+			//	Url = "verifyaccount",
+			//	Subject = $"Verify Account for {customerMap.Username}"
+			//};
+			//await _mailService.SendEmailAsync(data);
+
+			_context.Customers!.Add(customerMap);
+			await _context.SaveChangesAsync();
+			return customerMap;
+		}
+
+		public async Task UpdateUserAsync(CustomerCreate userCreate)
+		{
+			var customerMap = _mapper.Map<Customer>(userCreate);
+			customerMap.SEO_Name = CreateSlug.Init_Slug(userCreate.Username);
+			customerMap.Password = LoginRegisterController.HashPassword(customerMap.Password);
+
+			_context.Customers!.Update(customerMap);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task DeleteUserAsync(int userId)
+		{
+			var customer = await _context.Customers!.FirstOrDefaultAsync(c => c.Id == userId);
+
+			_context.Customers!.Remove(customer);
+			await _context.SaveChangesAsync();
 		}
 
 	}

@@ -88,11 +88,12 @@ namespace MediNet_BE.Repositories.Orders
 				if (cart != null)
 				{
 					var orderProduct = new OrderProduct { ProductId = cart.Product.Id, OrderId = orderMap.Id, Product = cart.Product, Order = orderMap, Quantity = cart.QtyCart, PriceSale = cart.Product.Price };
-					var supply = await _context.InStocks.FirstOrDefaultAsync(s => s.Product.Id == cart.ProductId && s.Clinic.Id == cart.ClinicId);
-					if (supply != null)
+					var inStock = await _context.InStocks.FirstOrDefaultAsync(s => s.Product.Id == cart.ProductId && s.Clinic.Id == cart.ClinicId);
+					if (inStock != null)
 						{
-							supply.StockQuantity -= cart.QtyCart;
-							_context.InStocks.Update(supply);
+						    inStock.StockQuantity -= cart.QtyCart;
+						    inStock.QuantitySold += cart.QtyCart;
+							_context.InStocks.Update(inStock);
 						}
 					_context.OrderProducts.Add(orderProduct);
 					_context.Carts.Remove(cart);
@@ -122,6 +123,5 @@ namespace MediNet_BE.Repositories.Orders
             await _context.SaveChangesAsync();
         }
 
-		
 	}
 }

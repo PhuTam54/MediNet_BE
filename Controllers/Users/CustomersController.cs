@@ -95,7 +95,7 @@ namespace MediNet_BE.Controllers.Users
         /// <returns></returns>
         
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
         public async Task<ActionResult<Customer>> CreateCustomer([FromForm] CustomerCreate customerCreate)
         {
@@ -125,7 +125,7 @@ namespace MediNet_BE.Controllers.Users
         }
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateCustomer([FromQuery] int id, [FromForm] CustomerCreate updatedCustomer)
@@ -156,7 +156,7 @@ namespace MediNet_BE.Controllers.Users
         }
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Admin")]
+		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteCustomer([FromQuery] int id)

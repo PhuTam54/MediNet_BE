@@ -5,5 +5,6 @@ namespace MediNet_BE.Services
     public interface IMailService
     {
         Task SendEmailAsync(SendMailRequest request);
-    }
+		Task SendOrderEmailAsync(OrderMailRequest request);
+	}
 }

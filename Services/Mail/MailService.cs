@@ -23,8 +23,8 @@ namespace MediNet_BE.Services
             string MailText = str.ReadToEnd();
 			str.Close();
             MailText = MailText.Replace("[username]", request.UserName).Replace("[email]", request.ToEmail)
-                .Replace("verify", $"https://localhost:3000/Acccount/verify?email={request.ToEmail}")
-				.Replace("forgotpwd", $"http://localhost:3000/resetpassword?email={request.ToEmail}");
+                .Replace("verify", $"https://medinetfptaptech.vercel.app/Acccount/verify?email={request.ToEmail}")
+				.Replace("forgotpwd", $"https://medinetfptaptech.vercel.app/resetpassword?email={request.ToEmail}");
 			var email = new MimeMessage();
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
 			email.To.Add(MailboxAddress.Parse(request.ToEmail));

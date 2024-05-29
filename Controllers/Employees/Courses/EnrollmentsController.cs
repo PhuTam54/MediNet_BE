@@ -46,7 +46,6 @@ namespace MediNet_BE.Controllers.Employees.Courses
         }
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Employee")]
 		[HttpPost]
         public async Task<ActionResult<Enrollment>> CreateEnrollment([FromBody] EnrollmentCreate enrollmentCreate)
         {

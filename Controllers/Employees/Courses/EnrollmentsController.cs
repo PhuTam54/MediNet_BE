@@ -66,7 +66,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
         }
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Employee")]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Employee")]
 		[HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateEnrollment([FromQuery] int id, [FromBody] EnrollmentCreate updatedEnrollment)
@@ -91,7 +91,7 @@ namespace MediNet_BE.Controllers.Employees.Courses
         }
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Employee")]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Employee")]
 		[HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteEnrollment([FromQuery] int id)

@@ -64,7 +64,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 		}
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpPost]
 		public async Task<ActionResult<BlogComment>> CreateBlogComment([FromBody] BlogCommentCreate blogCommentCreate)
 		{
@@ -91,7 +91,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 		}
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpPut]
 		[Route("id")]
 		public async Task<IActionResult> UpdateBlogComment([FromQuery] int id, [FromBody] BlogCommentCreate updatedBlogComment)
@@ -114,7 +114,7 @@ namespace MediNet_BE.Controllers.Employees.Blogs
 		}
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpDelete]
 		[Route("id")]
 		public async Task<IActionResult> DeleteBlogComment([FromQuery] int id)

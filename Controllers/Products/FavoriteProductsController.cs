@@ -87,7 +87,7 @@ namespace MediNet_BE.Controllers.Products
 		}
 
 		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpPost]
 		public async Task<ActionResult<FavoriteProduct>> CreateFavoriteProduct([FromBody] FavoriteProductCreate favoriteProductCreate)
 		{
@@ -107,8 +107,8 @@ namespace MediNet_BE.Controllers.Products
 			return newFavoriteProduct == null ? NotFound() : Ok(newFavoriteProduct);
 		}
 
-		[Authorize]
-		[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+		//[Authorize]
+		//[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
 		[HttpDelete]
 		[Route("id")]
 		public async Task<IActionResult> DeleteFavoriteProduct([FromQuery] int id)

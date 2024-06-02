@@ -105,7 +105,7 @@ namespace MediNet_BE.Controllers.Orders
 		}
 
 		[Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        ////[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
         public async Task<ActionResult<Feedback>> CreateFeedback([FromForm] FeedbackCreate feedbackCreate)
         {
@@ -138,7 +138,7 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        ////[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateFeedback([FromQuery] int id, [FromForm] FeedbackCreate updatedFeedback)
@@ -171,7 +171,7 @@ namespace MediNet_BE.Controllers.Orders
         }
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        //[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> DeleteFeedback([FromQuery] int id)

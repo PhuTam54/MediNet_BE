@@ -129,7 +129,7 @@ namespace MediNet_BE.Controllers.Orders
         /// <returns></returns>
 
         [Authorize]
-        [RequiresClaim(IdentityData.RoleClaimName, "Customer")]
+        //[RequiresClaim(IdentityData.RoleClaimName, "Customer")]
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreate orderCreate)
         {
